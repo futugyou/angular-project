@@ -1,9 +1,12 @@
 import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
 import { IOrderRow, IOrderRowDetail, IOrderSearch } from './order.model';
+import { OrderDetailComponent } from '../order-detail/order-detail';
 
 const ORDER_DATA: IOrderRow[] = [
     {
@@ -127,11 +130,12 @@ const ORDER_DATA: IOrderRow[] = [
         "status": 3
     }
 ]
+
 @Component({
     selector: 'app-order-main',
     templateUrl: './order.html',
     styleUrls: ['./order.css'],
-    imports: [MatButtonModule, MatTableModule, MatPaginatorModule],
+    imports: [MatButtonModule, MatTableModule, MatPaginatorModule, MatSidenavModule, OrderDetailComponent, CommonModule],
 })
 export class OrderMainComponent implements OnInit {
     totalCount = signal(100);
@@ -150,6 +154,7 @@ export class OrderMainComponent implements OnInit {
     data: IOrderRow[] = [];
     displayedColumns: string[] = ['id', 'orderCode', 'orderUser', 'orderTime', 'orderTel', 'orderPrice', 'remark', 'payName', 'payClient', 'status'];
     childPrint = false;
+    selectedOrder: IOrderRow | null = null;
 
     constructor(
         private fb: FormBuilder,
@@ -184,10 +189,12 @@ export class OrderMainComponent implements OnInit {
         });
     }
 
-    handlerView(row: IOrderRow) {
-        this.orderId = row.id;
-        this.title = 'View Order - ' + row.orderCode;
+    handlerView(order: IOrderRow, drawer: MatSidenav) {
+        this.orderId = order.id;
+        this.title = 'View Order - ' + order.orderCode;
         this.open = true;
+        this.selectedOrder = order;
+        drawer.open();
         this.loadOrderInfo();
     }
 
