@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { IOrderRowDetail } from './model';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export const ORDER_DETAILS: IOrderRowDetail[] = [
   {
@@ -63,7 +64,7 @@ export const ORDER_DETAILS: IOrderRowDetail[] = [
   imports: [MatTableModule, CommonModule],
 })
 export class OrderDetailComponent implements OnInit {
-  @Input() orderId!: string;
+  order = inject(MAT_DIALOG_DATA);
 
   displayedColumns: string[] = ['index', 'productName', 'productCode', 'count', 'unitName', 'price', 'allPrice', 'remark'];
   orderDetails: IOrderRowDetail[] = [];
@@ -71,7 +72,7 @@ export class OrderDetailComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log('Fetching order details for orderId:', this.orderId);
+    console.log('Fetching order details is:', this.order);
     this.orderDetails = ORDER_DETAILS;
   }
 }
