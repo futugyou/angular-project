@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { IOrderRow, IOrderRowDetail, IOrderSearch } from './order.model';
@@ -130,7 +131,7 @@ const ORDER_DATA: IOrderRow[] = [
     selector: 'app-order-main',
     templateUrl: './order.html',
     styleUrls: ['./order.css'],
-    imports: [MatTableModule, MatPaginatorModule],
+    imports: [MatButtonModule, MatTableModule, MatPaginatorModule],
 })
 export class OrderMainComponent implements OnInit {
     totalCount = signal(100);
