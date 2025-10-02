@@ -27,7 +27,9 @@
             "styles": [
               "src/custom-theme.scss",
               "src/styles.css"
-            ]
+            ],
+            "baseHref": "./",
+            "deployUrl": "./"
           },
           "configurations": {
             "production": {
@@ -96,5 +98,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "057c1d88-0c46-44f5-b756-be0a4024b9f1"
   }
 }
