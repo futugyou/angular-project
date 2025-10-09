@@ -8,7 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 
 
 @Component({
-  selector: 'app-root',
+  selector: 'angular-app-root',
   imports: [
     RouterOutlet,
     MatToolbarModule,
