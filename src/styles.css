@@ -1,16 +1,14 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-@theme {
+:root {
   --color-primary: #e11d48;
-  --color-tertiary: #ef4444; 
+  --color-tertiary: #ef4444;
   
   --color-surface: var(--sys-surface);
   --color-on-surface: var(--sys-on-surface);
   
   --font-sans: "Roboto", ui-sans-serif, system-ui;
-}
-
-:root {
+  
   --sys-surface: #ffffff;
   --sys-on-surface: #1f2937;
   
