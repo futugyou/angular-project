@@ -5,8 +5,6 @@ import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { IOrderRow, IOrderRowDetail } from './order.model';
 import { OrderDetailComponent } from '../order-detail/order-detail';
 import { NgIconsModule } from '@ng-icons/core'
-import { lucideChevronLeft, lucideChevronRight } from '@ng-icons/lucide'
-import { provideIcons } from '@ng-icons/core'
 
 const ORDER_DATA: IOrderRow[] = [
     {
@@ -137,9 +135,6 @@ const ORDER_DATA: IOrderRow[] = [
     templateUrl: './order.html',
     styleUrls: ['./order.css'],
     imports: [CommonModule, ReactiveFormsModule, DialogModule, NgIconsModule],
-    providers: [
-        provideIcons({ lucideChevronLeft, lucideChevronRight })
-    ],
 })
 export class OrderMainComponent implements OnInit {
     private dialog = inject(Dialog);

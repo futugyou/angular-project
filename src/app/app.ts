@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { NgIconsModule, provideIcons } from '@ng-icons/core';
-import { lucideMenu, lucideUser, lucideLogOut, lucideBell, lucideSettings } from '@ng-icons/lucide';
+import { NgIconsModule } from '@ng-icons/core';
 import { CdkMenuModule } from '@angular/cdk/menu';
 
 @Component({
@@ -17,10 +16,7 @@ import { CdkMenuModule } from '@angular/cdk/menu';
     NgIconsModule
   ],
   templateUrl: './app.html',
-  styleUrl: './app.css',
-  providers: [
-    provideIcons({ lucideMenu, lucideUser, lucideLogOut, lucideBell, lucideSettings })
-  ]
+  styleUrl: './app.css'
 })
 export class App {
 }

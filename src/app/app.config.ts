@@ -1,12 +1,33 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { provideIcons } from '@ng-icons/core';
+import {
+  lucideHome,
+  lucideClipboardList,
+  lucideLayoutDashboard,
+  lucideChevronLeft,
+  lucideChevronRight,
+  lucideX,
+  lucideMenu,
+  lucideUser
+} from '@ng-icons/lucide';
 
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes)
+    provideRouter(routes),
+
+    provideIcons({
+      lucideHome,
+      lucideClipboardList,
+      lucideLayoutDashboard,
+      lucideChevronLeft,
+      lucideChevronRight,
+      lucideX,
+      lucideMenu,
+      lucideUser
+    })
   ]
 };

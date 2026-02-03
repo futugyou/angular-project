@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { IOrderRowDetail } from './model';
 import { NgIconsModule } from '@ng-icons/core'
-import { lucideChevronLeft, lucideChevronRight } from '@ng-icons/lucide'
-import { provideIcons } from '@ng-icons/core'
 
 export const ORDER_DETAILS: IOrderRowDetail[] = [
   {
@@ -64,10 +62,7 @@ export const ORDER_DETAILS: IOrderRowDetail[] = [
   standalone: true,
   templateUrl: './order-detail.html',
   styleUrls: ['./order-detail.css'],
-  imports: [CommonModule, NgIconsModule],
-  providers: [
-    provideIcons({ lucideChevronLeft, lucideChevronRight })
-  ],
+  imports: [CommonModule, NgIconsModule]
 })
 export class OrderDetailComponent implements OnInit {
   order = inject(DIALOG_DATA);
