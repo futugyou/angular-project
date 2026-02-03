@@ -1,4 +1,52 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@theme {
+  --color-primary: #e11d48;
+  --color-tertiary: #ef4444; 
+  
+  --color-surface: var(--sys-surface);
+  --color-on-surface: var(--sys-on-surface);
+  
+  --font-sans: "Roboto", ui-sans-serif, system-ui;
+}
+
+:root {
+  --sys-surface: #ffffff;
+  --sys-on-surface: #1f2937;
+  
+  --dialog-bg: white;
+  --dialog-header: #ef4444;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sys-surface: #111827;
+    --sys-on-surface: #f9fafb;
+    --dialog-bg: #1f2937;
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light dark;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    background-color: var(--sys-surface);
+    color: var(--sys-on-surface);
+    
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .cdk-overlay-pane {
+    --container-color: var(--dialog-bg);
+    --header-color: var(--dialog-header);
+  }
+}
+
+@layer components {
+}

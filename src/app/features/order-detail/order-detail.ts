@@ -1,8 +1,10 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { IOrderRowDetail } from './model';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { NgIconsModule } from '@ng-icons/core'
+import { lucideChevronLeft, lucideChevronRight } from '@ng-icons/lucide'
+import { provideIcons } from '@ng-icons/core'
 
 export const ORDER_DETAILS: IOrderRowDetail[] = [
   {
@@ -59,20 +61,25 @@ export const ORDER_DETAILS: IOrderRowDetail[] = [
 
 @Component({
   selector: 'app-order-detail',
+  standalone: true,
   templateUrl: './order-detail.html',
   styleUrls: ['./order-detail.css'],
-  imports: [MatTableModule, CommonModule],
+  imports: [CommonModule, NgIconsModule],
+  providers: [
+    provideIcons({ lucideChevronLeft, lucideChevronRight })
+  ],
 })
 export class OrderDetailComponent implements OnInit {
-  order = inject(MAT_DIALOG_DATA);
+  order = inject(DIALOG_DATA);
+  dialogRef = inject(DialogRef);
 
-  displayedColumns: string[] = ['index', 'productName', 'productCode', 'count', 'unitName', 'price', 'allPrice', 'remark'];
   orderDetails: IOrderRowDetail[] = [];
 
-  constructor() { }
-
   ngOnInit(): void {
-    console.log('Fetching order details is:', this.order);
     this.orderDetails = ORDER_DETAILS;
+  }
+
+  close() {
+    this.dialogRef.close();
   }
 }

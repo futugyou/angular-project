@@ -1,26 +1,26 @@
 import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { NgIconsModule, provideIcons } from '@ng-icons/core';
+import { lucideMenu, lucideUser, lucideLogOut, lucideBell, lucideSettings } from '@ng-icons/lucide';
+import { CdkMenuModule } from '@angular/cdk/menu';
 
 @Component({
   selector: 'angular-app-root',
+  standalone: true,
   imports: [
+    CommonModule,
     RouterOutlet,
-    MatToolbarModule,
-    MatSidenavModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
     RouterLink,
+    RouterLinkActive,
+    CdkMenuModule,
+    NgIconsModule
   ],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
+  providers: [
+    provideIcons({ lucideMenu, lucideUser, lucideLogOut, lucideBell, lucideSettings })
+  ]
 })
 export class App {
-
-}  
+}

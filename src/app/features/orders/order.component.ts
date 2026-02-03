@@ -1,13 +1,12 @@
-import { Component, Input, Output, EventEmitter, OnInit, signal, inject } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
-import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
-import { MatDialog } from '@angular/material/dialog';
-
-import { IOrderRow, IOrderRowDetail, IOrderSearch } from './order.model';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Dialog, DialogModule } from '@angular/cdk/dialog';
+import { IOrderRow, IOrderRowDetail } from './order.model';
 import { OrderDetailComponent } from '../order-detail/order-detail';
+import { NgIconsModule } from '@ng-icons/core'
+import { lucideChevronLeft, lucideChevronRight } from '@ng-icons/lucide'
+import { provideIcons } from '@ng-icons/core'
 
 const ORDER_DATA: IOrderRow[] = [
     {
@@ -134,36 +133,41 @@ const ORDER_DATA: IOrderRow[] = [
 
 @Component({
     selector: 'app-order-main',
+    standalone: true,
     templateUrl: './order.html',
     styleUrls: ['./order.css'],
-    imports: [MatButtonModule, MatTableModule, MatPaginatorModule, CommonModule],
+    imports: [CommonModule, ReactiveFormsModule, DialogModule, NgIconsModule],
+    providers: [
+        provideIcons({ lucideChevronLeft, lucideChevronRight })
+    ],
 })
 export class OrderMainComponent implements OnInit {
-    dialog = inject(MatDialog);
-    totalCount = signal(100);
+    private dialog = inject(Dialog);
+    private fb = inject(FormBuilder);
+
+    totalCount = signal(0);
     pageIndex = signal(0);
     pageSize = signal(5);
+
     @Output() pageChange = new EventEmitter<number>();
-    @Output() refresh = new EventEmitter<void>();
 
-    form!: FormGroup;
-    open = false;
-    title = '';
-    orderId = '';
-    fdata: any = {};
-    payData: any[] = [];
-    tableData: IOrderRowDetail[] = [];
     data: IOrderRow[] = [];
-    displayedColumns: string[] = ['id', 'orderCode', 'orderUser', 'orderTime', 'orderTel', 'orderPrice', 'remark', 'payName', 'payClient', 'status'];
-    childPrint = false;
-    selectedOrder: IOrderRow | null = null;
+    form: FormGroup;
 
-    constructor(
-        private fb: FormBuilder,
-    ) { }
+    constructor() {
+        this.form = this.fb.group({
+            orderCode: [''],
+            orderTime: [''],
+            orderUser: [''],
+            payName: [''],
+            orderTel: [''],
+            orderAll: [''],
+            orderClient: [''],
+            remark: ['']
+        });
+    }
 
     ngOnInit(): void {
-
         this.loadPays();
     }
 
@@ -174,57 +178,35 @@ export class OrderMainComponent implements OnInit {
         this.data = ORDER_DATA.slice(start, end);
     }
 
-    async loadOrderInfo() {
-
-    }
-
-    setFormData(data: any) {
-        this.form.patchValue({
-            orderCode: data.orderCode,
-            orderTime: data.orderTime,
-            orderUser: data.orderUser,
-            payName: data.payName,
-            orderTel: data.orderTel,
-            orderAll: data.orderPrice,
-            orderClient: data.payClient,
-            remark: data.remark
-        });
-    }
-
     handlerView(order: IOrderRow) {
-        this.orderId = order.id;
-        this.title = 'View Order - ' + order.orderCode;
-        this.open = true;
-        this.selectedOrder = order;
         this.dialog.open(OrderDetailComponent, {
             data: order,
-            minWidth: "100%",
+            panelClass: ['max-w-4xl', 'w-full', 'm-4'],
+            backdropClass: 'bg-black/50'
         });
-        this.loadOrderInfo();
     }
 
-    handlerPrint(row: IOrderRow) {
-        this.childPrint = true;
-        this.orderId = row.id;
+    nextPage() {
+        if ((this.pageIndex() + 1) * this.pageSize() < this.totalCount()) {
+            this.pageIndex.update(v => v + 1);
+            this.loadPays();
+        }
     }
 
-    handlerClose() {
-        this.orderId = '';
-        this.form.reset();
-        this.open = false;
+    prevPage() {
+        if (this.pageIndex() > 0) {
+            this.pageIndex.update(v => v - 1);
+            this.loadPays();
+        }
     }
 
-    handlePageEvent(e: PageEvent) {
-        this.pageSize.set(e.pageSize);
-        this.pageIndex.set(e.pageIndex);
-        this.pageChange.emit(e.pageIndex);
+    onPageSizeChange(newSize: string) {
+        this.pageSize.set(parseInt(newSize, 10));
+        this.pageIndex.set(0);
         this.loadPays();
     }
 
-    async onPayConfirm(status: number) {
-        const payName = this.form.value.payName;
-        if (!payName && status === 1) {
-            return;
-        }
+    handlerPrint(element: IOrderRow) {
+        console.log('Printing order:', element.orderCode);
     }
 }
