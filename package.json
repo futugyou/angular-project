@@ -35,7 +35,6 @@
     "@angular/build": "^21.1.2",
     "@angular/cli": "^21.1.2",
     "@angular/compiler-cli": "^21.1.2",
-    "@types/cytoscape": "^3.31.0",
     "@types/node": "^25.2.0",
     "angular-eslint": "^21.2.0",
     "eslint": "^9.39.2",
