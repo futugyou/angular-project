@@ -16,6 +16,13 @@
   --dialog-header: #ef4444;
 }
 
+ng-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  --ng-icon__color: currentColor; 
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --sys-surface: #111827;
