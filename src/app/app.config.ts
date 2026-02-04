@@ -1,6 +1,6 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { provideIcons } from '@ng-icons/core';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core'
+import { provideRouter } from '@angular/router'
+import { provideIcons } from '@ng-icons/core'
 import {
   lucideHome,
   lucideClipboardList,
@@ -9,10 +9,10 @@ import {
   lucideChevronRight,
   lucideX,
   lucideMenu,
-  lucideUser
-} from '@ng-icons/lucide';
+  lucideUser,
+} from '@ng-icons/lucide'
 
-import { routes } from './app.routes';
+import { routes } from './app.routes'
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,7 +27,7 @@ export const appConfig: ApplicationConfig = {
       lucideChevronRight,
       lucideX,
       lucideMenu,
-      lucideUser
-    })
-  ]
-};
+      lucideUser,
+    }),
+  ],
+}

@@ -1,11 +1,11 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, signal } from '@angular/core'
+import { RouterOutlet } from '@angular/router'
 
 @Component({
   selector: 'home-root',
   templateUrl: './home.html',
-  styleUrl: './home.css'
+  styleUrl: './home.css',
 })
 export class HomeComponent {
-  protected readonly title = signal('angular-project');
+  protected readonly title = signal('angular-project')
 }

@@ -1,7 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { IOrderRowDetail } from './model';
+import { Component, OnInit, inject } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog'
+import { IOrderRowDetail } from './model'
 import { NgIconsModule } from '@ng-icons/core'
 
 export const ORDER_DETAILS: IOrderRowDetail[] = [
@@ -13,7 +13,7 @@ export const ORDER_DETAILS: IOrderRowDetail[] = [
     unitName: 'Jin',
     price: 5,
     remark: 'Fresh',
-    allPrice: 10
+    allPrice: 10,
   },
   {
     index: 2,
@@ -23,7 +23,7 @@ export const ORDER_DETAILS: IOrderRowDetail[] = [
     unitName: 'Jin',
     price: 4,
     remark: '',
-    allPrice: 12
+    allPrice: 12,
   },
   {
     index: 3,
@@ -33,7 +33,7 @@ export const ORDER_DETAILS: IOrderRowDetail[] = [
     unitName: 'Bottle',
     price: 8,
     remark: 'Whole Fat',
-    allPrice: 8
+    allPrice: 8,
   },
   {
     index: 4,
@@ -43,7 +43,7 @@ export const ORDER_DETAILS: IOrderRowDetail[] = [
     unitName: 'piece',
     price: 3,
     remark: 'Toasted',
-    allPrice: 15
+    allPrice: 15,
   },
   {
     index: 5,
@@ -53,28 +53,28 @@ export const ORDER_DETAILS: IOrderRowDetail[] = [
     unitName: 'piece',
     price: 1,
     remark: '',
-    allPrice: 12
-  }
-];
+    allPrice: 12,
+  },
+]
 
 @Component({
   selector: 'app-order-detail',
   standalone: true,
   templateUrl: './order-detail.html',
   styleUrls: ['./order-detail.css'],
-  imports: [CommonModule, NgIconsModule]
+  imports: [CommonModule, NgIconsModule],
 })
 export class OrderDetailComponent implements OnInit {
-  order = inject(DIALOG_DATA);
-  dialogRef = inject(DialogRef);
+  order = inject(DIALOG_DATA)
+  dialogRef = inject(DialogRef)
 
-  orderDetails: IOrderRowDetail[] = [];
+  orderDetails: IOrderRowDetail[] = []
 
   ngOnInit(): void {
-    this.orderDetails = ORDER_DETAILS;
+    this.orderDetails = ORDER_DETAILS
   }
 
   close() {
-    this.dialogRef.close();
+    this.dialogRef.close()
   }
 }
