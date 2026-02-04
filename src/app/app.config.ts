@@ -10,6 +10,10 @@ import {
   lucideX,
   lucideMenu,
   lucideUser,
+  lucideImage,
+  lucideFileText,
+  lucideMusic,
+  lucideTrash2,
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'
@@ -28,6 +32,10 @@ export const appConfig: ApplicationConfig = {
       lucideX,
       lucideMenu,
       lucideUser,
+      lucideImage,
+      lucideFileText,
+      lucideMusic,
+      lucideTrash2,
     }),
   ],
 }
