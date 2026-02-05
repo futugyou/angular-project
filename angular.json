@@ -14,9 +14,7 @@
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
@@ -24,9 +22,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.css"
-            ],
+            "styles": ["src/styles.css"],
             "baseHref": "./",
             "deployUrl": "./"
           },
@@ -59,9 +55,7 @@
           "options": {
             "host": "0.0.0.0",
             "port": 4200,
-            "allowedHosts": [
-              ".cloudstudio.club"
-            ]
+            "allowedHosts": [".cloudstudio.club"]
           },
           "configurations": {
             "production": {

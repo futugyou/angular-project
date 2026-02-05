@@ -5,20 +5,20 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: 'npm' # See documentation for possible values
+    directory: '/' # Location of package manifests
     schedule:
-      interval: "daily"
+      interval: 'daily'
     groups:
       angular:
         patterns:
-        - "@angular*"
+          - '@angular*'
       karma:
         patterns:
-        - "karma*"
-        
-  - package-ecosystem: "github-actions"
-    directory: "/"
+          - 'karma*'
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      time: "04:00"
+      interval: 'weekly'
+      time: '04:00'
