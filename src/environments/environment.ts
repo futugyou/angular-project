@@ -1,0 +1,3 @@
+export const environment = {
+  VITE_API_BASE_URL: '',
+}
