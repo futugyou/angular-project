@@ -16,6 +16,7 @@ import {
   lucideTrash2,
   lucideCheck,
   lucideMinus,
+  lucideX
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'

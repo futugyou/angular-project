@@ -41,7 +41,7 @@ type ButtonVariantProps = VariantProps<typeof buttonVariants>
   standalone: true,
   template: `<ng-content></ng-content>`,
 })
-export class BadgeComponent {
+export class ButtonComponent {
   @Input() variant: ButtonVariantProps['variant'] = 'default';
   @Input() size: ButtonVariantProps['size'] = 'default';
   @Input() class: string = '';
