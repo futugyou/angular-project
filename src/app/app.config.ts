@@ -16,7 +16,7 @@ import {
   lucideTrash2,
   lucideCheck,
   lucideMinus,
-  lucideX
+  lucideCircle,
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'
@@ -41,6 +41,7 @@ export const appConfig: ApplicationConfig = {
       lucideTrash2,
       lucideCheck,
       lucideMinus,
+      lucideCircle,
     }),
   ],
 }
