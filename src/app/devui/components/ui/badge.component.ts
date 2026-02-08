@@ -1,4 +1,4 @@
-import { Component, Input, HostBinding } from '@angular/core'
+import { Component, input, computed } from '@angular/core'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../../lib/utils'
 
@@ -27,12 +27,15 @@ type BadgeVariantProps = VariantProps<typeof badgeVariants>
   selector: 'app-badge',
   standalone: true,
   template: `<ng-content></ng-content>`,
+  host: {
+    '[class]': 'computedClass()',
+  },
 })
 export class BadgeComponent {
-  @Input() variant: BadgeVariantProps['variant'] = 'default'
-  @Input() class: string = ''
+  variant = input<BadgeVariantProps['variant']>('default')
+  readonly userClass = input<string>('', { alias: 'class' })
 
-  @HostBinding('class') get hostClasses() {
-    return cn(badgeVariants({ variant: this.variant }), this.class)
-  }
+  readonly computedClass = computed(() =>
+    cn(badgeVariants({ variant: this.variant() }), this.userClass()),
+  )
 }

@@ -1,4 +1,4 @@
-import { Component, Input, HostBinding, input, computed } from '@angular/core'
+import { Component, input, computed } from '@angular/core'
 import { cn } from '../../lib/utils'
 // usage
 // import { Alert, AlertTitle, AlertDescription } from './components/alert';
@@ -28,15 +28,14 @@ import { cn } from '../../lib/utils'
   },
 })
 export class Alert {
-  @Input() class: string = ''
+  readonly userClass = input<string>('', { alias: 'class' })
 
-  @HostBinding('class')
-  get hostClasses() {
-    return cn(
+  readonly classes = computed(() =>
+    cn(
       'relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground',
-      this.class,
-    )
-  }
+      this.userClass(),
+    ),
+  )
 }
 
 @Component({
@@ -56,12 +55,12 @@ export class AlertTitle {
   selector: 'div[hl-alert-description]',
   standalone: true,
   template: `<ng-content></ng-content>`,
+  host: {
+    '[class]': 'computedClass()',
+  },
 })
 export class AlertDescription {
-  @Input() class: string = ''
+  readonly userClass = input<string>('', { alias: 'class' })
 
-  @HostBinding('class')
-  get hostClasses() {
-    return cn('text-sm [&_p]:leading-relaxed', this.class)
-  }
+  readonly computedClass = computed(() => cn('text-sm [&_p]:leading-relaxed', this.userClass()))
 }
