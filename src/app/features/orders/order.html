@@ -17,43 +17,45 @@
       </thead>
 
       <tbody class="divide-y divide-gray-50">
-        <tr *ngFor="let element of data" class="hover:bg-primary/5 transition-colors group">
-          <td class="p-4 flex gap-2">
-            <button
-              (click)="handlerView(element)"
-              class="px-3 py-1 text-xs font-medium text-primary border border-primary rounded hover:bg-primary hover:text-white transition-all"
-            >
-              Detail Order
-            </button>
-            <button
-              (click)="handlerPrint(element)"
-              class="px-3 py-1 text-xs font-medium text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition-all"
-            >
-              Print
-            </button>
-          </td>
-          <td class="p-4 font-mono text-gray-700">{{element.orderCode}}</td>
-          <td class="p-4 text-gray-500">{{element.orderTime | date:'yyyy-MM-dd HH:mm'}}</td>
-          <td class="p-4 font-medium">{{element.orderUser}}</td>
-          <td class="p-4">{{element.orderTel}}</td>
-          <td class="p-4 font-semibold text-gray-900">{{element.orderPrice | currency:'USD'}}</td>
-          <td class="p-4">
-            <span
-              class="px-2 py-1 rounded bg-blue-50 text-blue-600 text-[10px] uppercase font-bold"
-            >
-              {{element.payName}}
-            </span>
-          </td>
-          <td class="p-4 text-gray-400">{{element.payClient}}</td>
-          <td class="p-4">
-            <span [class]="element.status === 1 ? 'text-green-600' : 'text-amber-600'">
-              {{element.status === 1 ? 'Paid' : 'Pending'}}
-            </span>
-          </td>
-          <td class="p-4 text-gray-400 truncate max-w-[150px]" [title]="element.remark">
-            {{element.remark}}
-          </td>
-        </tr>
+        @for (element of data; track element) {
+          <tr class="hover:bg-primary/5 transition-colors group">
+            <td class="p-4 flex gap-2">
+              <button
+                (click)="handlerView(element)"
+                class="px-3 py-1 text-xs font-medium text-primary border border-primary rounded hover:bg-primary hover:text-white transition-all"
+                >
+                Detail Order
+              </button>
+              <button
+                (click)="handlerPrint(element)"
+                class="px-3 py-1 text-xs font-medium text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition-all"
+                >
+                Print
+              </button>
+            </td>
+            <td class="p-4 font-mono text-gray-700">{{element.orderCode}}</td>
+            <td class="p-4 text-gray-500">{{element.orderTime | date:'yyyy-MM-dd HH:mm'}}</td>
+            <td class="p-4 font-medium">{{element.orderUser}}</td>
+            <td class="p-4">{{element.orderTel}}</td>
+            <td class="p-4 font-semibold text-gray-900">{{element.orderPrice | currency:'USD'}}</td>
+            <td class="p-4">
+              <span
+                class="px-2 py-1 rounded bg-blue-50 text-blue-600 text-[10px] uppercase font-bold"
+                >
+                {{element.payName}}
+              </span>
+            </td>
+            <td class="p-4 text-gray-400">{{element.payClient}}</td>
+            <td class="p-4">
+              <span [class]="element.status === 1 ? 'text-green-600' : 'text-amber-600'">
+                {{element.status === 1 ? 'Paid' : 'Pending'}}
+              </span>
+            </td>
+            <td class="p-4 text-gray-400 truncate max-w-[150px]" [title]="element.remark">
+              {{element.remark}}
+            </td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>
@@ -68,7 +70,7 @@
         [value]="pageSize()"
         (change)="onPageSizeChange($any($event.target).value)"
         class="text-xs border-gray-200 rounded p-1 outline-none focus:ring-1 focus:ring-primary"
-      >
+        >
         <option [value]="5">5 / Page</option>
         <option [value]="10">10 / Page</option>
         <option [value]="25">25 / Page</option>
@@ -79,7 +81,7 @@
           (click)="prevPage()"
           [disabled]="pageIndex() === 0"
           class="p-1 rounded hover:bg-gray-100 disabled:opacity-30 transition-all"
-        >
+          >
           <ng-icon name="lucideChevronLeft"></ng-icon>
         </button>
         <span class="text-xs flex items-center px-2 font-medium"> Page {{pageIndex() + 1}} </span>
@@ -87,7 +89,7 @@
           (click)="nextPage()"
           [disabled]="(pageIndex() + 1) * pageSize() >= totalCount()"
           class="p-1 rounded hover:bg-gray-100 disabled:opacity-30 transition-all"
-        >
+          >
           <ng-icon name="lucideChevronRight"></ng-icon>
         </button>
       </div>

@@ -1,6 +1,6 @@
 <div
   class="flex flex-col bg-white rounded-xl shadow-2xl max-h-[90vh] overflow-hidden border border-gray-100"
->
+  >
   <div class="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50/50">
     <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
       <ng-icon name="lucideClipboardList" class="text-primary"></ng-icon>
@@ -27,18 +27,20 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
-          <tr *ngFor="let element of orderDetails" class="hover:bg-gray-50 transition-colors">
-            <td class="px-4 py-3 text-center text-gray-400">{{ element.index }}</td>
-            <td class="px-4 py-3 font-medium text-gray-900">{{ element.productName }}</td>
-            <td class="px-4 py-3 text-gray-500 font-mono">{{ element.productCode }}</td>
-            <td class="px-4 py-3 text-right">{{ element.count }}</td>
-            <td class="px-4 py-3">{{ element.unitName }}</td>
-            <td class="px-4 py-3 text-right">{{ element.price | currency }}</td>
-            <td class="px-4 py-3 text-right font-semibold text-primary">
-              {{ element.allPrice | currency }}
-            </td>
-            <td class="px-4 py-3 text-gray-400 italic text-xs">{{ element.remark || '-' }}</td>
-          </tr>
+          @for (element of orderDetails; track element) {
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-3 text-center text-gray-400">{{ element.index }}</td>
+              <td class="px-4 py-3 font-medium text-gray-900">{{ element.productName }}</td>
+              <td class="px-4 py-3 text-gray-500 font-mono">{{ element.productCode }}</td>
+              <td class="px-4 py-3 text-right">{{ element.count }}</td>
+              <td class="px-4 py-3">{{ element.unitName }}</td>
+              <td class="px-4 py-3 text-right">{{ element.price | currency }}</td>
+              <td class="px-4 py-3 text-right font-semibold text-primary">
+                {{ element.allPrice | currency }}
+              </td>
+              <td class="px-4 py-3 text-gray-400 italic text-xs">{{ element.remark || '-' }}</td>
+            </tr>
+          }
         </tbody>
       </table>
     </div>
@@ -59,7 +61,7 @@
     <button
       (click)="close()"
       class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-all active:scale-95"
-    >
+      >
       Close Window
     </button>
   </div>
