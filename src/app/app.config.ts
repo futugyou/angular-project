@@ -14,6 +14,8 @@ import {
   lucideFileText,
   lucideMusic,
   lucideTrash2,
+  lucideCheck,
+  lucideMinus,
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'
@@ -36,6 +38,8 @@ export const appConfig: ApplicationConfig = {
       lucideFileText,
       lucideMusic,
       lucideTrash2,
+      lucideCheck,
+      lucideMinus,
     }),
   ],
 }
