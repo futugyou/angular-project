@@ -1,62 +1,12 @@
-import { Component, computed, input, signal, forwardRef } from '@angular/core'
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms'
+import { Component, computed, input, signal, forwardRef, inject } from '@angular/core'
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
-import { NgIconComponent } from '@ng-icons/core'
-
-@Component({
-  selector: 'app-code-block',
-  standalone: true,
-  imports: [NgIconComponent],
-  template: `
-    <div class="relative group">
-      <pre
-        class="my-3 p-3 bg-foreground/5 dark:bg-foreground/10 rounded overflow-x-auto border border-foreground/10"
-      >
-        <code class="text-xs font-mono block whitespace-pre-wrap break-words">
-          @if (language()) {
-            <span class="opacity-60 text-[10px] mb-1 block uppercase">{{ language() }}</span>
-          }
-          {{ code() }}
-        </code>
-      </pre>
-      <button
-        (click)="handleCopy()"
-        class="absolute top-2 right-2 p-1.5 rounded-md border shadow-sm
-               bg-background hover:bg-accent text-muted-foreground hover:text-foreground
-               transition-all duration-200 opacity-0 group-hover:opacity-100"
-        [title]="copied() ? 'Copied!' : 'Copy code'"
-      >
-        @if (copied()) {
-          <ng-icon name="lucideCheck" class="text-green-600 dark:text-green-400" size="14" />
-        } @else {
-          <ng-icon name="lucideCopy" size="14" />
-        }
-      </button>
-    </div>
-  `,
-})
-export class CodeBlock {
-  code = input.required<string>()
-  language = input<string>('')
-  copied = signal(false)
-  private timeoutId: any
-
-  async handleCopy() {
-    try {
-      await navigator.clipboard.writeText(this.code())
-      this.copied.set(true)
-      if (this.timeoutId) clearTimeout(this.timeoutId)
-      this.timeoutId = setTimeout(() => this.copied.set(false), 2000)
-    } catch (err) {
-      console.error('Failed to copy code:', err)
-    }
-  }
-}
+import { CodeBlock } from './code-block.component'
 
 @Component({
   selector: 'app-markdown-renderer',
   standalone: true,
-  imports: [FormsModule, CodeBlock],
+  imports: [CodeBlock],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -66,66 +16,52 @@ export class CodeBlock {
   ],
   template: `
     <div [class]="'markdown-content break-words ' + className()">
-      @for (element of parsedElements(); track $index) {
-        @switch (element.type) {
+      @for (el of elements(); track $index) {
+        @switch (el.type) {
           @case ('code') {
-            <app-code-block [code]="element.content" [language]="element.lang" />
+            <app-code-block [code]="el.content" [language]="el.lang" />
           }
-          @case ('h1') {
-            <h1 [class]="element.css" [innerHTML]="renderInlineHtml(element.content)"></h1>
+          @case ('h') {
+            <div [class]="el.css" [innerHTML]="el.safeHtml"></div>
           }
-          @case ('h2') {
-            <h2 [class]="element.css" [innerHTML]="renderInlineHtml(element.content)"></h2>
-          }
-          @case ('h3') {
-            <h3 [class]="element.css" [innerHTML]="renderInlineHtml(element.content)"></h3>
-          }
-          @case ('h4') {
-            <h4 [class]="element.css" [innerHTML]="renderInlineHtml(element.content)"></h4>
-          }
-          @case ('h5') {
-            <h5 [class]="element.css" [innerHTML]="renderInlineHtml(element.content)"></h5>
-          }
-          @case ('h6') {
-            <h6 [class]="element.css" [innerHTML]="renderInlineHtml(element.content)"></h6>
-          }
-
-          @case ('ul') {
-            <ul class="my-2 ml-4 list-disc space-y-1 break-words">
-              @for (item of element.items; track $index) {
-                <li class="text-sm break-words" [innerHTML]="renderInlineHtml(item)"></li>
+          @case ('list') {
+            @switch (el.listType) {
+              @case ('ul') {
+                <ul class="my-2 ml-4 list-disc space-y-1 break-words">
+                  @for (item of el.items; track $index) {
+                    <li class="text-sm break-words" [innerHTML]="item"></li>
+                  }
+                </ul>
               }
-            </ul>
-          }
-
-          @case ('ol') {
-            <ol class="my-2 ml-4 list-decimal space-y-1 break-words">
-              @for (item of element.items; track $index) {
-                <li class="text-sm break-words" [innerHTML]="renderInlineHtml(item)"></li>
+              @case ('ol') {
+                <ol class="my-2 ml-4 list-decimal space-y-1 break-words">
+                  @for (item of el.items; track $index) {
+                    <li class="text-sm break-words" [innerHTML]="item"></li>
+                  }
+                </ol>
               }
-            </ol>
+            }
           }
-
           @case ('table') {
             <div class="my-3 overflow-x-auto">
               <table class="min-w-full border border-foreground/10 text-sm">
                 <thead class="bg-foreground/5">
                   <tr>
-                    @for (head of element.headers; track $index) {
+                    @for (h of el.headers; track $index) {
                       <th
                         class="border-b border-foreground/10 px-3 py-2 text-left font-semibold break-words"
-                        [innerHTML]="renderInlineHtml(head)"
+                        [innerHTML]="h"
                       ></th>
                     }
                   </tr>
                 </thead>
                 <tbody>
-                  @for (row of element.rows; track $index) {
+                  @for (row of el.rows; track $index) {
                     <tr class="border-b border-foreground/5 last:border-b-0">
                       @for (cell of row; track $index) {
                         <td
                           class="px-3 py-2 border-r border-foreground/5 last:border-r-0 break-words"
-                          [innerHTML]="renderInlineHtml(cell)"
+                          [innerHTML]="cell"
                         ></td>
                       }
                     </tr>
@@ -134,17 +70,15 @@ export class CodeBlock {
               </table>
             </div>
           }
-
-          @case ('blockquote') {
+          @case ('quote') {
             <blockquote
               class="my-2 pl-4 border-l-4 border-current/30 opacity-80 italic break-words"
             >
-              @for (line of element.lines; track $index) {
-                <div class="break-words" [innerHTML]="renderInlineHtml(line)"></div>
+              @for (line of el.lines; track $index) {
+                <div class="break-words" [innerHTML]="line"></div>
               }
             </blockquote>
           }
-
           @case ('hr') {
             <hr class="my-4 border-t border-border" />
           }
@@ -152,7 +86,7 @@ export class CodeBlock {
             <div class="h-2"></div>
           }
           @case ('p') {
-            <p class="my-1 break-words" [innerHTML]="renderInlineHtml(element.content)"></p>
+            <p class="my-1 break-words" [innerHTML]="el.safeHtml"></p>
           }
         }
       }
@@ -160,24 +94,165 @@ export class CodeBlock {
   `,
 })
 export class MarkdownRenderer implements ControlValueAccessor {
-  content = input<string>('')
+  private sanitizer = inject(DomSanitizer)
+
+  // Inputs
   className = input<string>('')
+  content = input<string>('') // 支持直接属性输入
 
-  private _val = signal<string>('')
+  // ControlValueAccessor State
+  private _formValue = signal<string>('')
+  disabled = signal(false)
 
-  constructor(private sanitizer: DomSanitizer) {}
+  // 最终合并渲染的内容源
+  private effectiveContent = computed(() => this.content() || this._formValue())
 
-  parsedElements = computed(() => {
-    const raw = this.content() || this._val()
-    return this.parseMarkdown(raw)
+  // 核心解析逻辑：将纯文本转化为结构化数据与安全HTML
+  elements = computed(() => {
+    const text = this.effectiveContent()
+    if (!text) return []
+
+    const lines = text.split('\n')
+    const result: any[] = []
+    let i = 0
+
+    const sizes = ['text-2xl', 'text-xl', 'text-lg', 'text-base', 'text-sm', 'text-sm']
+
+    while (i < lines.length) {
+      const line = lines[i]
+
+      // 1. Code Blocks
+      if (line.trim().startsWith('```')) {
+        const lang = line.trim().match(/^```(\w+)?/)?.[1] || ''
+        const codeRows = []
+        i++
+        while (i < lines.length && !lines[i].trim().startsWith('```')) {
+          codeRows.push(lines[i++])
+        }
+        i++
+        result.push({ type: 'code', content: codeRows.join('\n'), lang })
+        continue
+      }
+
+      // 2. Headers
+      const hMatch = line.match(/^(#{1,6})\s+(.+)$/)
+      if (hMatch) {
+        const level = hMatch[1].length
+        result.push({
+          type: 'h',
+          level,
+          safeHtml: this.parseInline(hMatch[2]),
+          css: `${sizes[level - 1]} font-semibold mt-4 mb-2 first:mt-0`,
+        })
+        i++
+        continue
+      }
+
+      // 3. Lists
+      const ulMatch = line.match(/^[\s]*[-*+]\s+/)
+      const olMatch = line.match(/^[\s]*\d+\.\s+/)
+      if (ulMatch || olMatch) {
+        const listType = ulMatch ? 'ul' : 'ol'
+        const regex = ulMatch ? /^[\s]*[-*+]\s+/ : /^[\s]*\d+\.\s+/
+        const items = []
+        while (i < lines.length && lines[i].match(regex)) {
+          items.push(this.parseInline(lines[i++].replace(regex, '')))
+        }
+        result.push({ type: 'list', listType, items })
+        continue
+      }
+
+      // 4. Tables
+      if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+        const tLines = []
+        while (
+          i < lines.length &&
+          lines[i].trim().startsWith('|') &&
+          lines[i].trim().endsWith('|')
+        ) {
+          tLines.push(lines[i++].trim())
+        }
+        if (tLines.length >= 2 && tLines[1].match(/^\|[\s\-:|]+\|$/)) {
+          const headers = tLines[0]
+            .split('|')
+            .slice(1, -1)
+            .map((c) => this.parseInline(c.trim()))
+          const rows = tLines.slice(2).map((r) =>
+            r
+              .split('|')
+              .slice(1, -1)
+              .map((c) => this.parseInline(c.trim())),
+          )
+          result.push({ type: 'table', headers, rows })
+          continue
+        }
+        tLines.forEach((l) => result.push({ type: 'p', safeHtml: this.parseInline(l) }))
+        continue
+      }
+
+      // 5. Blockquotes
+      if (line.trim().startsWith('>')) {
+        const qLines = []
+        while (i < lines.length && lines[i].trim().startsWith('>')) {
+          qLines.push(this.parseInline(lines[i++].replace(/^>\s?/, '')))
+        }
+        result.push({ type: 'quote', lines: qLines })
+        continue
+      }
+
+      // 6. HR / Spacer / P
+      if (line.match(/^[\s]*[-*_]{3,}[\s]*$/)) {
+        result.push({ type: 'hr' })
+      } else if (line.trim() === '') {
+        result.push({ type: 'spacer' })
+      } else {
+        result.push({ type: 'p', safeHtml: this.parseInline(line) })
+      }
+      i++
+    }
+    return result
   })
 
-  // --- ControlValueAccessor ---
-  onChange = (v: any) => {}
+  // 行内解析：为了性能，直接返回被信任的 HTML 字符串（因为我们在 computed 里处理）
+  private parseInline(text: string): SafeHtml {
+    // 基础转义防止 XSS
+    let h = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+    // Inline Code
+    h = h.replace(
+      /`([^`]+)`/g,
+      '<code class="px-1.5 py-0.5 bg-foreground/10 rounded text-xs font-mono border border-foreground/20">$1</code>',
+    )
+    // Bold/Italic Links
+    h = h.replace(
+      /\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/g,
+      '<strong class="font-semibold"><a href="$2" target="_blank" rel="noopener" class="text-primary hover:underline">$1</a></strong>',
+    )
+    h = h.replace(
+      /\*\[([^\]]+)\]\(([^)]+)\)\*/g,
+      '<em class="italic"><a href="$2" target="_blank" rel="noopener" class="text-primary hover:underline">$1</a></em>',
+    )
+    // Links
+    h = h.replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener" class="text-primary hover:underline">$1</a>',
+    )
+    // Bold
+    h = h.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold">$1</strong>')
+    h = h.replace(/__(.+?)__/g, '<strong class="font-semibold">$1</strong>')
+    // Italic
+    h = h.replace(/\*(.+?)\*/g, '<em class="italic">$1</em>')
+    h = h.replace(/_(.+?)_/g, '<em class="italic">$1</em>')
+
+    return this.sanitizer.bypassSecurityTrustHtml(h)
+  }
+
+  // CVA Implementation
+  onChange = (_: any) => {}
   onTouched = () => {}
 
-  writeValue(value: any): void {
-    this._val.set(value || '')
+  writeValue(v: any): void {
+    this._formValue.set(v || '')
   }
   registerOnChange(fn: any): void {
     this.onChange = fn
@@ -185,157 +260,7 @@ export class MarkdownRenderer implements ControlValueAccessor {
   registerOnTouched(fn: any): void {
     this.onTouched = fn
   }
-
-  private parseMarkdown(content: string) {
-    if (!content) return []
-    const lines = content.split('\n')
-    const elements: any[] = []
-    let i = 0
-    const sizes = ['text-2xl', 'text-xl', 'text-lg', 'text-base', 'text-sm', 'text-sm']
-
-    while (i < lines.length) {
-      const line = lines[i]
-
-      // Code blocks
-      if (line.trim().startsWith('```')) {
-        const langMatch = line.trim().match(/^```(\w+)?/)
-        const language = langMatch?.[1] || ''
-        const codeLines: string[] = []
-        i++
-        while (i < lines.length && !lines[i].trim().startsWith('```')) {
-          codeLines.push(lines[i])
-          i++
-        }
-        i++
-        elements.push({ type: 'code', content: codeLines.join('\n'), lang: language })
-        continue
-      }
-
-      // Headers
-      const headerMatch = line.match(/^(#{1,6})\s+(.+)$/)
-      if (headerMatch) {
-        const level = headerMatch[1].length
-        elements.push({
-          type: `h${level}`,
-          content: headerMatch[2],
-          css: `${sizes[level - 1]} font-semibold mt-4 mb-2 first:mt-0 break-words`,
-        })
-        i++
-        continue
-      }
-
-      // Lists (Unordered)
-      if (line.match(/^[\s]*[-*+]\s+/)) {
-        const items = []
-        while (i < lines.length && lines[i].match(/^[\s]*[-*+]\s+/)) {
-          items.push(lines[i].replace(/^[\s]*[-*+]\s+/, ''))
-          i++
-        }
-        elements.push({ type: 'ul', items })
-        continue
-      }
-
-      // Lists (Ordered)
-      if (line.match(/^[\s]*\d+\.\s+/)) {
-        const items = []
-        while (i < lines.length && lines[i].match(/^[\s]*\d+\.\s+/)) {
-          items.push(lines[i].replace(/^[\s]*\d+\.\s+/, ''))
-          i++
-        }
-        elements.push({ type: 'ol', items })
-        continue
-      }
-
-      // Tables
-      if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
-        const tableLines = []
-        while (
-          i < lines.length &&
-          lines[i].trim().startsWith('|') &&
-          lines[i].trim().endsWith('|')
-        ) {
-          tableLines.push(lines[i].trim())
-          i++
-        }
-        if (tableLines.length >= 2 && tableLines[1].match(/^\|[\s\-:|]+\|$/)) {
-          const headers = tableLines[0]
-            .split('|')
-            .slice(1, -1)
-            .map((c) => c.trim())
-          const rows = tableLines.slice(2).map((r) =>
-            r
-              .split('|')
-              .slice(1, -1)
-              .map((c) => c.trim()),
-          )
-          elements.push({ type: 'table', headers, rows })
-          continue
-        } else {
-          tableLines.forEach((tl) => elements.push({ type: 'p', content: tl }))
-          continue
-        }
-      }
-
-      // Blockquotes
-      if (line.trim().startsWith('>')) {
-        const quoteLines = []
-        while (i < lines.length && lines[i].trim().startsWith('>')) {
-          quoteLines.push(lines[i].replace(/^>\s?/, ''))
-          i++
-        }
-        elements.push({ type: 'blockquote', lines: quoteLines })
-        continue
-      }
-
-      // HR
-      if (line.match(/^[\s]*[-*_]{3,}[\s]*$/)) {
-        elements.push({ type: 'hr' })
-        i++
-        continue
-      }
-
-      // Blank or Paragraph
-      if (line.trim() === '') {
-        elements.push({ type: 'spacer' })
-      } else {
-        elements.push({ type: 'p', content: line })
-      }
-      i++
-    }
-    return elements
-  }
-
-  renderInlineHtml(text: string): SafeHtml {
-    let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-
-    // Code
-    html = html.replace(
-      /`([^`]+)`/g,
-      '<code class="px-1.5 py-0.5 bg-foreground/10 rounded text-xs font-mono border border-foreground/20">$1</code>',
-    )
-
-    // Bold Links & Italic Links
-    html = html.replace(
-      /\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/g,
-      '<strong class="font-semibold"><a href="$2" target="_blank" rel="noopener" class="text-primary hover:underline">$1</a></strong>',
-    )
-    html = html.replace(
-      /\*\[([^\]]+)\]\(([^)]+)\)\*/g,
-      '<em class="italic"><a href="$2" target="_blank" rel="noopener" class="text-primary hover:underline">$1</a></em>',
-    )
-
-    // Normal Links
-    html = html.replace(
-      /\[([^\]]+)\]\(([^)]+)\)/g,
-      '<a href="$2" target="_blank" rel="noopener" class="text-primary hover:underline">$1</a>',
-    )
-
-    // Bold / Italic
-    html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold">$1</strong>')
-    html = html.replace(/__(.+?)__/g, '<strong class="font-semibold">$1</strong>')
-    html = html.replace(/\*(.+?)\*/g, '<em class="italic">$1</em>')
-    html = html.replace(/_(.+?)_/g, '<em class="italic">$1</em>')
-
-    return this.sanitizer.bypassSecurityTrustHtml(html)
+  setDisabledState?(isDisabled: boolean): void {
+    this.disabled.set(isDisabled)
   }
 }
