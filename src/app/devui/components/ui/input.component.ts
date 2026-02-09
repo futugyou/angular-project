@@ -1,0 +1,72 @@
+import { Component, input, computed, forwardRef, signal } from '@angular/core'
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
+import { cn } from '../../lib/utils'
+
+@Component({
+  selector: 'app-input',
+  standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => Input),
+      multi: true,
+    },
+  ],
+  host: {
+    '[attr.data-slot]': '"input"',
+  },
+  template: `
+    <input
+      [type]="type()"
+      [class]="classes()"
+      [attr.placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [value]="value()"
+      (input)="onInputChange($event)"
+      (blur)="onTouched()"
+    />
+  `,
+})
+export class Input implements ControlValueAccessor {
+  type = input<string>('text')
+  placeholder = input<string>('')
+  disabled = signal<boolean>(false)
+
+  readonly userClass = input<string>('', { alias: 'class' })
+
+  value = signal<any>('')
+
+  onChange: any = () => {}
+  onTouched: any = () => {}
+
+  readonly classes = computed(() =>
+    cn(
+      'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+      'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
+      'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
+      this.userClass(),
+    ),
+  )
+
+  onInputChange(event: Event) {
+    const val = (event.target as HTMLInputElement).value
+    this.value.set(val)
+    this.onChange(val)
+  }
+
+  writeValue(value: any): void {
+    this.value.set(value)
+  }
+
+  registerOnChange(fn: any): void {
+    this.onChange = fn
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled.set(isDisabled)
+  }
+}
