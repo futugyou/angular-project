@@ -19,6 +19,7 @@ import {
   lucideCircle,
   lucideUpload,
   lucideLoader2,
+  lucideCopy,
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'
@@ -46,6 +47,7 @@ export const appConfig: ApplicationConfig = {
       lucideCircle,
       lucideUpload,
       lucideLoader2,
+      lucideCopy,
     }),
   ],
 }
