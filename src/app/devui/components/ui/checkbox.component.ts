@@ -1,8 +1,11 @@
-import { Component, input, model, computed, forwardRef } from '@angular/core'
+import { Component, input, model, computed, forwardRef, signal } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { cn } from '../../lib/utils'
 import { NgIconsModule } from '@ng-icons/core'
 
+// usage
+// <app-checkbox [(ngModel)]="isAdmin" />
+// <app-checkbox [formControl]="myControl" />
 @Component({
   selector: 'app-checkbox',
   standalone: true,
@@ -20,10 +23,11 @@ import { NgIconsModule } from '@ng-icons/core'
       [class]="rootClasses()"
       [attr.data-state]="state()"
       [attr.aria-checked]="indeterminate() ? 'mixed' : checked()"
-      [attr.aria-disabled]="disabled()"
+      [attr.aria-disabled]="isDisabled()"
+      [tabIndex]="isDisabled() ? -1 : 0"
       role="checkbox"
-      [tabIndex]="disabled() ? -1 : 0"
       (click)="toggle()"
+      (blur)="onTouched()"
       (keydown.space)="$event.preventDefault(); toggle()"
     >
       @if (state() !== 'unchecked') {
@@ -37,12 +41,14 @@ import { NgIconsModule } from '@ng-icons/core'
   `,
 })
 export class CheckboxComponent implements ControlValueAccessor {
-  // --- Signals ---
   className = input<string>('')
   disabled = input<boolean>(false)
 
   checked = model<boolean>(false)
   indeterminate = model<boolean>(false)
+
+  private _cvaDisabled = signal(false)
+  isDisabled = computed(() => this.disabled() || this._cvaDisabled())
 
   state = computed(() => {
     if (this.indeterminate()) return 'indeterminate'
@@ -51,16 +57,17 @@ export class CheckboxComponent implements ControlValueAccessor {
 
   rootClasses = computed(() =>
     cn(
-      'peer border-input dark:bg-input/30 size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] focus-visible:border-ring focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center',
+      'peer border-input dark:bg-input/30 size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] focus-visible:border-ring focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center cursor-pointer',
       this.state() !== 'unchecked'
         ? 'bg-primary text-primary-foreground border-primary'
         : 'bg-transparent',
+      this.isDisabled() && 'opacity-50 cursor-not-allowed pointer-events-none',
       this.className(),
     ),
   )
 
   toggle() {
-    if (this.disabled()) return
+    if (this.isDisabled()) return
 
     if (this.indeterminate()) {
       this.indeterminate.set(false)
@@ -73,12 +80,16 @@ export class CheckboxComponent implements ControlValueAccessor {
     this.onTouched()
   }
 
-  // --- ControlValueAccessor ---
-  private onTouched = () => {}
-  private onChange = (val: boolean) => {}
+  onChange: (value: any) => void = () => {}
+  onTouched: () => void = () => {}
 
   writeValue(value: any): void {
-    this.checked.set(!!value)
+    if (value === 'indeterminate') {
+      this.indeterminate.set(true)
+    } else {
+      this.indeterminate.set(false)
+      this.checked.set(!!value)
+    }
   }
 
   registerOnChange(fn: any): void {
@@ -87,5 +98,9 @@ export class CheckboxComponent implements ControlValueAccessor {
 
   registerOnTouched(fn: any): void {
     this.onTouched = fn
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this._cvaDisabled.set(isDisabled)
   }
 }
