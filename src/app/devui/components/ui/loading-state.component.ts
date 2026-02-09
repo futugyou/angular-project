@@ -1,4 +1,4 @@
-import { Component, computed, input, Signal } from '@angular/core'
+import { Component, computed, input } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { cn } from '../../lib/utils'
 import { LoadingSpinner } from './loading-spinner.component'
@@ -8,15 +8,13 @@ import { LoadingSpinner } from './loading-spinner.component'
   standalone: true,
   imports: [CommonModule, LoadingSpinner],
   template: `
-    @if (fullPage()) {
-      <div class="flex items-center justify-center min-h-screen bg-background">
-        <ng-container *ngTemplateOutlet="contentTpl" />
-      </div>
-    } @else {
-      <ng-container *ngTemplateOutlet="contentTpl" />
-    }
-
-    <ng-template #contentTpl>
+    <div
+      [class.min-h-screen]="fullPage()"
+      [class.bg-background]="fullPage()"
+      [class.flex]="fullPage()"
+      [class.items-center]="fullPage()"
+      [class.justify-center]="fullPage()"
+    >
       <div [className]="containerClasses()">
         <app-loading-spinner [size]="size()" className="text-muted-foreground" />
 
@@ -30,9 +28,13 @@ import { LoadingSpinner } from './loading-spinner.component'
               {{ description() }}
             </p>
           }
+
+          <div class="mt-2">
+            <ng-content></ng-content>
+          </div>
         </div>
       </div>
-    </ng-template>
+    </div>
   `,
 })
 export class LoadingState {
@@ -42,16 +44,19 @@ export class LoadingState {
   className = input<string>('')
   fullPage = input<boolean>(false)
 
-  protected containerClasses: Signal<string> = computed(() => {
-    return cn(
+  protected containerClasses = computed(() =>
+    cn(
       'flex flex-col items-center justify-center gap-3',
       this.fullPage() ? 'min-h-[50vh]' : 'py-8',
       this.className(),
-    )
-  })
+    ),
+  )
 
-  protected messageClasses: Signal<string> = computed(() => {
-    const s = this.size()
-    return cn('font-medium text-muted-foreground', s === 'sm' && 'text-sm', s === 'lg' && 'text-lg')
-  })
+  protected messageClasses = computed(() =>
+    cn(
+      'font-medium text-muted-foreground',
+      this.size() === 'sm' && 'text-sm',
+      this.size() === 'lg' && 'text-lg',
+    ),
+  )
 }
