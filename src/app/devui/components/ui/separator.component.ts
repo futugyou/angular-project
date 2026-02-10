@@ -1,10 +1,17 @@
-import { Component, input, ChangeDetectionStrategy } from '@angular/core';
-import { NgIcon } from '@ng-icons/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core'
+import { NgIcon } from '@ng-icons/core'
+import { SeparatorRoot } from '../../directives/separator.directive'
 
 @Component({
   selector: 'app-separator',
   standalone: true,
   imports: [NgIcon],
+  hostDirectives: [
+    {
+      directive: SeparatorRoot,
+      inputs: ['orientation', 'decorative'],
+    },
+  ],
   template: `
     <ng-content>
       @if (icon()) {
@@ -18,20 +25,20 @@ import { NgIcon } from '@ng-icons/core';
       flex-shrink: 0;
       background-color: var(--border, #e2e8f0);
     }
-    :host[data-orientation="horizontal"] { height: 1px; width: 100%; }
-    :host[data-orientation="vertical"] { height: 100%; width: 1px; }
-  `, 
+    :host[data-orientation='horizontal'] {
+      height: 1px;
+      width: 100%;
+    }
+    :host[data-orientation='vertical'] {
+      height: 100%;
+      width: 1px;
+    }
+  `,
   host: {
-    '[attr.role]': 'decorative() ? "none" : "separator"',
-    '[attr.aria-orientation]': 'decorative() ? null : orientation()',
-    '[attr.data-orientation]': 'orientation()',
-    '[class.shrink-0]': 'true',
-    '[class.bg-border]': 'true'
+    '[class.app-separator]': 'true',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Separator {
-  orientation = input<'horizontal' | 'vertical'>('horizontal');
-  decorative = input<boolean>(true);
-  icon = input<string | undefined>();
+  icon = input<string | undefined>()
 }
