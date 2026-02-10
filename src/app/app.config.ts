@@ -20,6 +20,8 @@ import {
   lucideUpload,
   lucideLoader2,
   lucideCopy,
+  lucideChevronUp,
+  lucideChevronDown,
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'
@@ -48,6 +50,8 @@ export const appConfig: ApplicationConfig = {
       lucideUpload,
       lucideLoader2,
       lucideCopy,
+      lucideChevronUp,
+      lucideChevronDown,
     }),
   ],
 }
