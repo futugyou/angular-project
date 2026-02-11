@@ -22,6 +22,8 @@ import {
   lucideCopy,
   lucideChevronUp,
   lucideChevronDown,
+  lucideInfo,
+  lucideCheckCircle,
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'
@@ -52,6 +54,8 @@ export const appConfig: ApplicationConfig = {
       lucideCopy,
       lucideChevronUp,
       lucideChevronDown,
+      lucideInfo,
+      lucideCheckCircle,
     }),
   ],
 }
