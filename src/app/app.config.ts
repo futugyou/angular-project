@@ -24,6 +24,8 @@ import {
   lucideChevronDown,
   lucideInfo,
   lucideCheckCircle,
+  lucideSun,
+  lucideMoon,
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'
@@ -66,6 +68,8 @@ export const appConfig: ApplicationConfig = {
       lucideChevronDown,
       lucideInfo,
       lucideCheckCircle,
+      lucideSun,
+      lucideMoon,
     }),
   ],
 }
