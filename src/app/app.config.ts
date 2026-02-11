@@ -27,9 +27,19 @@ import {
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'
+import { THEME_CONFIG } from './devui/services/theme.service'
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    {
+      provide: THEME_CONFIG,
+      useValue: {
+        attribute: 'class',
+        defaultTheme: 'dark',
+        enableSystem: true,
+        disableTransitionOnChange: true,
+      },
+    },
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
 
