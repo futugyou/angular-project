@@ -8,7 +8,7 @@ import { cn } from '../../lib/utils'
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => Input),
+      useExisting: forwardRef(() => InputComponent),
       multi: true,
     },
   ],
@@ -27,7 +27,7 @@ import { cn } from '../../lib/utils'
     />
   `,
 })
-export class Input implements ControlValueAccessor {
+export class InputComponent implements ControlValueAccessor {
   type = input<string>('text')
   placeholder = input<string>('')
   disabled = signal<boolean>(false)

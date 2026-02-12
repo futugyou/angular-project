@@ -41,6 +41,7 @@ type ButtonVariantProps = VariantProps<typeof buttonVariants>
   },
 })
 export class ButtonComponent {
+  appButton = input<any>(null)
   size = input<ButtonVariantProps['size']>('default')
   variant = input<ButtonVariantProps['variant']>('default')
   readonly userClass = input<string>('', { alias: 'class' })
