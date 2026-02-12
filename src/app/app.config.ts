@@ -26,6 +26,9 @@ import {
   lucideCheckCircle,
   lucideSun,
   lucideMoon,
+  lucideBot,
+  lucideWorkflow,
+  lucidePlus,
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'
@@ -70,6 +73,9 @@ export const appConfig: ApplicationConfig = {
       lucideCheckCircle,
       lucideSun,
       lucideMoon,
+      lucideBot,
+      lucideWorkflow,
+      lucidePlus,
     }),
   ],
 }

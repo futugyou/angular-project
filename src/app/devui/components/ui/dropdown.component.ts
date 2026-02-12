@@ -75,6 +75,7 @@ export class DropdownMenuContent {
   template: `<ng-content />`,
 })
 export class DropdownMenuItem {
+  appDropdownMenuItem = input<any>(null)
   className = input<string>('', { alias: 'class' })
   inset = input<boolean>(false)
   variant = input<'default' | 'destructive'>('default')
