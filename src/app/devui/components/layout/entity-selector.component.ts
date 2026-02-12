@@ -1,4 +1,4 @@
-import { Component, input, output, forwardRef, signal, computed } from '@angular/core'
+import { Component, input, output, forwardRef, signal, computed, model } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NgTemplateOutlet } from '@angular/common'
 import { CdkMenuModule } from '@angular/cdk/menu'
@@ -181,7 +181,7 @@ export class EntitySelector implements ControlValueAccessor {
 
   // Internal State
   isOpen = signal(false)
-  selectedValue = signal<AgentInfo | WorkflowInfo | null>(null)
+  selectedValue = model<AgentInfo | WorkflowInfo | undefined>(undefined)
 
   // Computed Values
   allItems = computed(() => this.entities() || [...this.agents(), ...this.workflows()])
