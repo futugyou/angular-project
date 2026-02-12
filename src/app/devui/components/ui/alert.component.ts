@@ -7,20 +7,20 @@ import { cn } from '../../lib/utils'
 //   standalone: true,
 //   imports: [Alert, AlertTitle, AlertDescription],
 //   template: `
-//     <div hl-alert class="bg-blue-50 text-blue-900 border-blue-200">
+//     <app-alert class="bg-blue-50 text-blue-900 border-blue-200">
 //       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
 
-//       <h5 hl-alert-title>Update Available</h5>
-//       <div hl-alert-description>
+//       <app-alert-title>Update Available</app-alert-title>
+//       <app-alert-description>
 //         A new software version is ready; please update it as soon as possible.
-//       </div>
-//     </div>
+//       </app-alert-description>
+//     </app-alert>
 //   `
 // })
 // export class AppComponent {}
 
 @Component({
-  selector: 'div[hl-alert]',
+  selector: 'app-alert',
   standalone: true,
   template: `<ng-content></ng-content>`,
   host: {
@@ -39,7 +39,7 @@ export class Alert {
 }
 
 @Component({
-  selector: 'h5[hl-alert-title]',
+  selector: 'app-alert-title',
   standalone: true,
   template: `<ng-content />`,
   host: { '[class]': 'classes()' },
@@ -52,7 +52,7 @@ export class AlertTitle {
 }
 
 @Component({
-  selector: 'div[hl-alert-description]',
+  selector: 'app-alert-description',
   standalone: true,
   template: `<ng-content></ng-content>`,
   host: {

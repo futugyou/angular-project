@@ -34,6 +34,9 @@ import {
   lucideSendHorizontal,
   lucideSquare,
   lucidePaperclip,
+  lucideDownload,
+  lucideLightbulb,
+  lucideBookOpen,
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'
@@ -86,6 +89,9 @@ export const appConfig: ApplicationConfig = {
       lucideSendHorizontal,
       lucideSquare,
       lucidePaperclip,
+      lucideDownload,
+      lucideLightbulb,
+      lucideBookOpen,
     }),
   ],
 }
