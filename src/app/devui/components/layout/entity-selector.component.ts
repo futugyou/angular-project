@@ -3,7 +3,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NgTemplateOutlet } from '@angular/common'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { ButtonComponent } from '../ui/button.component'
-import { LoadingSpinner } from '../ui/loading-spinner.component'
+import { LoadingSpinnerComponent } from '../ui/loading-spinner.component'
 import {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -21,7 +21,7 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
     NgIconComponent,
     ButtonComponent,
     NgTemplateOutlet,
-    LoadingSpinner,
+    LoadingSpinnerComponent,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,

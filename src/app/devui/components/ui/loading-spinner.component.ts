@@ -26,7 +26,7 @@ import { cn } from '../../lib/utils'
     `,
   ],
 })
-export class LoadingSpinner {
+export class LoadingSpinnerComponent {
   size = input<'sm' | 'md' | 'lg'>('md')
   className = input<string>('')
 

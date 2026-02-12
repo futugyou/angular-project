@@ -150,6 +150,7 @@ export { isExecutorAction } from './openai'
 
 // Re-export Agent Framework types
 export type {
+  ResponseInputContent,
   AgentFrameworkRequest,
   AgentFrameworkExtraBody,
   ResponseInputParam,

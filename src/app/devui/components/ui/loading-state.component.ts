@@ -1,12 +1,12 @@
 import { Component, computed, input } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { cn } from '../../lib/utils'
-import { LoadingSpinner } from './loading-spinner.component'
+import { LoadingSpinnerComponent } from './loading-spinner.component'
 
 @Component({
   selector: 'app-loading-state',
   standalone: true,
-  imports: [CommonModule, LoadingSpinner],
+  imports: [CommonModule, LoadingSpinnerComponent],
   template: `
     <div
       [class.min-h-screen]="fullPage()"

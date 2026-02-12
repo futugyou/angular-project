@@ -31,6 +31,9 @@ import {
   lucidePlus,
   lucideExternalLink,
   lucideRotateCcw,
+  lucideSendHorizontal,
+  lucideSquare,
+  lucidePaperclip,
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'
@@ -80,6 +83,9 @@ export const appConfig: ApplicationConfig = {
       lucidePlus,
       lucideExternalLink,
       lucideRotateCcw,
+      lucideSendHorizontal,
+      lucideSquare,
+      lucidePaperclip,
     }),
   ],
 }
