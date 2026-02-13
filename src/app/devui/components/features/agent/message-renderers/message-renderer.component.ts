@@ -1,4 +1,4 @@
-import { Component, computed, input, type Signal } from '@angular/core'
+import { Component, computed, input } from '@angular/core'
 import type { ConversationItem } from '../../../../types'
 import {
   OpenAIContentRendererComponent,
@@ -70,16 +70,9 @@ export class OpenAIMessageRenderer {
   })
 
   // Derived state using Computed Signals
-  protected isStreaming: Signal<boolean> = computed(
-    () => this.item().type === 'message' && this.item().status === 'in_progress',
-  )
+  protected isStreaming = computed(() => this.messageItem()?.status === 'in_progress')
 
-  protected hasContent: Signal<boolean> = computed(() => {
-    const it = this.item()
-    return it.type === 'message' && it.content.length > 0
-  })
-
-  protected showTypingIndicator: Signal<boolean> = computed(
-    () => this.isStreaming() && !this.hasContent(),
+  protected showTypingIndicator = computed(
+    () => this.isStreaming() && (this.messageItem()?.content.length ?? 0) === 0,
   )
 }
