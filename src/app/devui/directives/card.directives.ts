@@ -1,17 +1,16 @@
-import { Component, input, computed } from '@angular/core'
-import { cn } from '../../lib/utils'
+import { Directive, input, computed } from '@angular/core'
+import { cn } from '../lib/utils'
 
 // --- Card ---
-@Component({
-  selector: 'div[ui-card]',
+@Directive({
+  selector: '[ui-card]',
   standalone: true,
-  template: `<ng-content />`,
   host: {
     '[attr.data-slot]': '"card"',
     '[class]': 'computedClass()',
   },
 })
-export class CardComponent {
+export class CardDirective {
   className = input<string>('', { alias: 'class' })
   protected computedClass = computed(() =>
     cn(
@@ -22,16 +21,15 @@ export class CardComponent {
 }
 
 // --- Card Header ---
-@Component({
-  selector: 'div[ui-card-header]',
+@Directive({
+  selector: '[ui-card-header]',
   standalone: true,
-  template: `<ng-content />`,
   host: {
     '[attr.data-slot]': '"card-header"',
     '[class]': 'computedClass()',
   },
 })
-export class CardHeaderComponent {
+export class CardHeaderDirective {
   className = input<string>('', { alias: 'class' })
   protected computedClass = computed(() =>
     cn(
@@ -42,46 +40,43 @@ export class CardHeaderComponent {
 }
 
 // --- Card Title ---
-@Component({
-  selector: 'div[ui-card-title]',
+@Directive({
+  selector: '[ui-card-title]',
   standalone: true,
-  template: `<ng-content />`,
   host: {
     '[attr.data-slot]': '"card-title"',
     '[class]': 'computedClass()',
   },
 })
-export class CardTitleComponent {
+export class CardTitleDirective {
   className = input<string>('', { alias: 'class' })
   protected computedClass = computed(() => cn('leading-none font-semibold', this.className()))
 }
 
 // --- Card Description ---
-@Component({
-  selector: 'div[ui-card-description]',
+@Directive({
+  selector: '[ui-card-description]',
   standalone: true,
-  template: `<ng-content />`,
   host: {
     '[attr.data-slot]': '"card-description"',
     '[class]': 'computedClass()',
   },
 })
-export class CardDescriptionComponent {
+export class CardDescriptionDirective {
   className = input<string>('', { alias: 'class' })
   protected computedClass = computed(() => cn('text-muted-foreground text-sm', this.className()))
 }
 
 // --- Card Action ---
-@Component({
-  selector: 'div[ui-card-action]',
+@Directive({
+  selector: '[ui-card-action]',
   standalone: true,
-  template: `<ng-content />`,
   host: {
     '[attr.data-slot]': '"card-action"',
     '[class]': 'computedClass()',
   },
 })
-export class CardActionComponent {
+export class CardActionDirective {
   className = input<string>('', { alias: 'class' })
   protected computedClass = computed(() =>
     cn('col-start-2 row-span-2 row-start-1 self-start justify-self-end', this.className()),
@@ -89,31 +84,29 @@ export class CardActionComponent {
 }
 
 // --- Card Content ---
-@Component({
-  selector: 'div[ui-card-content]',
+@Directive({
+  selector: '[ui-card-content]',
   standalone: true,
-  template: `<ng-content />`,
   host: {
     '[attr.data-slot]': '"card-content"',
     '[class]': 'computedClass()',
   },
 })
-export class CardContentComponent {
+export class CardContentDirective {
   className = input<string>('', { alias: 'class' })
   protected computedClass = computed(() => cn('px-6', this.className()))
 }
 
 // --- Card Footer ---
-@Component({
-  selector: 'div[ui-card-footer]',
+@Directive({
+  selector: '[ui-card-footer]',
   standalone: true,
-  template: `<ng-content />`,
   host: {
     '[attr.data-slot]': '"card-footer"',
     '[class]': 'computedClass()',
   },
 })
-export class CardFooterComponent {
+export class CardFooterDirective {
   className = input<string>('', { alias: 'class' })
   protected computedClass = computed(() =>
     cn('flex items-center px-6 [.border-t]:pt-6', this.className()),
