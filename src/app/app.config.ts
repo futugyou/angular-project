@@ -37,6 +37,9 @@ import {
   lucideDownload,
   lucideLightbulb,
   lucideBookOpen,
+  lucideTriangleAlert,
+  lucideKey,
+  lucideArrowLeft,
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'
@@ -92,6 +95,9 @@ export const appConfig: ApplicationConfig = {
       lucideDownload,
       lucideLightbulb,
       lucideBookOpen,
+      lucideTriangleAlert,
+      lucideKey,
+      lucideArrowLeft,
     }),
   ],
 }
