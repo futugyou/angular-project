@@ -28,7 +28,7 @@ import { cn } from '../../lib/utils'
     '[class]': 'hostClasses()',
   },
 })
-export class ScrollBar {
+export class ScrollBarComponent {
   private renderer = inject(Renderer2)
 
   orientation = input<'vertical' | 'horizontal'>('vertical')
@@ -91,7 +91,7 @@ export class ScrollBar {
 @Component({
   selector: 'app-scroll-area',
   standalone: true,
-  imports: [ScrollingModule, ScrollBar],
+  imports: [ScrollingModule, ScrollBarComponent],
   template: `
     <div
       cdkScrollable
@@ -112,7 +112,7 @@ export class ScrollBar {
   `,
   host: { '[class]': 'rootClasses()' },
 })
-export class ScrollArea {
+export class ScrollAreaComponent {
   className = input<string>('')
   viewportRef = viewChild<ElementRef<HTMLElement>>('viewport')
 

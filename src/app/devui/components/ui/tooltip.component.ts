@@ -11,9 +11,9 @@ import {
   ViewEncapsulation,
   type OnDestroy,
 } from '@angular/core'
-import { Overlay, OverlayRef, OverlayModule, ConnectedPosition } from '@angular/cdk/overlay'
+import { Overlay, OverlayRef } from '@angular/cdk/overlay'
 import { TemplatePortal } from '@angular/cdk/portal'
-import { NgIconComponent, provideIcons } from '@ng-icons/core'
+import { NgIconComponent } from '@ng-icons/core'
 
 @Component({
   selector: 'app-tooltip-content',
