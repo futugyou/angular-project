@@ -39,7 +39,7 @@ import {
     </div>
   `,
 })
-export class CodeBlock {
+export class CodeBlockComponent {
   content = input.required<string>()
   copyable = input(false)
 
@@ -55,7 +55,7 @@ export class CodeBlock {
 @Component({
   selector: 'app-setup-step',
   standalone: true,
-  imports: [CodeBlock],
+  imports: [CodeBlockComponent],
   template: `
     <div class="flex gap-4">
       <div class="flex-shrink-0">
@@ -78,7 +78,7 @@ export class CodeBlock {
     </div>
   `,
 })
-export class SetupStep {
+export class SetupStepComponent {
   number = input.required<number>()
   title = input.required<string>()
   description = input<string>()
@@ -91,8 +91,8 @@ export class SetupStep {
   standalone: true,
   imports: [
     NgIconComponent,
-    CodeBlock,
-    SetupStep,
+    CodeBlockComponent,
+    SetupStepComponent,
     DialogCloseComponent,
     DialogComponent,
     DialogContentComponent,

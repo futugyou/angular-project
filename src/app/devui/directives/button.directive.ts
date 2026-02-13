@@ -1,12 +1,4 @@
-import {
-  Directive,
-  Input,
-  HostBinding,
-  ElementRef,
-  Renderer2,
-  OnChanges,
-  SimpleChanges,
-} from '@angular/core'
+import { Directive, input, computed, ElementRef, Renderer2, effect, untracked } from '@angular/core'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
@@ -39,49 +31,54 @@ const buttonVariants = cva(
 )
 
 type ButtonVariantProps = VariantProps<typeof buttonVariants>
+
 @Directive({
   selector: '[appButton]',
   standalone: true,
+  host: {
+    '[class]': 'hostClasses()',
+    '[attr.disabled]': 'loading()',
+    '[attr.aria-busy]': 'loading()',
+  },
 })
-export class ButtonDirective implements OnChanges {
-  @Input() variant: ButtonVariantProps['variant'] = 'default'
-  @Input() size: ButtonVariantProps['size'] = 'default'
-  @Input() class: string = ''
+export class ButtonDirective {
+  variant = input<ButtonVariantProps['variant']>('default', { alias: 'appButton' })
+  size = input<ButtonVariantProps['size']>('default')
+  userClass = input<string>('', { alias: 'class' })
+  loading = input<boolean>(false)
 
-  @Input() loading: boolean = false
-
-  @HostBinding('disabled') get isDisabled() {
-    return this.loading
-  }
-
-  @HostBinding('class') get hostClasses() {
-    return cn(
-      buttonVariants({ variant: this.variant, size: this.size }),
-      this.loading ? 'opacity-70 cursor-not-allowed' : '',
-      this.class,
-    )
-  }
+  protected hostClasses = computed(() =>
+    cn(
+      buttonVariants({ variant: this.variant(), size: this.size() }),
+      this.loading()
+        ? 'opacity-70 cursor-not-allowed relative !text-transparent transition-none'
+        : '',
+      this.userClass(),
+    ),
+  )
 
   private loaderElement: HTMLElement | null = null
 
   constructor(
-    private el: ElementRef,
+    private el: ElementRef<HTMLElement>,
     private renderer: Renderer2,
-  ) {}
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['loading']) {
-      this.toggleLoader()
-    }
+  ) {
+    effect(() => {
+      const isLoading = this.loading()
+      untracked(() => this.toggleLoader(isLoading))
+    })
   }
 
-  private toggleLoader() {
+  private toggleLoader(isLoading: boolean) {
     const host = this.el.nativeElement
 
-    if (this.loading) {
+    if (isLoading) {
+      if (this.loaderElement) return
+
       this.loaderElement = this.renderer.createElement('span')
+      this.renderer.addClass(this.loaderElement, 'inline-flex')
       this.loaderElement!.innerHTML = `
-        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>

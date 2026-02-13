@@ -33,7 +33,7 @@ const buttonVariants = cva(
 type ButtonVariantProps = VariantProps<typeof buttonVariants>
 
 @Component({
-  selector: 'button[appButton]',
+  selector: 'button[appButton], a[appButton]',
   standalone: true,
   template: `<ng-content></ng-content>`,
   host: {
