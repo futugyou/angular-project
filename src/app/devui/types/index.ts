@@ -144,6 +144,7 @@ export type {
   StructuredEvent,
   WorkflowItem,
   ExecutorActionItem,
+  ConversationItem,
 } from './openai'
 
 export { isExecutorAction } from './openai'
