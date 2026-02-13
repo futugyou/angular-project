@@ -1,17 +1,15 @@
-import { Component, input, model, computed, signal, inject, effect } from '@angular/core'
+import { Component, input, model, computed, signal } from '@angular/core'
 import { NgIconComponent } from '@ng-icons/core'
 
 import { SampleEntity } from '../../../data/gallery/sample-entities'
 
-import { ButtonComponent } from '../../ui/button.component'
+import { ButtonDirective } from '../../../directives/button.directive'
 import { ScrollArea } from '../../ui/scroll-area.component'
 import { Alert, AlertDescription, AlertTitle } from '../../ui/alert.component'
 import {
   DialogCloseComponent,
   DialogComponent,
   DialogContentComponent,
-  DialogDescriptionComponent,
-  DialogFooterComponent,
   DialogHeaderComponent,
   DialogTitleComponent,
 } from '../../ui/dialog.component'
@@ -19,7 +17,7 @@ import {
 @Component({
   selector: 'app-code-block',
   standalone: true,
-  imports: [NgIconComponent, ButtonComponent],
+  imports: [NgIconComponent, ButtonDirective],
   template: `
     <div class="relative group">
       <pre class="bg-muted p-3 rounded-md text-sm overflow-x-auto font-mono">
@@ -99,7 +97,7 @@ export class SetupStepComponent {
     DialogHeaderComponent,
     DialogTitleComponent,
     ScrollArea,
-    ButtonComponent,
+    ButtonDirective,
     Alert,
     AlertTitle,
     AlertDescription,

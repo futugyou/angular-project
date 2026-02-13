@@ -4,7 +4,7 @@ import { lucideSettings, lucideZap } from '@ng-icons/lucide'
 import { DevUIStore } from '../../stores/devuiStore'
 import type { AgentInfo, WorkflowInfo } from '../../types'
 
-import { ButtonComponent } from '../ui/button.component'
+import { ButtonDirective } from '../../directives/button.directive'
 import { BadgeComponent } from '../ui/badge.component'
 import { ModeToggle } from '../mode-toggle.component'
 import { EntitySelector } from './entity-selector.component'
@@ -12,7 +12,7 @@ import { EntitySelector } from './entity-selector.component'
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [NgIconComponent, ButtonComponent, BadgeComponent, ModeToggle, EntitySelector],
+  imports: [NgIconComponent, ButtonDirective, BadgeComponent, ModeToggle, EntitySelector],
   providers: [provideIcons({ lucideSettings, lucideZap })],
   template: `
     <header class="flex h-14 items-center gap-4 border-b px-4">

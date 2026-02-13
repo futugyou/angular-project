@@ -19,7 +19,7 @@ import {
 
 import { AttachmentItem } from './types'
 import { AttachmentGalleryComponent } from './attachment-gallery.component'
-import { ButtonComponent } from './button.component'
+import { ButtonDirective } from '../../directives/button.directive'
 import { FileUploadComponent } from './file-upload.component'
 import { TextareaComponent } from './textarea.component'
 import { LoadingSpinnerComponent } from './loading-spinner.component'
@@ -34,7 +34,7 @@ import { LoadingSpinnerComponent } from './loading-spinner.component'
     FileUploadComponent,
     TextareaComponent,
     LoadingSpinnerComponent,
-    ButtonComponent,
+    ButtonDirective,
   ],
   template: `
     <div

@@ -10,7 +10,7 @@ import {
   DialogContentComponent,
   DialogComponent,
 } from '../ui/dialog.component'
-import { ButtonComponent } from '../ui/button.component'
+import { ButtonDirective } from '../../directives/button.directive'
 import { InputComponent } from '../ui/input.component'
 import { LabelComponent } from '../ui/label.component'
 import { SwitchComponent } from '../ui/switch.component'
@@ -30,7 +30,7 @@ const PRESET_MODELS = ['gpt-4.1', 'gpt-4.1-mini', 'o1', 'o1-mini', 'o3-mini'] as
     DialogCloseComponent,
     DialogContentComponent,
     DialogComponent,
-    ButtonComponent,
+    ButtonDirective,
     InputComponent,
     LabelComponent,
     SwitchComponent,
@@ -240,8 +240,7 @@ const PRESET_MODELS = ['gpt-4.1', 'gpt-4.1-mini', 'o1', 'o1-mini', 'o3-mini'] as
                   <div class="flex flex-wrap gap-2">
                     @for (m of presetModels; track m) {
                       <button
-                        [appButton]
-                        [variant]="store.oaiMode.model === m ? 'default' : 'outline'"
+                        [appButton]="store.oaiMode.model === m ? 'default' : 'outline'"
                         size="sm"
                         (click)="updateProxyConfig({ model: m })"
                         class="text-xs h-7"

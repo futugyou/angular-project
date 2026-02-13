@@ -13,7 +13,7 @@ import {
 import { Overlay, OverlayModule, OverlayRef } from '@angular/cdk/overlay'
 import { TemplatePortal } from '@angular/cdk/portal'
 import { NgIconComponent } from '@ng-icons/core'
-import { ButtonComponent } from './button.component'
+import { ButtonDirective } from '../../directives/button.directive'
 
 @Component({
   selector: 'app-dialog-header',
@@ -54,11 +54,10 @@ export class DialogFooterComponent {}
 @Component({
   selector: 'app-dialog-close',
   standalone: true,
-  imports: [ButtonComponent, NgIconComponent],
+  imports: [ButtonDirective, NgIconComponent],
   template: `
     <button
-      appButton
-      variant="ghost"
+      appButton="ghost"
       size="sm"
       (click)="close.emit()"
       class="absolute top-4 right-4 h-8 w-8 p-0 rounded-sm opacity-70 hover:opacity-100"

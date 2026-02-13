@@ -2,7 +2,7 @@ import { Component, input, output, forwardRef, signal, computed, model } from '@
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NgTemplateOutlet } from '@angular/common'
 import { CdkMenuModule } from '@angular/cdk/menu'
-import { ButtonComponent } from '../ui/button.component'
+import { ButtonDirective } from '../../directives/button.directive'
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component'
 import {
   DropdownMenuContent,
@@ -19,7 +19,7 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
   imports: [
     CdkMenuModule,
     NgIconComponent,
-    ButtonComponent,
+    ButtonDirective,
     NgTemplateOutlet,
     LoadingSpinnerComponent,
     DropdownMenuContent,
@@ -36,7 +36,7 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
   ],
   template: `
     <button
-      appButton
+      [appButton]
       variant="outline"
       class="w-64 justify-between font-mono text-sm"
       [disabled]="isLoading()"

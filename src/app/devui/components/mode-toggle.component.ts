@@ -1,16 +1,16 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core'
 import { NgIconComponent } from '@ng-icons/core'
-import { ButtonComponent } from './ui/button.component'
+import { ButtonDirective } from '../directives/button.directive'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from './ui/dropdown.component'
 import { ThemeService } from '../services/theme.service'
 
 @Component({
   selector: 'app-mode-toggle',
   standalone: true,
-  imports: [NgIconComponent, ButtonComponent, DropdownMenu, DropdownMenuContent, DropdownMenuItem],
+  imports: [NgIconComponent, ButtonDirective, DropdownMenu, DropdownMenuContent, DropdownMenuItem],
   template: `
     <div [appDropdownMenu]="menu">
-      <button appButton variant="ghost" size="sm" class="relative">
+      <button [appButton] variant="ghost" size="sm" class="relative">
         <ng-icon
           name="lucideSun"
           class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"

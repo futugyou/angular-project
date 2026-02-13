@@ -1,11 +1,11 @@
 import { Component, input, output, viewChild, ElementRef, computed } from '@angular/core'
 import { NgIconsModule } from '@ng-icons/core'
-import { ButtonComponent } from './button.component'
+import { ButtonDirective } from '../../directives/button.directive'
 
 @Component({
   selector: 'app-file-upload',
   standalone: true,
-  imports: [ButtonComponent, NgIconsModule],
+  imports: [ButtonDirective, NgIconsModule],
   template: `
     <div [class]="className()">
       <input
@@ -19,9 +19,8 @@ import { ButtonComponent } from './button.component'
       />
 
       <button
-        appButton
+        appButton="outline"
         type="button"
-        variant="outline"
         size="icon"
         [disabled]="disabled()"
         (click)="handleButtonClick()"
