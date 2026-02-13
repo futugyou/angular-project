@@ -129,7 +129,7 @@ export type {
   ResponseTextDeltaEvent,
   OpenAIResponse,
   OpenAIError,
-  // New structured event types
+  MessageContent,
   ExtendedResponseStreamEvent,
   ResponseWorkflowEventComplete,
   ResponseTraceEventComplete,

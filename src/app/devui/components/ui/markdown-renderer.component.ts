@@ -10,7 +10,7 @@ import { CodeBlock } from './code-block.component'
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => MarkdownRenderer),
+      useExisting: forwardRef(() => MarkdownRendererComponent),
       multi: true,
     },
   ],
@@ -93,21 +93,19 @@ import { CodeBlock } from './code-block.component'
     </div>
   `,
 })
-export class MarkdownRenderer implements ControlValueAccessor {
+export class MarkdownRendererComponent implements ControlValueAccessor {
   private sanitizer = inject(DomSanitizer)
 
   // Inputs
   className = input<string>('')
-  content = input<string>('') // 支持直接属性输入
+  content = input<string>('')
 
   // ControlValueAccessor State
   private _formValue = signal<string>('')
   disabled = signal(false)
 
-  // 最终合并渲染的内容源
   private effectiveContent = computed(() => this.content() || this._formValue())
 
-  // 核心解析逻辑：将纯文本转化为结构化数据与安全HTML
   elements = computed(() => {
     const text = this.effectiveContent()
     if (!text) return []
@@ -213,9 +211,7 @@ export class MarkdownRenderer implements ControlValueAccessor {
     return result
   })
 
-  // 行内解析：为了性能，直接返回被信任的 HTML 字符串（因为我们在 computed 里处理）
   private parseInline(text: string): SafeHtml {
-    // 基础转义防止 XSS
     let h = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
     // Inline Code
