@@ -40,6 +40,11 @@ import {
   lucideTriangleAlert,
   lucideKey,
   lucideArrowLeft,
+  lucidePackage,
+  lucideFolderOpen,
+  lucideDatabase,
+  lucideGlobe,
+  lucideXCircle,
 } from '@ng-icons/lucide'
 
 import { routes } from './app.routes'
@@ -98,6 +103,11 @@ export const appConfig: ApplicationConfig = {
       lucideTriangleAlert,
       lucideKey,
       lucideArrowLeft,
+      lucidePackage,
+      lucideFolderOpen,
+      lucideDatabase,
+      lucideGlobe,
+      lucideXCircle,
     }),
   ],
 }
