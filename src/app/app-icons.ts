@@ -42,6 +42,8 @@ import {
   lucideDatabase,
   lucideGlobe,
   lucideXCircle,
+  lucideBarChart3,
+  lucideLayers,
 } from '@ng-icons/lucide'
 
 export const APP_ICONS = {
@@ -88,4 +90,6 @@ export const APP_ICONS = {
   lucideDatabase,
   lucideGlobe,
   lucideXCircle,
+  lucideBarChart3,
+  lucideLayers,
 }
