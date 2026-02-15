@@ -1674,3 +1674,130 @@ export class TracesTabComponent {
     this.store.setDebugTraceSubTab(tab)
   }
 }
+
+@Component({
+  selector: 'app-tool-event-item',
+  standalone: true,
+  imports: [NgIconComponent],
+  template: `
+    @if (shouldRender()) {
+      <div class="border rounded p-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <ng-icon name="lucideZap" class="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+            <span class="font-medium text-sm">
+              {{ isFunctionCall() ? 'Tool Call' : 'Tool Result' }}
+            </span>
+            @if (isFunctionCall() && callData()?.['name']) {
+              <span class="text-xs text-muted-foreground"> ({{ callData()?.['name'] }}) </span>
+            }
+          </div>
+          <span class="text-xs text-muted-foreground font-mono">
+            {{ timestamp() }}
+          </span>
+        </div>
+
+        @if (isFunctionCall() && callData(); as data) {
+          <div
+            class="p-2 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded"
+          >
+            <div class="flex items-center gap-2 mb-2">
+              <ng-icon name="lucideWrench" class="h-3 w-3 text-blue-600 dark:text-blue-400" />
+              <span
+                class="text-xs font-mono bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded"
+              >
+                CALL
+              </span>
+              <span class="font-medium text-sm">
+                {{ data['name'] || 'unknown' }}
+              </span>
+            </div>
+
+            @if (data['arguments'] !== undefined) {
+              <div class="text-xs">
+                <span class="text-muted-foreground mb-1 block"> Arguments: </span>
+                <pre
+                  class="p-2 bg-background border rounded text-xs overflow-auto max-h-32 max-w-full break-all whitespace-pre-wrap"
+                  >{{ formattedArguments() }}</pre
+                >
+              </div>
+            }
+          </div>
+        }
+
+        @if (isFunctionResult() && resultData(); as result) {
+          <div
+            class="p-2 bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-800 rounded"
+          >
+            <div class="flex items-center gap-2 mb-2">
+              <ng-icon
+                name="lucideCheckCircle2"
+                class="h-3 w-3 text-green-600 dark:text-green-400"
+              />
+              <span
+                class="text-xs font-mono bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded"
+              >
+                RESULT
+              </span>
+              @if (result.status !== 'completed') {
+                <span
+                  class="ml-auto px-2 py-1 rounded text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
+                >
+                  {{ result.status }}
+                </span>
+              }
+            </div>
+
+            <div class="text-xs space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="text-muted-foreground">Call ID:</span>
+                <span class="font-mono text-xs break-all">
+                  {{ result.call_id }}
+                </span>
+              </div>
+              <div>
+                <span class="text-muted-foreground block mb-1">Output:</span>
+                <pre
+                  class="p-2 bg-background border rounded text-xs overflow-auto max-h-32 break-all whitespace-pre-wrap"
+                  >{{ result.output }}</pre
+                >
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  `,
+})
+export class ToolEventItemComponent {
+  // Input Signal
+  event = input.required<ExtendedResponseStreamEvent>()
+
+  // Computed Values
+  timestamp = computed(() => {
+    const e = this.event()
+    if ('_uiTimestamp' in e && typeof e._uiTimestamp === 'number') {
+      return new Date(e._uiTimestamp * 1000).toLocaleTimeString()
+    }
+    return new Date().toLocaleTimeString()
+  })
+
+  isFunctionCall = computed(() => this.event().type === 'response.function_call.complete')
+
+  resultData = computed(() => getFunctionResultFromEvent(this.event()))
+
+  isFunctionResult = computed(() => this.resultData() !== null)
+
+  shouldRender = computed(() => this.isFunctionCall() || this.isFunctionResult())
+
+  callData = computed(() => {
+    const e = this.event()
+    return this.isFunctionCall() && 'data' in e ? (e.data as EventDataBase) : null
+  })
+
+  formattedArguments = computed(() => {
+    const args = this.callData()?.['arguments']
+    if (args === undefined) return ''
+    return typeof args === 'string' ? args : JSON.stringify(args, null, 1)
+  })
+}
