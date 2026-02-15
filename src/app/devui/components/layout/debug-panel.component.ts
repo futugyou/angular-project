@@ -1481,3 +1481,88 @@ export class TraceTreeNodeComponent {
     }
   }
 }
+
+@Component({
+  selector: 'app-trace-group-item',
+  standalone: true,
+  imports: [NgIconComponent, BadgeComponent, TraceTreeNodeComponent],
+  template: `
+    <div class="border rounded-lg overflow-hidden">
+      <div
+        class="flex items-center gap-2 p-2 bg-muted/50 cursor-pointer hover:bg-muted/70 transition-colors"
+        (click)="toggleExpand()"
+      >
+        <div class="text-muted-foreground">
+          @if (isExpanded()) {
+            <ng-icon name="lucideChevronDown" class="h-4 w-4" />
+          } @else {
+            <ng-icon name="lucideChevronRight" class="h-4 w-4" />
+          }
+        </div>
+
+        <span class="font-mono text-xs text-muted-foreground">
+          {{ formattedTimestamp() }}
+        </span>
+
+        @if (displayEntityId(); as entityId) {
+          <app-badge variant="outline" class="text-xs py-0">
+            {{ entityId }}
+          </app-badge>
+        }
+
+        <div class="flex-1"></div>
+
+        @if (formattedDuration(); as duration) {
+          <app-badge variant="secondary" class="text-xs py-0">
+            {{ duration }}
+          </app-badge>
+        }
+
+        <span class="text-xs text-muted-foreground">
+          {{ spanCount() }} span{{ spanCount() !== 1 ? 's' : '' }}
+        </span>
+      </div>
+
+      @if (isExpanded()) {
+        <div class="p-2 border-t">
+          @for (node of group().traces; track node.data.span_id || $index) {
+            <app-trace-tree-node [node]="node" [depth]="0" />
+          }
+        </div>
+      }
+    </div>
+  `,
+  host: {
+    '[class.block]': 'true',
+  },
+})
+export class TraceGroupItemComponent {
+  group = input.required<TraceGroup>()
+
+  isExpanded = signal(true)
+  formattedTimestamp = computed(() => {
+    return new Date(this.group().timestamp * 1000).toLocaleTimeString()
+  })
+
+  displayEntityId = computed(() => {
+    const id = this.group().entity_id
+    if (!id) return null
+    return id.replace('agent_', '').replace('workflow_', '')
+  })
+
+  formattedDuration = computed(() => {
+    const duration = this.group().totalDuration
+    return duration > 0 ? `${duration.toFixed(0)}ms` : ''
+  })
+
+  spanCount = computed(() => {
+    const countNode = (n: TraceNode): number => {
+      return 1 + n.children.reduce((c, child) => c + countNode(child), 0)
+    }
+    return this.group().traces.reduce((count, node) => count + countNode(node), 0)
+  })
+
+  toggleExpand() {
+    this.isExpanded.update((v) => !v)
+  }
+}
