@@ -1,4 +1,4 @@
-import { Directive, Input, HostBinding, ElementRef, OnInit } from '@angular/core'
+import { Directive, input, computed, OnInit } from '@angular/core'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
@@ -29,15 +29,20 @@ type BadgeVariantProps = VariantProps<typeof badgeVariants>
 @Directive({
   selector: '[appBadge]',
   standalone: true,
+  host: {
+    '[class]': 'computedClasses()',
+  },
 })
 export class BadgeDirective implements OnInit {
-  @Input() variant: BadgeVariantProps['variant'] = 'default'
-  @Input() class: string = ''
+  variant = input<BadgeVariantProps['variant']>('default')
+  className = input<string>('', { alias: 'class' })
 
-  @HostBinding('class') get classes() {
-    return cn(badgeVariants({ variant: this.variant }), this.class)
-  }
-
+  computedClasses = computed(() =>
+    cn(
+      "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+      this.className(),
+    ),
+  )
   constructor() {}
 
   ngOnInit(): void {}

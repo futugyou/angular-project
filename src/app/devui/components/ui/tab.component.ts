@@ -22,14 +22,14 @@ const TABS_ROOT = new InjectionToken<{
   standalone: true,
   template: `<ng-content />`,
   providers: [
-    { provide: TABS_ROOT, useExisting: forwardRef(() => Tabs) },
-    { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => Tabs), multi: true },
+    { provide: TABS_ROOT, useExisting: forwardRef(() => TabsComponent) },
+    { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => TabsComponent), multi: true },
   ],
   host: {
     '[class]': 'hostClass()',
   },
 })
-export class Tabs implements ControlValueAccessor {
+export class TabsComponent implements ControlValueAccessor {
   readonly value = model<string>('')
   readonly className = input<string>('')
 
@@ -63,7 +63,7 @@ export class Tabs implements ControlValueAccessor {
     role: 'tablist',
   },
 })
-export class TabsList {
+export class TabsListComponent {
   readonly className = input<string>('')
   readonly hostClass = computed(() =>
     cn(
@@ -86,7 +86,7 @@ export class TabsList {
     '(click)': 'handleClick()',
   },
 })
-export class TabsTrigger {
+export class TabsTriggerComponent {
   private root = inject(TABS_ROOT)
 
   readonly value = input.required<string>()
@@ -127,7 +127,7 @@ export class TabsTrigger {
     role: 'tabpanel',
   },
 })
-export class TabsContent {
+export class TabsContentComponent {
   private root = inject(TABS_ROOT)
 
   readonly value = input.required<string>()

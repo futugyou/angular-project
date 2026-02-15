@@ -46,6 +46,13 @@ import {
   lucideLayers,
   lucideCode,
   lucideClock,
+  lucideActivity,
+  lucideSearch,
+  lucideWrench,
+  lucideCheckCircle2,
+  lucideAlertCircle,
+  lucideZap,
+  lucideMessageSquare,
 } from '@ng-icons/lucide'
 
 export const APP_ICONS = {
@@ -96,4 +103,11 @@ export const APP_ICONS = {
   lucideLayers,
   lucideCode,
   lucideClock,
+  lucideActivity,
+  lucideSearch,
+  lucideWrench,
+  lucideCheckCircle2,
+  lucideAlertCircle,
+  lucideZap,
+  lucideMessageSquare,
 }

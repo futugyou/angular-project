@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, inject, signal } from '@angular/core'
+import { Component, EventEmitter, OnInit, output, inject, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
@@ -144,7 +144,7 @@ export class OrderMainComponent implements OnInit {
   pageIndex = signal(0)
   pageSize = signal(5)
 
-  @Output() pageChange = new EventEmitter<number>()
+  pageChange = output<number>()
 
   data: IOrderRow[] = []
   form: FormGroup
