@@ -1081,7 +1081,7 @@ export class MessageSeparatorComponent {}
     class: 'block',
   },
 })
-export class EventExpandedContent {
+export class EventExpandedContentComponent {
   event = input.required<ExtendedResponseStreamEvent>()
 
   hasData(e: ExtendedResponseStreamEvent): any | null {
@@ -1128,4 +1128,96 @@ export class EventExpandedContent {
   hasKeys(obj: any): boolean {
     return obj && Object.keys(obj).length > 0
   }
+}
+
+@Component({
+  selector: 'app-message-separator',
+  standalone: true,
+  imports: [NgClass, NgIconComponent, BadgeComponent, EventExpandedContentComponent],
+  template: `
+    <div class="border-l-2 border-muted pl-3 py-2 hover:bg-muted/50 transition-colors">
+      <div class="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+        <ng-icon [name]="Icon()" class="h-3 w-3" [ngClass]="[colorClass]" />
+        <span class="font-mono">{{ timestamp() }}</span>
+        <app-badge variant="outline" class="text-xs py-0">
+          {{ streamEvent().type ? streamEvent().type.replace('response.', '') : 'unknown' }}
+        </app-badge>
+      </div>
+
+      <div class="text-sm">
+        <div
+          class="flex items-center gap-2"
+          [class.cursor-pointer]="hasExpandableContent()"
+          (click)="hasExpandableContent() && isExpanded.set(!isExpanded())"
+        >
+          @if (hasExpandableContent()) {
+            <div class="text-muted-foreground">
+              @if (isExpanded()) {
+                <ng-icon name="lucideChevronDown" class="h-3 w-3" />
+              } @else {
+                <ng-icon name="lucideChevronRight" class="h-3 w-3" />
+              }
+            </div>
+          }
+
+          <div class="text-muted-foreground flex-1">
+            {{
+              hasExpandableContent() && summary().length > 80
+                ? summary().slice(0, 80) + '...'
+                : summary()
+            }}
+          </div>
+        </div>
+
+        @if (isExpanded() && hasExpandableContent()) {
+          <div class="mt-2 ml-5 p-3 bg-muted/30 rounded border">
+            <app-event-expanded-content [event]="streamEvent()" />
+          </div>
+        }
+      </div>
+    </div>
+  `,
+})
+export class EventItemComponent {
+  streamEvent = input.required<ExtendedResponseStreamEvent>()
+  eventType = computed(() => {
+    const data = this.streamEvent()
+    return data.type || 'unknown'
+  })
+  isExpanded = signal(false)
+  Icon = computed(() => getEventIconName(this.eventType()))
+  colorClass = computed(() => getEventColor(this.eventType()))
+
+  // Use stored UI timestamp if available, otherwise compute from event data
+  timestamp = computed(() => {
+    const data = this.streamEvent()
+    return '_uiTimestamp' in data && typeof data._uiTimestamp === 'number'
+      ? new Date(data._uiTimestamp * 1000).toLocaleTimeString()
+      : new Date().toLocaleTimeString()
+  })
+
+  summary = computed(() => {
+    const data = this.streamEvent()
+    return getEventSummary(data)
+  })
+
+  // Determine if this event has expandable content
+  hasExpandableContent = computed(() => {
+    const data = this.streamEvent()
+    return (
+      (data.type === 'response.function_call.complete' && 'data' in data && data.data) ||
+      data.type === 'response.function_result.complete' ||
+      (data.type === 'response.output_item.added' && getFunctionResultFromEvent(data) !== null) ||
+      (data.type === 'response.workflow_event.completed' && 'data' in data && data.data) ||
+      (data.type === 'response.trace.completed' && 'data' in data && data.data) ||
+      (data.type === 'response.trace.completed' && 'data' in data && data.data) ||
+      (data.type === 'response.output_text.delta' &&
+        'delta' in data &&
+        data.delta &&
+        data.delta.length > 100) ||
+      (data.type === 'response.completed' && 'response' in data && data.response) ||
+      // Make error events expandable to show full error details
+      data.type === 'error'
+    )
+  })
 }
