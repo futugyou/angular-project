@@ -967,7 +967,7 @@ export class StatCardComponent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class ContextInspector {
+export class ContextInspectorComponent {
   private store = inject(DevUIStore)
   readonly colors = SEGMENT_COLORS
 

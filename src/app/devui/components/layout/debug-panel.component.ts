@@ -33,6 +33,7 @@ import {
   isToolResultPart,
 } from '../../types/openai'
 
+import { ContextInspectorComponent } from '../../components/features/agent/context-inspector.component'
 import {
   ExtendedResponseStreamEvent,
   ResponseFunctionResultComplete,
@@ -1564,5 +1565,112 @@ export class TraceGroupItemComponent {
 
   toggleExpand() {
     this.isExpanded.update((v) => !v)
+  }
+}
+@Component({
+  selector: 'app-traces-tab',
+  standalone: true,
+  imports: [
+    NgClass,
+    NgIconComponent,
+    BadgeComponent,
+    ScrollAreaComponent,
+    TraceGroupItemComponent,
+    ContextInspectorComponent,
+  ],
+  template: `
+    <div class="h-full flex flex-col">
+      <div class="flex items-center gap-2 p-3 border-b">
+        <ng-icon name="lucideSearch" class="h-4 w-4" />
+        <span class="font-medium">Traces</span>
+        <app-badge variant="outline">{{ traceEvents().length }}</app-badge>
+
+        <div class="flex-1"></div>
+        <div class="flex items-center bg-muted rounded-md p-1 min-w-0">
+          <button
+            type="button"
+            (click)="setSubTab('spans')"
+            [ngClass]="{
+              'bg-background shadow-sm font-medium': subTab() === 'spans',
+              'text-muted-foreground hover:text-foreground': subTab() !== 'spans',
+            }"
+            class="px-3 py-1.5 text-xs rounded transition-colors truncate"
+          >
+            OTel Spans
+          </button>
+          <button
+            type="button"
+            (click)="setSubTab('context')"
+            [ngClass]="{
+              'bg-background shadow-sm font-medium': subTab() === 'context',
+              'text-muted-foreground hover:text-foreground': subTab() !== 'context',
+            }"
+            class="px-3 py-1.5 text-xs rounded transition-colors flex items-center gap-1.5 min-w-0"
+          >
+            <ng-icon name="lucideBarChart3" class="h-3.5 w-3.5 flex-shrink-0" />
+            <span class="truncate">Context Inspector</span>
+          </button>
+        </div>
+      </div>
+
+      @if (subTab() === 'spans') {
+        <div class="flex-1 flex flex-col min-h-0">
+          @if (traceEvents().length > 0) {
+            <div class="p-3 border-b flex-shrink-0">
+              <div class="flex items-center gap-2">
+                <ng-icon name="lucideSearch" class="h-4 w-4" />
+                <span class="font-medium text-sm">OTel Spans</span>
+                <app-badge variant="outline" class="text-xs">
+                  {{ traceGroups().length }} turn{{ traceGroups().length !== 1 ? 's' : '' }}
+                </app-badge>
+              </div>
+            </div>
+          }
+
+          @if (traceEvents().length === 0) {
+            <div class="flex flex-col items-center text-center p-6 pt-9">
+              <ng-icon name="lucideBarChart3" class="h-8 w-8 text-muted-foreground mb-3" />
+              <div class="text-sm font-medium mb-1">No Data</div>
+              <div class="text-xs text-muted-foreground max-w-[200px]">
+                Run
+                <span class="font-mono bg-accent/10 px-1 rounded"> devui --instrumentation </span>
+                and start a conversation.
+              </div>
+            </div>
+          } @else {
+            <app-scroll-area class="flex-1">
+              <div class="p-3">
+                <div class="space-y-3">
+                  @for (group of traceGroups(); track group.response_id) {
+                    <app-trace-group-item [group]="group" />
+                  }
+                </div>
+              </div>
+            </app-scroll-area>
+          }
+        </div>
+      } @else {
+        <app-context-inspector [events]="events()" />
+      }
+    </div>
+  `,
+})
+export class TracesTabComponent {
+  // --- Signals ---
+  events = input.required<ExtendedResponseStreamEvent[]>()
+
+  // --- Store ---
+  private store = inject(DevUIStore)
+
+  // --- Computed ---
+  subTab = computed(() => this.store.debugTraceSubTab)
+
+  traceEvents = computed(() => this.events().filter((e) => e.type === 'response.trace.completed'))
+
+  traceGroups = computed(() => buildTraceHierarchy(this.traceEvents()))
+
+  // --- Actions ---
+  setSubTab(tab: 'spans' | 'context') {
+    this.store.setDebugTraceSubTab(tab)
   }
 }
