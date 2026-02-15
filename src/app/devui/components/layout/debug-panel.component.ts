@@ -10,6 +10,8 @@ import {
   inject,
   Pipe,
   PipeTransform,
+  viewChild,
+  ElementRef,
 } from '@angular/core'
 import { NgTemplateOutlet, NgClass } from '@angular/common'
 import {
@@ -1131,7 +1133,7 @@ export class EventExpandedContentComponent {
 }
 
 @Component({
-  selector: 'app-message-separator',
+  selector: 'app-event-item',
   standalone: true,
   imports: [NgClass, NgIconComponent, BadgeComponent, EventExpandedContentComponent],
   template: `
@@ -1179,7 +1181,7 @@ export class EventExpandedContentComponent {
   `,
 })
 export class EventItemComponent {
-  streamEvent = input.required<ExtendedResponseStreamEvent>()
+  streamEvent = input.required<ExtendedResponseStreamEvent>({ alias: 'event' })
   eventType = computed(() => {
     const data = this.streamEvent()
     return data.type || 'unknown'
@@ -1220,4 +1222,98 @@ export class EventItemComponent {
       data.type === 'error'
     )
   })
+}
+
+@Component({
+  selector: 'app-events-tab',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    NgIconComponent,
+    BadgeComponent,
+    MessageSeparatorComponent,
+    EventItemComponent,
+    ScrollAreaComponent,
+  ],
+  template: `
+    <div class="h-full flex flex-col">
+      <div class="flex items-center justify-between p-3 border-b">
+        <div class="flex items-center gap-2">
+          <ng-icon name="lucideActivity" class="h-4 w-4" />
+          <span class="font-medium">Events</span>
+          <app-badge variant="outline">
+            {{ processedEvents().length }}
+            @if (events().length > processedEvents().length) {
+              ({{ events().length }} raw)
+            }
+          </app-badge>
+        </div>
+
+        @if (isStreaming()) {
+          <div class="flex items-center gap-1 text-xs text-muted-foreground">
+            <div class="h-2 w-2 animate-pulse rounded-full bg-green-500 dark:bg-green-400"></div>
+            Streaming
+          </div>
+        }
+      </div>
+
+      <app-scroll-area #scrollRef class="flex-1">
+        <div class="p-3">
+          @if (processedEvents().length === 0) {
+            <div class="text-center text-muted-foreground text-sm py-8">
+              @if (events().length === 0) {
+                No events yet. Start a conversation to see real-time events.
+              } @else {
+                Processing events... Accumulated events will appear here.
+              }
+            </div>
+          } @else {
+            <div class="space-y-2">
+              @for (event of reversedEvents(); track isSeparator(event) ? event.id : $index) {
+                @if (isSeparator(event)) {
+                  <app-message-separator />
+                } @else {
+                  <app-event-item [event]="event" />
+                }
+              }
+            </div>
+          }
+        </div>
+      </app-scroll-area>
+    </div>
+  `,
+  styles: `
+    :host {
+      display: block;
+      height: 100%;
+    }
+  `,
+})
+export class EventsTabComponent {
+  /**
+   * Inputs using Signal API
+   */
+  events = input.required<ExtendedResponseStreamEvent[]>()
+  isStreaming = input<boolean>(false)
+
+  /**
+   * ViewChild for the scroll area using Signal API
+   */
+  scrollRef = viewChild<ElementRef<HTMLDivElement>>('scrollRef')
+
+  processedEvents = computed(() => {
+    return processEventsForDisplay(this.events())
+  })
+
+  eventsWithSeparators = computed(() => {
+    return addSeparatorsToEvents(this.processedEvents())
+  })
+
+  reversedEvents = computed(() => {
+    return [...this.eventsWithSeparators()].reverse()
+  })
+
+  isSeparator(event: any): event is { type: 'separator'; id: string } {
+    return event && (event as any).type === 'separator'
+  }
 }
