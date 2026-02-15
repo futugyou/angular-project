@@ -1,4 +1,4 @@
-import { Directive, Output, Input, EventEmitter, HostBinding, HostListener } from '@angular/core'
+import { Directive, input, output, signal } from '@angular/core'
 //
 // <div
 //   class="drop-zone"
@@ -11,62 +11,62 @@ import { Directive, Output, Input, EventEmitter, HostBinding, HostListener } fro
 @Directive({
   selector: '[appDragDrop]',
   standalone: true,
+  host: {
+    '[class.drag-over]': 'isDragOver()',
+    '(dragover)': 'onDragOver($event)',
+    '(dragenter)': 'onDragEnter($event)',
+    '(dragleave)': 'onDragLeave($event)',
+    '(drop)': 'onDrop($event)',
+  },
 })
 export class DragDropDirective {
-  @Input() appDragDropDisabled = false
+  disabled = input(false, { alias: 'appDragDropDisabled' })
+  filesDropped = output<File[]>()
 
-  @Output() filesDropped = new EventEmitter<File[]>()
-
-  @HostBinding('class.drag-over') isDragOver = false
-
+  protected isDragOver = signal(false)
   private dragCounter = 0
 
-  @HostListener('dragover', ['$event'])
-  onDragOver(event: DragEvent) {
+  protected onDragOver(event: DragEvent) {
     event.preventDefault()
     event.stopPropagation()
   }
 
-  @HostListener('dragenter', ['$event'])
-  onDragEnter(event: DragEvent) {
+  protected onDragEnter(event: DragEvent) {
     event.preventDefault()
     event.stopPropagation()
 
-    if (this.appDragDropDisabled) return
+    if (this.disabled()) return
 
     this.dragCounter++
     if (event.dataTransfer?.items && event.dataTransfer.items.length > 0) {
-      this.isDragOver = true
+      this.isDragOver.set(true)
     }
   }
 
-  @HostListener('dragleave', ['$event'])
-  onDragLeave(event: DragEvent) {
+  protected onDragLeave(event: DragEvent) {
     event.preventDefault()
     event.stopPropagation()
 
-    if (this.appDragDropDisabled) return
+    if (this.disabled()) return
 
     this.dragCounter--
     if (this.dragCounter === 0) {
-      this.isDragOver = false
+      this.isDragOver.set(false)
     }
   }
 
-  @HostListener('drop', ['$event'])
-  onDrop(event: DragEvent) {
+  protected onDrop(event: DragEvent) {
     event.preventDefault()
     event.stopPropagation()
 
-    this.isDragOver = false
+    this.isDragOver.set(false)
     this.dragCounter = 0
 
-    if (this.appDragDropDisabled) return
+    if (this.disabled()) return
 
     const files = event.dataTransfer?.files
     if (files && files.length > 0) {
-      const fileArray = Array.from(files)
-      this.filesDropped.emit(fileArray)
+      this.filesDropped.emit(Array.from(files))
     }
   }
 }
