@@ -1801,3 +1801,101 @@ export class ToolEventItemComponent {
     return typeof args === 'string' ? args : JSON.stringify(args, null, 1)
   })
 }
+
+@Component({
+  selector: 'app-tools-tab',
+  standalone: true,
+  imports: [
+    NgIconComponent,
+    ScrollAreaComponent,
+    BadgeComponent,
+    MessageSeparatorComponent,
+    ToolEventItemComponent,
+  ],
+  template: `
+    <div class="h-full flex flex-col">
+      <div class="flex items-center gap-2 p-3 border-b">
+        <ng-icon name="lucideWrench" class="h-4 w-4" />
+        <span class="font-medium">Tools</span>
+        <app-badge variant="outline">{{ toolEventsCount() }}</app-badge>
+      </div>
+
+      <app-scroll-area class="flex-1">
+        <div class="p-3">
+          @if (reversedToolEvents().length === 0) {
+            <div class="text-center text-muted-foreground text-sm py-8">
+              No tool executions yet. Tool calls will appear here during conversations.
+            </div>
+          } @else {
+            <div class="space-y-3">
+              @for (event of reversedToolEvents(); track $index) {
+                @if (isSeparator(event)) {
+                  <app-message-separator />
+                } @else {
+                  <app-tool-event-item [event]="event" />
+                }
+              }
+            </div>
+          }
+        </div>
+      </app-scroll-area>
+    </div>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ToolsTabComponent {
+  events = input.required<ExtendedResponseStreamEvent[]>()
+
+  private processedToolData = computed(() => {
+    const rawEvents = this.events()
+    const processedEvents = processEventsForDisplay(rawEvents)
+
+    const toolEvents: (ExtendedResponseStreamEvent | { type: 'separator'; id: string })[] = []
+
+    const functionCalls = processedEvents.filter(
+      (event) => event.type === 'response.function_call.complete',
+    )
+
+    const functionResults = rawEvents.filter((event) => getFunctionResultFromEvent(event) !== null)
+
+    const resultsByCallId = new Map<string, ExtendedResponseStreamEvent>()
+    functionResults.forEach((result) => {
+      const resultData = getFunctionResultFromEvent(result)
+      if (resultData) {
+        resultsByCallId.set(String(resultData.call_id), result)
+      }
+    })
+
+    const pairedEvents: ExtendedResponseStreamEvent[] = []
+
+    functionCalls.forEach((call) => {
+      pairedEvents.push(call)
+
+      const data = (call as any).data as EventDataBase | undefined
+      if (data?.call_id) {
+        const callId = String(data.call_id)
+        const matchingResult = resultsByCallId.get(callId)
+        if (matchingResult) {
+          pairedEvents.push(matchingResult)
+          resultsByCallId.delete(callId)
+        }
+      }
+    })
+
+    resultsByCallId.forEach((result) => {
+      pairedEvents.push(result)
+    })
+
+    return addSeparatorsToEvents(pairedEvents)
+  })
+
+  reversedToolEvents = computed(() => [...this.processedToolData()].reverse())
+
+  toolEventsCount = computed(
+    () => this.processedToolData().filter((e) => (e as any).type !== 'separator').length,
+  )
+
+  isSeparator(event: any): event is { type: 'separator'; id: string } {
+    return event && event.type === 'separator'
+  }
+}
