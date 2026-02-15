@@ -1,19 +1,17 @@
 import {
   Component,
   computed,
-  contentChild,
   input,
-  TemplateRef,
   signal,
   ChangeDetectionStrategy,
-  ViewEncapsulation,
   inject,
   Pipe,
   PipeTransform,
   viewChild,
   ElementRef,
+  output,
 } from '@angular/core'
-import { NgTemplateOutlet, NgClass } from '@angular/common'
+import { NgClass } from '@angular/common'
 import {
   TabsComponent,
   TabsContentComponent,
@@ -22,16 +20,7 @@ import {
 } from '../ui/tab.component'
 import { BadgeComponent } from '../ui/badge.component'
 import { ButtonComponent } from '../ui/button.component'
-import { ScrollAreaComponent, ScrollBarComponent } from '../ui/scroll-area.component'
-import {
-  TraceAttributes,
-  TypedTraceAttributes,
-  TraceMessage,
-  parseTraceMessages,
-  isTextPart,
-  isToolCallPart,
-  isToolResultPart,
-} from '../../types/openai'
+import { ScrollAreaComponent } from '../ui/scroll-area.component'
 
 import { ContextInspectorComponent } from '../../components/features/agent/context-inspector.component'
 import {
@@ -118,12 +107,6 @@ interface TraceGroup {
   traces: TraceNode[]
   totalDuration: number
   entity_id?: string
-}
-
-interface DebugPanelProps {
-  events: ExtendedResponseStreamEvent[]
-  isStreaming?: boolean
-  onMinimize?: () => void
 }
 
 // Helper: Extract function result from DevUI custom event
@@ -1898,4 +1881,122 @@ export class ToolsTabComponent {
   isSeparator(event: any): event is { type: 'separator'; id: string } {
     return event && event.type === 'separator'
   }
+}
+@Component({
+  selector: 'app-debug-panel',
+  standalone: true,
+  imports: [
+    NgIconComponent,
+    TabsComponent,
+    TabsListComponent,
+    TabsTriggerComponent,
+    TabsContentComponent,
+    ButtonComponent,
+    EventsTabComponent,
+    TracesTabComponent,
+    ToolsTabComponent,
+  ],
+  template: `
+    <div class="flex-1 border-l flex flex-col min-h-0">
+      <app-tabs
+        [value]="activeTab()"
+        (valueChange)="setActiveTab($any($event))"
+        class="flex-1 flex flex-col min-h-0"
+      >
+        <div class="px-3 pt-3 flex items-center gap-2 flex-shrink-0">
+          <app-tabs-list class="flex-1">
+            <button tabsTrigger value="events" class="flex-1 gap-1.5">
+              Events
+              @if (counts().eventsCount > 0) {
+                <span
+                  class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center"
+                >
+                  {{ counts().eventsCount }}
+                </span>
+              }
+            </button>
+
+            <button tabsTrigger value="traces" class="flex-1 gap-1.5">
+              Traces
+              @if (counts().tracesCount > 0) {
+                <span
+                  class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center"
+                >
+                  {{ counts().tracesCount }}
+                </span>
+              }
+            </button>
+
+            <button tabsTrigger value="tools" class="flex-1 gap-1.5">
+              Tools
+              @if (counts().toolsCount > 0) {
+                <span
+                  class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center"
+                >
+                  {{ counts().toolsCount }}
+                </span>
+              }
+            </button>
+          </app-tabs-list>
+
+          @if (canMinimize()) {
+            <button
+              appButton="ghost"
+              size="sm"
+              (click)="onMinimize.emit()"
+              class="h-8 w-8 p-0 flex-shrink-0"
+              title="Minimize debug panel"
+            >
+              <ng-icon name="lucideChevronRight" class="h-4 w-4" />
+            </button>
+          }
+        </div>
+
+        <app-tabs-content value="events" class="flex-1 mt-0 overflow-hidden">
+          <app-events-tab [events]="events()" [isStreaming]="isStreaming()" />
+        </app-tabs-content>
+
+        <app-tabs-content value="traces" class="flex-1 mt-0 overflow-hidden">
+          <app-traces-tab [events]="events()" />
+        </app-tabs-content>
+
+        <app-tabs-content value="tools" class="flex-1 mt-0 overflow-hidden">
+          <app-tools-tab [events]="events()" />
+        </app-tabs-content>
+      </app-tabs>
+    </div>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class DebugPanelComponent {
+  // --- Signal Inputs ---
+  events = input.required<any[]>()
+  isStreaming = input(false)
+  canMinimize = input(false)
+
+  // --- Signal Outputs ---
+  onMinimize = output<void>()
+
+  // --- Store & Logic ---
+  private store = inject(DevUIStore)
+
+  activeTab = computed(() => this.store.debugPanelTab)
+
+  setActiveTab(v: 'events' | 'traces' | 'tools') {
+    this.store.setDebugPanelTab(v)
+  }
+
+  // --- Computed (Replacement for useMemo) ---
+  counts = computed(() => {
+    const rawEvents = this.events()
+    const processedEvents = processEventsForDisplay(rawEvents)
+
+    const eventsCount = processedEvents.length
+    const tracesCount = rawEvents.filter((e) => e.type === 'response.trace.completed').length
+    const toolsCount =
+      processedEvents.filter((e) => e.type === 'response.function_call.complete').length +
+      rawEvents.filter((e) => getFunctionResultFromEvent(e) !== null).length
+
+    return { eventsCount, tracesCount, toolsCount }
+  })
 }

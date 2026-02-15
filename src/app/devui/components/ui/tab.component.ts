@@ -18,7 +18,7 @@ const TABS_ROOT = new InjectionToken<{
 }>('TABS_ROOT')
 
 @Component({
-  selector: 'tabs',
+  selector: 'app-tabs',
   standalone: true,
   template: `<ng-content />`,
   providers: [
@@ -54,7 +54,7 @@ export class TabsComponent implements ControlValueAccessor {
 }
 
 @Component({
-  selector: 'tabs-list',
+  selector: 'app-tabs-list',
   standalone: true,
   template: `<ng-content />`,
   encapsulation: ViewEncapsulation.None,
@@ -88,7 +88,7 @@ export class TabsListComponent {
 })
 export class TabsTriggerComponent {
   private root = inject(TABS_ROOT)
-
+  tabsTrigger = input<any>(null)
   readonly value = input.required<string>()
   readonly className = input<string>('')
   readonly disabled = input<boolean, any>(false, {
@@ -114,7 +114,7 @@ export class TabsTriggerComponent {
 }
 
 @Component({
-  selector: 'tabs-content',
+  selector: 'app-tabs-content',
   standalone: true,
   template: `
     @if (isVisible()) {
@@ -145,11 +145,11 @@ export class TabsContentComponent {
   )
 }
 // usage
-// <tabs [(value)]="currentTab">
-//   <tabs-list>
+// <app-tabs [(value)]="currentTab">
+//   <app-tabs-list>
 //     <button tabsTrigger value="account">Account</button>
 //     <button tabsTrigger value="password">Password</button>
-//   </tabs-list>
-//   <tabs-content value="account">Make changes to your account here.</tabs-content>
-//   <tabs-content value="password">Change your password here.</tabs-content>
-// </tabs>
+//   </app-tabs-list>
+//   <app-tabs-content value="account">Make changes to your account here.</app-tabs-content>
+//   <app-tabs-content value="password">Change your password here.</app-tabs-content>
+// </app-tabs>
