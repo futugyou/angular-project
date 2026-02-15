@@ -1317,3 +1317,167 @@ export class EventsTabComponent {
     return event && (event as any).type === 'separator'
   }
 }
+
+@Component({
+  selector: 'app-trace-tree-node',
+  standalone: true,
+  imports: [NgIconComponent],
+  template: `
+    <div class="relative">
+      @if (depth() > 0) {
+        <div
+          class="absolute left-0 top-0 bottom-0 border-l-2 border-muted"
+          [style.marginLeft.px]="(depth() - 1) * 16 + 8"
+        ></div>
+      }
+
+      <div
+        class="flex items-center gap-2 py-1.5 hover:bg-muted/50 rounded transition-colors"
+        [style.paddingLeft.px]="depth() * 16"
+      >
+        <button
+          (click)="toggle()"
+          class="w-4 h-4 flex items-center justify-center text-muted-foreground hover:text-foreground border-none bg-transparent cursor-pointer"
+        >
+          @if (hasChildren()) {
+            <ng-icon
+              [name]="isExpanded() ? 'lucideChevronDown' : 'lucideChevronRight'"
+              class="text-[12px]"
+            />
+          } @else {
+            <ng-icon
+              [name]="showDetails() ? 'lucideChevronDown' : 'lucideChevronRight'"
+              class="text-[12px]"
+            />
+          }
+        </button>
+
+        <span [class]="'text-xs px-1.5 py-0.5 rounded font-medium ' + operationColor()">
+          {{ processedOperationName() }}
+        </span>
+
+        @if (duration()) {
+          <span class="text-xs text-muted-foreground font-mono">
+            {{ duration() }}
+          </span>
+        }
+
+        @if (hasTokens()) {
+          <span class="text-xs text-muted-foreground font-mono">
+            @if (inputTokens() !== undefined) {
+              <span>↑{{ inputTokens() }}</span>
+            }
+            @if (inputTokens() !== undefined && outputTokens() !== undefined) {
+              <span class="mx-0.5">/</span>
+            }
+            @if (outputTokens() !== undefined) {
+              <span>↓{{ outputTokens() }}</span>
+            }
+          </span>
+        }
+      </div>
+
+      @if (showDetails() && !hasChildren()) {
+        <div
+          class="mt-1 mb-2 p-2 bg-muted/30 rounded border text-xs"
+          [style.marginLeft.px]="depth() * 16 + 20"
+        >
+          <div class="space-y-1">
+            @if (node().data.span_id; as spanId) {
+              <div class="flex gap-2">
+                <span class="text-muted-foreground w-20">Span ID:</span>
+                <span class="font-mono text-xs break-all">{{ spanId }}</span>
+              </div>
+            }
+            @if (node().data.trace_id; as traceId) {
+              <div class="flex gap-2">
+                <span class="text-muted-foreground w-20">Trace ID:</span>
+                <span class="font-mono text-xs break-all">{{ traceId }}</span>
+              </div>
+            }
+            @if (node().data.status; as status) {
+              <div class="flex gap-2">
+                <span class="text-muted-foreground w-20">Status:</span>
+                <span [class]="statusClass()">
+                  {{ status }}
+                </span>
+              </div>
+            }
+            @if (hasAttributes()) {
+              <div class="mt-2">
+                <span class="text-muted-foreground block mb-1">Attributes:</span>
+                <pre
+                  class="text-xs bg-background border rounded p-2 overflow-auto max-h-32 whitespace-pre-wrap break-all"
+                  >{{ formattedAttributes() }}</pre
+                >
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (hasChildren() && isExpanded()) {
+        <div>
+          @for (child of node().children; track child.data.span_id || $index) {
+            <app-trace-tree-node [node]="child" [depth]="depth() + 1" />
+          }
+        </div>
+      }
+    </div>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class TraceTreeNodeComponent {
+  node = input.required<TraceNode>()
+  depth = input<number>(0)
+
+  isExpanded = signal<boolean>(false)
+  showDetails = signal<boolean>(false)
+
+  constructor() {
+    const initialExpanded = this.depth() < 2
+    this.isExpanded.set(initialExpanded)
+  }
+
+  hasChildren = computed(() => (this.node().children?.length ?? 0) > 0)
+
+  processedOperationName = computed(() => {
+    const name = this.node().data.operation_name || 'Unknown'
+    return name.replace('Agent.', '').replace('invoke_agent ', '')
+  })
+
+  operationColor = computed(() => getOperationColor(this.node().data.operation_name || 'Unknown'))
+
+  duration = computed(() => {
+    const ms = this.node().data.duration_ms
+    return ms ? `${Number(ms).toFixed(1)}ms` : ''
+  })
+
+  inputTokens = computed(() => this.node().data.attributes?.['gen_ai.usage.input_tokens'])
+  outputTokens = computed(() => this.node().data.attributes?.['gen_ai.usage.output_tokens'])
+
+  hasTokens = computed(() => this.inputTokens() !== undefined || this.outputTokens() !== undefined)
+
+  hasAttributes = computed(() => {
+    const attrs = this.node().data.attributes
+    return attrs && Object.keys(attrs).length > 0
+  })
+
+  formattedAttributes = computed(() => formatTraceAttributes(this.node().data.attributes ?? {}))
+
+  statusClass = computed(() => {
+    const status = this.node().data.status
+    const isOk = status === 'StatusCode.UNSET' || status === 'OK'
+    return isOk
+      ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-1.5 py-0.5 rounded text-xs'
+      : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-1.5 py-0.5 rounded text-xs'
+  })
+
+  toggle() {
+    if (this.hasChildren()) {
+      this.isExpanded.update((v) => !v)
+    } else {
+      this.showDetails.update((v) => !v)
+    }
+  }
+}
