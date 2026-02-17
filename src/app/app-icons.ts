@@ -53,6 +53,9 @@ import {
   lucideAlertCircle,
   lucideZap,
   lucideMessageSquare,
+  lucidePlay,
+  lucideSettings,
+  lucideRefreshCw,
 } from '@ng-icons/lucide'
 
 export const APP_ICONS = {
@@ -73,6 +76,7 @@ export const APP_ICONS = {
   lucideCircle,
   lucideUpload,
   lucideLoader2,
+  lucidePlay,
   lucideCopy,
   lucideChevronUp,
   lucideChevronDown,
@@ -85,6 +89,7 @@ export const APP_ICONS = {
   lucidePlus,
   lucideExternalLink,
   lucideRotateCcw,
+  lucideSettings,
   lucideSendHorizontal,
   lucideSquare,
   lucidePaperclip,
@@ -110,4 +115,5 @@ export const APP_ICONS = {
   lucideAlertCircle,
   lucideZap,
   lucideMessageSquare,
+  lucideRefreshCw,
 }

@@ -1,6 +1,6 @@
 import { Component, computed, effect, input, output, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgTemplateOutlet, NgClass } from '@angular/common'
+import { NgTemplateOutlet } from '@angular/common'
 import { NgIconComponent } from '@ng-icons/core'
 
 import {
@@ -166,7 +166,7 @@ import type { JSONSchemaProperty } from '../../../types'
     </ng-template>
   `,
 })
-export class WorkflowInputForm {
+export class WorkflowInputFormComponent {
   // --- Inputs & Outputs ---
   inputSchema = input.required<JSONSchemaProperty>()
   inputTypeName = input.required<string>()
