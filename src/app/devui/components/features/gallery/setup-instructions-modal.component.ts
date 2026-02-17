@@ -31,7 +31,7 @@ import {
           class="absolute top-2 right-2 h-6 w-6 p-0"
           (click)="handleCopy()"
         >
-          <ng-icon [name]="copied() ? 'lucCheck' : 'lucCopy'" class="h-3 w-3" />
+          <ng-icon [name]="copied() ? 'lucideCheck' : 'lucideCopy'" class="h-3 w-3" />
         </button>
       }
     </div>
@@ -125,7 +125,7 @@ export class SetupStepComponent {
                     rel="noopener noreferrer"
                     class="flex items-center"
                   >
-                    <ng-icon name="lucDownload" class="h-4 w-4 mr-2" />
+                    <ng-icon name="lucideDownload" class="h-4 w-4 mr-2" />
                     Download {{ sample().id }}.py
                   </a>
                 </button>
@@ -166,7 +166,7 @@ export class SetupStepComponent {
               />
 
               <app-alert>
-                <ng-icon name="lucLightbulb" class="h-4 w-4" />
+                <ng-icon name="lucideLightbulb" class="h-4 w-4" />
                 <app-alert-title>Alternative: Run Programmatically</app-alert-title>
                 <app-alert-description>
                   <p class="mb-2 mt-2">
@@ -184,7 +184,7 @@ export class SetupStepComponent {
                     rel="noopener noreferrer"
                     class="flex items-center"
                   >
-                    <ng-icon name="lucExternalLink" class="h-4 w-4 mr-2" />
+                    <ng-icon name="lucideExternalLink" class="h-4 w-4 mr-2" />
                     View Source
                   </a>
                 </button>
@@ -195,7 +195,7 @@ export class SetupStepComponent {
                     rel="noopener noreferrer"
                     class="flex items-center"
                   >
-                    <ng-icon name="lucBookOpen" class="h-4 w-4 mr-2" />
+                    <ng-icon name="lucideBookOpen" class="h-4 w-4 mr-2" />
                     Documentation
                   </a>
                 </button>

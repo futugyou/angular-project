@@ -53,7 +53,7 @@ import type { JSONSchemaProperty } from '../../../types'
             class="w-full"
             size="default"
           >
-            <ng-icon name="lucSend" class="h-4 w-4 mr-2" />
+            <ng-icon name="lucideSendHorizontal" class="h-4 w-4 mr-2" />
             {{ isSubmitting() ? 'Running...' : 'Run Workflow' }}
           </button>
         </div>
@@ -78,7 +78,7 @@ import type { JSONSchemaProperty } from '../../../types'
         <ng-container [ngTemplateOutlet]="formFields" />
         <div class="flex gap-2 mt-4 justify-end">
           <button [appButton] type="submit" [disabled]="loading() || !canSubmit()" size="default">
-            <ng-icon name="lucSend" class="h-4 w-4" />
+            <ng-icon name="lucideSendHorizontal" class="h-4 w-4" />
             {{ loading() ? 'Running...' : 'Run Workflow' }}
           </button>
         </div>
@@ -129,7 +129,7 @@ import type { JSONSchemaProperty } from '../../../types'
             form="workflow-modal-form"
             [disabled]="loading() || !canSubmit()"
           >
-            <ng-icon name="lucSend" class="h-4 w-4 mr-2" />
+            <ng-icon name="lucideSendHorizontal" class="h-4 w-4 mr-2" />
             {{ loading() ? 'Running...' : 'Run Workflow' }}
           </button>
         </app-dialog-footer>

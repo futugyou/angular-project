@@ -12,19 +12,7 @@ import {
   OnDestroy,
 } from '@angular/core'
 import { NgClass } from '@angular/common'
-import { provideIcons, NgIconComponent } from '@ng-icons/core'
-import {
-  lucideLoader2,
-  lucideCheckCircle,
-  lucideXCircle,
-  lucideAlertCircle,
-  lucideChevronDown,
-  lucideChevronRight,
-  lucideCopy,
-  lucideCheck,
-  lucideSquare,
-} from '@ng-icons/lucide'
-
+import { NgIconComponent } from '@ng-icons/core'
 import { ScrollAreaComponent } from '../../ui/scroll-area.component'
 import { ButtonComponent } from '../../ui/button.component'
 import { BadgeComponent } from '../../ui/badge.component'
@@ -192,19 +180,6 @@ export class ExecutorRunItemComponent {
     HilTimelineItemComponent,
     RunWorkflowButtonComponent,
     ChatMessageInputComponent,
-  ],
-  providers: [
-    provideIcons({
-      lucideLoader2,
-      lucideCheckCircle,
-      lucideXCircle,
-      lucideAlertCircle,
-      lucideChevronDown,
-      lucideChevronRight,
-      lucideCopy,
-      lucideCheck,
-      lucideSquare,
-    }),
   ],
   template: `
     <div class="h-full flex flex-col border-l bg-muted/30">

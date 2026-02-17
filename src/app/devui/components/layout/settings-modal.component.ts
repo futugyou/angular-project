@@ -81,7 +81,7 @@ const PRESET_MODELS = ['gpt-4.1', 'gpt-4.1-mini', 'o1', 'o1-mini', 'o3-mini'] as
                       (click)="handleReset()"
                       class="h-7 text-xs"
                     >
-                      <ng-icon name="lucRotateCcw" class="h-3 w-3 mr-1" />
+                      <ng-icon name="lucideRotateCcw" class="h-3 w-3 mr-1" />
                       Reset
                     </button>
                   }
@@ -264,7 +264,7 @@ const PRESET_MODELS = ['gpt-4.1', 'gpt-4.1-mini', 'o1', 'o1-mini', 'o3-mini'] as
               </div>
               <div class="flex justify-center pt-2">
                 <button [appButton] variant="outline" size="sm" (click)="goToRepo()">
-                  <ng-icon name="lucExternalLink" class="h-3 w-3 mr-1" />
+                  <ng-icon name="lucideExternalLink" class="h-3 w-3 mr-1" />
                   Learn More
                 </button>
               </div>

@@ -56,7 +56,7 @@ export class DetailCardComponent {
         <div class="px-6 pb-6 overflow-y-auto flex-1">
           <div class="mb-6">
             <div class="flex items-center gap-3 mb-2">
-              <ng-icon name="lucBot" class="h-6 w-6 text-primary" />
+              <ng-icon name="lucideBot" class="h-6 w-6 text-primary" />
               <h2 class="text-xl font-semibold text-foreground">
                 {{ info.name || info.id }}
               </h2>
@@ -70,7 +70,7 @@ export class DetailCardComponent {
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             @if (info.model_id || info.chat_client_type) {
-              <app-detail-card title="Model & Client" iconName="lucBot">
+              <app-detail-card title="Model & Client" iconName="lucideBot">
                 <div class="space-y-1">
                   @if (info.model_id) {
                     <div class="font-mono text-foreground">{{ info.model_id }}</div>
@@ -93,7 +93,7 @@ export class DetailCardComponent {
 
             <app-detail-card
               title="Environment"
-              [iconName]="info.has_env ? 'lucXCircle' : 'lucCheckCircle'"
+              [iconName]="info.has_env ? 'lucideXCircle' : 'lucideCheckCircle'"
               className="md:col-span-2"
             >
               <div
@@ -113,7 +113,7 @@ export class DetailCardComponent {
           </div>
 
           @if (info.instructions; as inst) {
-            <app-detail-card title="Instructions" iconName="lucFileText" className="mb-4">
+            <app-detail-card title="Instructions" iconName="lucideFileText" className="mb-4">
               <div class="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
                 {{ inst }}
               </div>
@@ -122,7 +122,7 @@ export class DetailCardComponent {
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @if (info.tools; as tools) {
-              <app-detail-card [title]="'Tools (' + tools.length + ')'" iconName="lucPackage">
+              <app-detail-card [title]="'Tools (' + tools.length + ')'" iconName="lucidePackage">
                 <ul class="space-y-1">
                   @for (tool of tools; track $index) {
                     <li class="font-mono text-xs text-foreground">• {{ tool }}</li>
@@ -132,7 +132,10 @@ export class DetailCardComponent {
             }
 
             @if (info.middleware; as mws) {
-              <app-detail-card [title]="'Middlewares (' + mws.length + ')'" iconName="lucPackage">
+              <app-detail-card
+                [title]="'Middlewares (' + mws.length + ')'"
+                iconName="lucidePackage"
+              >
                 <ul class="space-y-1">
                   @for (mw of mws; track $index) {
                     <li class="font-mono text-xs text-foreground">• {{ mw }}</li>
@@ -144,7 +147,7 @@ export class DetailCardComponent {
             @if (info.context_provider; as provider) {
               <app-detail-card
                 title="Context Provider"
-                iconName="lucDatabase"
+                iconName="lucideDatabase"
                 [className]="
                   !info.middleware || info.middleware.length === 0 ? 'md:col-start-2' : ''
                 "
@@ -168,9 +171,9 @@ export class AgentDetailsModalComponent {
 
   sourceIcon = computed(() => {
     const s = this.agent().source
-    if (s === 'directory') return 'lucFolderOpen'
-    if (s === 'in_memory') return 'lucDatabase'
-    return 'lucGlobe'
+    if (s === 'directory') return 'lucideFolderOpen'
+    if (s === 'in_memory') return 'lucideDatabase'
+    return 'lucideGlobe'
   })
 
   sourceLabel = computed(() => {

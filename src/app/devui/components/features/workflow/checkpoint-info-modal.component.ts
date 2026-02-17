@@ -155,7 +155,7 @@ import type {
                       class="absolute inset-0 bg-background/50 flex items-center justify-center z-10"
                     >
                       <ng-icon
-                        name="lucLoader2"
+                        name="lucideLoader2"
                         class="h-6 w-6 animate-spin text-muted-foreground"
                       />
                     </div>
@@ -164,7 +164,7 @@ import type {
                   <div class="flex items-start justify-between pb-4 border-b">
                     <div>
                       <div class="flex items-center gap-2 mb-1">
-                        <ng-icon name="lucClock" class="h-4 w-4 text-muted-foreground" />
+                        <ng-icon name="lucideClock" class="h-4 w-4 text-muted-foreground" />
                         <span class="font-medium">
                           {{
                             selectedCheckpoint()?.metadata?.iteration_count === 0
@@ -197,7 +197,7 @@ import type {
                   @if (executorIds().length > 0) {
                     <div>
                       <div class="text-sm font-medium mb-3 flex items-center gap-2">
-                        <ng-icon name="lucPackage" class="h-4 w-4" />
+                        <ng-icon name="lucidePackage" class="h-4 w-4" />
                         Active Executors ({{ executorIds().length }})
                       </div>
                       <div class="flex flex-wrap gap-2">
@@ -213,7 +213,7 @@ import type {
                   @if (messageExecutors().length > 0) {
                     <div>
                       <div class="text-sm font-medium mb-3 flex items-center gap-2">
-                        <ng-icon name="lucMessageSquare" class="h-4 w-4" />
+                        <ng-icon name="lucideMessageSquare" class="h-4 w-4" />
                         Messages
                       </div>
                       <div class="grid grid-cols-2 gap-3">
@@ -236,7 +236,7 @@ import type {
                   @if (pendingHilEvents().length > 0) {
                     <div>
                       <div class="text-sm font-medium mb-3 flex items-center gap-2">
-                        <ng-icon name="lucAlertCircle" class="h-4 w-4" />
+                        <ng-icon name="lucideAlertCircle" class="h-4 w-4" />
                         Pending HIL Requests ({{ pendingHilEvents().length }})
                       </div>
                       <div class="space-y-2">
@@ -297,7 +297,7 @@ import type {
                       class="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors w-full"
                     >
                       <ng-icon
-                        [name]="jsonExpanded() ? 'lucChevronDown' : 'lucChevronRight'"
+                        [name]="jsonExpanded() ? 'lucideChevronDown' : 'lucideChevronRight'"
                         class="h-4 w-4"
                       />
                       Raw JSON

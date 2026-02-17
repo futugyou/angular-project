@@ -74,7 +74,7 @@ export class TextContentRenderer {
         @if (imageError()) {
           <div class="p-3 border rounded-lg bg-muted">
             <div class="flex items-center gap-2 text-sm text-muted-foreground">
-              <ng-icon name="lucFileText" class="h-4 w-4" />
+              <ng-icon name="lucideFileText" class="h-4 w-4" />
               <span>Image could not be loaded</span>
             </div>
           </div>
@@ -117,14 +117,14 @@ export class ImageContentRenderer {
       <div [class]="'my-2 ' + className()">
         @if (isPdf() && fileUrl()) {
           <div class="flex items-center gap-2 mb-2 px-1">
-            <ng-icon name="lucFileText" class="h-4 w-4 text-red-500" />
+            <ng-icon name="lucideFileText" class="h-4 w-4 text-red-500" />
             <span class="text-sm font-medium truncate flex-1">{{ filename() }}</span>
             <button
               (click)="isExpanded.set(!isExpanded())"
               class="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
             >
               <ng-icon
-                [name]="isExpanded() ? 'lucChevronDown' : 'lucChevronRight'"
+                [name]="isExpanded() ? 'lucideChevronDown' : 'lucideChevronRight'"
                 class="h-3 w-3"
               />
               {{ isExpanded() ? 'Collapse' : 'Expand' }}
@@ -135,7 +135,7 @@ export class ImageContentRenderer {
             <div
               class="border rounded-lg p-6 bg-muted/50 flex flex-col items-center justify-center gap-4"
             >
-              <ng-icon name="lucFileText" class="h-16 w-16 text-red-400" />
+              <ng-icon name="lucideFileText" class="h-16 w-16 text-red-400" />
               <div class="text-center">
                 <p class="text-sm font-medium mb-1">{{ filename() }}</p>
                 <p class="text-xs text-muted-foreground">PDF Document</p>
@@ -152,7 +152,7 @@ export class ImageContentRenderer {
                   [download]="filename()"
                   class="text-sm text-foreground hover:bg-accent flex items-center gap-2 px-4 py-2 border rounded-md transition-colors"
                 >
-                  <ng-icon name="lucDownload" class="h-4 w-4" /> Download
+                  <ng-icon name="lucideDownload" class="h-4 w-4" /> Download
                 </a>
               </div>
             </div>
@@ -160,7 +160,7 @@ export class ImageContentRenderer {
         } @else if (isAudio() && fileUrl()) {
           <div class="p-3 border rounded-lg">
             <div class="flex items-center gap-2 mb-2">
-              <ng-icon name="lucMusic" class="h-4 w-4 text-muted-foreground" />
+              <ng-icon name="lucideMusic" class="h-4 w-4 text-muted-foreground" />
               <span class="text-sm font-medium">{{ filename() }}</span>
             </div>
             <audio controls class="w-full">
@@ -172,7 +172,7 @@ export class ImageContentRenderer {
           <div class="p-3 border rounded-lg bg-muted">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <ng-icon name="lucFileText" class="h-4 w-4 text-muted-foreground" />
+                <ng-icon name="lucideFileText" class="h-4 w-4 text-muted-foreground" />
                 <span class="text-sm">{{ filename() }}</span>
               </div>
               @if (fileUrl()) {
@@ -181,7 +181,7 @@ export class ImageContentRenderer {
                   [download]="filename()"
                   class="text-xs text-primary hover:underline flex items-center gap-1"
                 >
-                  <ng-icon name="lucDownload" class="h-3 w-3" /> Download
+                  <ng-icon name="lucideDownload" class="h-3 w-3" /> Download
                 </a>
               }
             </div>
@@ -237,11 +237,11 @@ export class FileContentRenderer {
     @if (content().type === 'output_data') {
       <div [class]="'my-2 p-3 border rounded-lg bg-muted ' + className()">
         <div class="flex items-center gap-2 cursor-pointer" (click)="isExpanded.set(!isExpanded())">
-          <ng-icon name="lucFileText" class="h-4 w-4 text-muted-foreground" />
+          <ng-icon name="lucideFileText" class="h-4 w-4 text-muted-foreground" />
           <span class="text-sm font-medium">{{ content().description || 'Data Output' }}</span>
           <span class="text-xs text-muted-foreground ml-auto">{{ content().mime_type }}</span>
           <ng-icon
-            [name]="isExpanded() ? 'lucChevronDown' : 'lucChevronRight'"
+            [name]="isExpanded() ? 'lucideChevronDown' : 'lucideChevronRight'"
             class="h-4 w-4 text-muted-foreground"
           />
         </div>
@@ -306,11 +306,11 @@ export class FunctionApprovalRenderer {
   statusConfig = computed(() => {
     const status = this.content().status
     if (status === 'approved')
-      return { icon: 'lucCheck', label: 'Approved', class: 'text-green-600 dark:text-green-400' }
+      return { icon: 'lucideCheck', label: 'Approved', class: 'text-green-600 dark:text-green-400' }
     if (status === 'rejected')
-      return { icon: 'lucX', label: 'Rejected', class: 'text-red-600 dark:text-red-400' }
+      return { icon: 'lucideX', label: 'Rejected', class: 'text-red-600 dark:text-red-400' }
     return {
-      icon: 'lucClock',
+      icon: 'lucideClock',
       label: 'Awaiting approval',
       class: 'text-amber-600 dark:text-amber-400',
     }
@@ -395,12 +395,12 @@ export class OpenAIContentRendererComponent {
   template: `
     <div [class]="'my-2 p-3 border rounded bg-blue-50 dark:bg-blue-950/20 ' + className()">
       <div class="flex items-center gap-2 cursor-pointer" (click)="isExpanded.set(!isExpanded())">
-        <ng-icon name="lucCode" class="h-4 w-4 text-blue-600 dark:text-blue-400" />
+        <ng-icon name="lucideCode" class="h-4 w-4 text-blue-600 dark:text-blue-400" />
         <span class="text-sm font-medium text-blue-800 dark:text-blue-300"
           >Function Call: {{ name() }}</span
         >
         <ng-icon
-          [name]="isExpanded() ? 'lucChevronDown' : 'lucChevronRight'"
+          [name]="isExpanded() ? 'lucideChevronDown' : 'lucideChevronRight'"
           class="h-4 w-4 text-blue-600 dark:text-blue-400 ml-auto"
         />
       </div>
@@ -436,10 +436,10 @@ export class FunctionCallRendererComponent {
   template: `
     <div [class]="'my-2 p-3 border rounded bg-green-50 dark:bg-green-950/20 ' + className()">
       <div class="flex items-center gap-2 cursor-pointer" (click)="isExpanded.set(!isExpanded())">
-        <ng-icon name="lucCode" class="h-4 w-4 text-green-600 dark:text-green-400" />
+        <ng-icon name="lucideCode" class="h-4 w-4 text-green-600 dark:text-green-400" />
         <span class="text-sm font-medium text-green-800 dark:text-green-300">Function Result</span>
         <ng-icon
-          [name]="isExpanded() ? 'lucChevronDown' : 'lucChevronRight'"
+          [name]="isExpanded() ? 'lucideChevronDown' : 'lucideChevronRight'"
           class="h-4 w-4 text-green-600 dark:text-green-400 ml-auto"
         />
       </div>

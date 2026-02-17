@@ -6,7 +6,7 @@ import { cn } from '../../lib/utils'
   selector: 'app-loading-spinner',
   standalone: true,
   imports: [NgIconComponent],
-  template: ` <ng-icon name="lucLoader2" [class]="computedClass()" /> `,
+  template: ` <ng-icon name="lucideLoader2" [class]="computedClass()" /> `,
   styles: [
     `
       :host {

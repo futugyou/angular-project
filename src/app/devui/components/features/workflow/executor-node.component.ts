@@ -54,9 +54,9 @@ export interface ExecutorNodeData extends Record<string, unknown> {
               class="w-10 h-10 rounded-lg bg-gray-900/90 dark:bg-gray-800/90 flex items-center justify-center"
             >
               @if (nodeData().isStartNode) {
-                <ng-icon name="lucHome" class="w-5 h-5 text-[#643FB2] dark:text-[#8B5CF6]" />
+                <ng-icon name="lucideHome" class="w-5 h-5 text-[#643FB2] dark:text-[#8B5CF6]" />
               } @else {
-                <ng-icon name="lucWorkflow" class="w-5 h-5 text-gray-300 dark:text-gray-400" />
+                <ng-icon name="lucideWorkflow" class="w-5 h-5 text-gray-300 dark:text-gray-400" />
               }
             </div>
           </div>
@@ -68,7 +68,7 @@ export interface ExecutorNodeData extends Record<string, unknown> {
               </h3>
               @if (isRunning()) {
                 <ng-icon
-                  name="lucLoader2"
+                  name="lucideLoader2"
                   [class]="
                     cn(
                       'w-4 h-4 text-[#643FB2] dark:text-[#8B5CF6] flex-shrink-0',
@@ -93,7 +93,7 @@ export interface ExecutorNodeData extends Record<string, unknown> {
               class="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-full"
             >
               <ng-icon
-                [name]="isOutputExpanded() ? 'lucChevronDown' : 'lucChevronRight'"
+                [name]="isOutputExpanded() ? 'lucideChevronDown' : 'lucideChevronRight'"
                 class="w-3 h-3"
               />
               <span>{{ nodeData().error ? 'Show error' : 'Show output' }}</span>

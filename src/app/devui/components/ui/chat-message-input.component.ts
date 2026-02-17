@@ -75,7 +75,9 @@ import { LoadingSpinnerComponent } from './loading-spinner.component'
                flex items-center gap-2 shadow-lg"
         >
           <ng-icon
-            [name]="pasteNotification()?.includes('screenshot') ? 'lucPaperclip' : 'lucFileText'"
+            [name]="
+              pasteNotification()?.includes('screenshot') ? 'lucidePaperclip' : 'lucideFileText'
+            "
             class="h-3 w-3"
           ></ng-icon>
           {{ pasteNotification() }}
@@ -116,7 +118,7 @@ import { LoadingSpinnerComponent } from './loading-spinner.component'
             @if (isCancelling()) {
               <app-loading-spinner size="sm" />
             } @else {
-              <ng-icon name="lucSquare" class="h-4 w-4 fill-current"></ng-icon>
+              <ng-icon name="lucideSquare" class="h-4 w-4 fill-current"></ng-icon>
             }
           </button>
         } @else {
@@ -131,7 +133,7 @@ import { LoadingSpinnerComponent } from './loading-spinner.component'
             @if (isSubmitting()) {
               <app-loading-spinner size="sm" />
             } @else {
-              <ng-icon name="lucSendHorizontal" class="h-4 w-4"></ng-icon>
+              <ng-icon name="lucideSendHorizontal" class="h-4 w-4"></ng-icon>
             }
           </button>
         }

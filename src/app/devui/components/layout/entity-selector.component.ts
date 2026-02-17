@@ -57,13 +57,13 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
           @if (selectedValue(); as item) {
             @if (item.metadata?.['lazy_loaded'] === false) {
               <ng-icon
-                name="lucLoader2"
+                name="lucideLoader2"
                 class="h-3 w-3 text-muted-foreground animate-spin ml-auto flex-shrink-0"
               />
             }
           }
         </div>
-        <ng-icon name="lucChevronDown" class="h-4 w-4 opacity-50" />
+        <ng-icon name="lucideChevronDown" class="h-4 w-4 opacity-50" />
       }
     </button>
 
@@ -96,7 +96,7 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
           class="cursor-pointer text-primary w-full flex items-center"
           (click)="onBrowseGallery.emit()"
         >
-          <ng-icon name="lucPlus" class="h-4 w-4 mr-2" />
+          <ng-icon name="lucidePlus" class="h-4 w-4 mr-2" />
           Browse Gallery
         </button>
       </app-dropdown-menu-content>
@@ -108,7 +108,7 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
           <app-dropdown-menu-separator></app-dropdown-menu-separator>
         }
         <app-dropdown-menu-label class="flex items-center gap-2">
-          <ng-icon name="lucWorkflow" class="h-4 w-4" />
+          <ng-icon name="lucideWorkflow" class="h-4 w-4" />
           Workflows ({{ workflowItems().length }})
         </app-dropdown-menu-label>
         @for (item of workflowItems(); track item.id) {
@@ -118,7 +118,7 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
             (click)="handleSelect(item)"
           >
             <div class="flex items-center gap-2 min-w-0 flex-1">
-              <ng-icon name="lucWorkflow" class="h-4 w-4 flex-shrink-0" />
+              <ng-icon name="lucideWorkflow" class="h-4 w-4 flex-shrink-0" />
               <div class="min-w-0 flex-1">
                 <span class="truncate font-medium block">{{ item.name || item.id }}</span>
                 @if (item.metadata?.['lazy_loaded'] !== false && item.description) {
@@ -139,7 +139,7 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
           <app-dropdown-menu-separator></app-dropdown-menu-separator>
         }
         <app-dropdown-menu-label class="flex items-center gap-2">
-          <ng-icon name="lucBot" class="h-4 w-4" />
+          <ng-icon name="lucideBot" class="h-4 w-4" />
           Agents ({{ agentItems().length }})
         </app-dropdown-menu-label>
         @for (item of agentItems(); track item.id) {
@@ -149,7 +149,7 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
             (click)="handleSelect(item)"
           >
             <div class="flex items-center gap-2 min-w-0 flex-1">
-              <ng-icon name="lucBot" class="h-4 w-4 flex-shrink-0" />
+              <ng-icon name="lucideBot" class="h-4 w-4 flex-shrink-0" />
               <div class="min-w-0 flex-1">
                 <span class="truncate font-medium block">{{ item.name || item.id }}</span>
                 @if (item.metadata?.['lazy_loaded'] !== false && item.description) {
@@ -199,8 +199,8 @@ export class EntitySelector implements ControlValueAccessor {
 
   selectedIcon = computed(() => {
     const val = this.selectedValue()
-    if (!val) return 'lucBot'
-    return val.type === 'workflow' ? 'lucWorkflow' : 'lucBot'
+    if (!val) return 'lucideBot'
+    return val.type === 'workflow' ? 'lucideWorkflow' : 'lucideBot'
   })
 
   // ControlValueAccessor Implementation

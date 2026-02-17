@@ -89,7 +89,7 @@ import { WorkflowInputFormComponent } from './workflow-input-form.component'
           class="rounded-l-none border-l-0 px-2"
           [appDropdownMenu]="workflowMenu"
         >
-          <ng-icon name="lucChevronDown" class="w-4 h-4"></ng-icon>
+          <ng-icon name="lucideChevronDown" class="w-4 h-4"></ng-icon>
         </button>
       }
     </div>
@@ -98,14 +98,14 @@ import { WorkflowInputFormComponent } from './workflow-input-form.component'
       <app-dropdown-menu-content class="w-80 max-h-[400px] overflow-y-auto">
         @if (hasCheckpoints()) {
           <button appDropdownMenuItem (click)="handleDirectRun(analysis, schema)">
-            <ng-icon name="lucPlay" class="w-4 h-4 mr-2"></ng-icon>
+            <ng-icon name="lucidePlay" class="w-4 h-4 mr-2"></ng-icon>
             Run Fresh
           </button>
         }
 
         @if (analysis.needsInput) {
           <button appDropdownMenuItem (click)="showModal.set(true)">
-            <ng-icon name="lucSettings" class="w-4 h-4 mr-2"></ng-icon>
+            <ng-icon name="lucideSettings" class="w-4 h-4 mr-2"></ng-icon>
             Configure Inputs
           </button>
         }
@@ -121,7 +121,7 @@ import { WorkflowInputFormComponent } from './workflow-input-form.component'
               class="flex flex-col items-start py-2 w-full"
             >
               <div class="flex items-center gap-2 w-full">
-                <ng-icon name="lucRefreshCw" class="w-4 h-4 flex-shrink-0"></ng-icon>
+                <ng-icon name="lucideRefreshCw" class="w-4 h-4 flex-shrink-0"></ng-icon>
                 <span class="font-medium">
                   {{
                     checkpoint.metadata.iteration_count === 0
@@ -136,7 +136,7 @@ import { WorkflowInputFormComponent } from './workflow-input-form.component'
                 }
               </div>
               <div class="flex items-center gap-2 text-xs text-muted-foreground ml-6 mt-0.5">
-                <ng-icon name="lucClock" class="w-3 h-3"></ng-icon>
+                <ng-icon name="lucideClock" class="w-3 h-3"></ng-icon>
                 <span>{{ formatTimestamp(checkpoint.timestamp) }}</span>
                 @if (checkpoint.metadata.size_bytes) {
                   <span>•</span>
@@ -268,14 +268,15 @@ export class RunWorkflowButtonComponent {
   buttonContent = computed(() => {
     const state = this.workflowState()
     const analysis = this.inputAnalysis()
-    if (this.isCancelling()) return { icon: 'lucLoader2' as const, text: 'Stopping...' }
-    if (state === 'running' && this.canCancel()) return { icon: 'lucSquare' as const, text: 'Stop' }
-    if (state === 'running') return { icon: 'lucLoader2' as const, text: 'Running...' }
-    if (state === 'error') return { icon: 'lucRotateCcw' as const, text: 'Retry' }
-    if (state === 'completed') return { icon: 'lucPlay' as const, text: 'Run Again' }
+    if (this.isCancelling()) return { icon: 'lucideLoader2' as const, text: 'Stopping...' }
+    if (state === 'running' && this.canCancel())
+      return { icon: 'lucideSquare' as const, text: 'Stop' }
+    if (state === 'running') return { icon: 'lucideLoader2' as const, text: 'Running...' }
+    if (state === 'error') return { icon: 'lucideRotateCcw' as const, text: 'Retry' }
+    if (state === 'completed') return { icon: 'lucidePlay' as const, text: 'Run Again' }
     if (analysis.needsInput && !analysis.canRunDirectly)
-      return { icon: 'lucSettings' as const, text: 'Configure & Run' }
-    return { icon: 'lucPlay' as const, text: 'Run Workflow' }
+      return { icon: 'lucideSettings' as const, text: 'Configure & Run' }
+    return { icon: 'lucidePlay' as const, text: 'Run Workflow' }
   })
 
   isSpinning = computed(

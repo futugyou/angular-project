@@ -12,8 +12,7 @@ import {
 } from '@angular/core'
 import { Overlay, OverlayRef } from '@angular/cdk/overlay'
 import { ComponentPortal } from '@angular/cdk/portal'
-import { NgIconComponent, provideIcons } from '@ng-icons/core'
-import { lucideX } from '@ng-icons/lucide'
+import { NgIconComponent } from '@ng-icons/core'
 
 export interface ToastData {
   id: string
@@ -26,7 +25,6 @@ export interface ToastData {
   selector: 'app-toast',
   standalone: true,
   imports: [NgIconComponent],
-  providers: [provideIcons({ lucideX })],
   template: `
     <div
       #toastElement
