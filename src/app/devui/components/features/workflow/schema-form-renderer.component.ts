@@ -90,6 +90,35 @@ export function detectChatMessagePattern(
   )
 }
 
+export function validateSchemaForm(
+  schema: JSONSchemaProperty,
+  values: Record<string, unknown>,
+): boolean {
+  const requiredFields = schema.required || []
+
+  return requiredFields.every((fieldName) => {
+    const value = values[fieldName]
+    return value !== undefined && value !== '' && value !== null
+  })
+}
+
+export function filterEmptyOptionalFields(
+  schema: JSONSchemaProperty,
+  values: Record<string, unknown>,
+): Record<string, unknown> {
+  const requiredFields = schema.required || []
+  const filtered: Record<string, unknown> = {}
+
+  Object.keys(values).forEach((key) => {
+    const value = values[key]
+    // Include if: 1) required field, OR 2) has non-empty value
+    if (requiredFields.includes(key) || (value !== undefined && value !== '' && value !== null)) {
+      filtered[key] = value
+    }
+  })
+
+  return filtered
+}
 // ============================================================================
 // Internal Form Field Component
 // ============================================================================
@@ -295,7 +324,7 @@ export class FormFieldComponent {
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => SchemaFormRenderer),
+      useExisting: forwardRef(() => SchemaFormRendererComponent),
       multi: true,
     },
   ],
@@ -366,7 +395,7 @@ export class FormFieldComponent {
     </div>
   `,
 })
-export class SchemaFormRenderer implements ControlValueAccessor {
+export class SchemaFormRendererComponent implements ControlValueAccessor {
   schema = input.required<JSONSchemaProperty>()
   readOnlyFields = input<string[]>([])
   hideFields = input<string[]>([])

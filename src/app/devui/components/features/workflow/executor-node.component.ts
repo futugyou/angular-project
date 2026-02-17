@@ -1,7 +1,7 @@
 import { input, Component, ChangeDetectionStrategy, signal, computed } from '@angular/core'
-import { NgClass, NgStyle, JsonPipe } from '@angular/common'
+import { NgClass, NgStyle } from '@angular/common'
 import { XYFlowModule } from 'ngx-xyflow'
-import { provideIcons, NgIconComponent } from '@ng-icons/core'
+import { NgIconComponent } from '@ng-icons/core'
 import { cn, truncateText } from '../../../lib/utils'
 
 export type ExecutorState = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled'

@@ -1,15 +1,5 @@
-import {
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  output,
-  signal,
-  viewChild,
-  ElementRef,
-} from '@angular/core'
-import { NgIconComponent, provideIcons } from '@ng-icons/core'
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core'
+import { NgIconComponent } from '@ng-icons/core'
 import {
   DialogComponent,
   DialogContentComponent,
