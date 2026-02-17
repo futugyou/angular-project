@@ -199,7 +199,7 @@ import { WorkflowInputFormComponent } from './workflow-input-form.component'
       </app-dialog>
     } `,
 })
-export class RunWorkflowButton {
+export class RunWorkflowButtonComponent {
   inputSchema = input<JSONSchemaProperty>()
   isSubmitting = input.required<boolean>()
   isCancelling = input<boolean>(false)

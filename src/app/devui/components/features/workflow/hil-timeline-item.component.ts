@@ -131,7 +131,7 @@ export interface HilRequest {
     `,
   ],
 })
-export class HilTimelineItem {
+export class HilTimelineItemComponent {
   // --- Inputs (Signal-based) ---
   request = input.required<HilRequest>()
   response = input.required<Record<string, unknown>>()
