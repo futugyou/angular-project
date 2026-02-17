@@ -27,6 +27,7 @@ import { cn } from '../../lib/utils'
       data-slot="textarea"
       [class]="computedClass()"
       [placeholder]="placeholder()"
+      [rows]="rows()"
       [disabled]="isEffectivelyDisabled()"
       [value]="value()"
       (input)="handleInput($event)"
@@ -38,6 +39,7 @@ export class TextareaComponent implements ControlValueAccessor {
   // Signals Inputs
   readonly className = input<string>('')
   readonly placeholder = input<string>('')
+  readonly rows = input<number>(3)
   readonly disabled = input<boolean>(false)
   private readonly _isCvaDisabled = signal(false)
   readonly isEffectivelyDisabled = computed(() => this.disabled() || this._isCvaDisabled())
