@@ -257,9 +257,6 @@ function getExecutorsFromDump(workflowDump: Record<string, unknown>): WorkflowDu
   return executors
 }
 
-/**
- * Convert workflow dump data to React Flow nodes
- */
 export function convertWorkflowDumpToNodes(
   workflowDump: Workflow | Record<string, unknown> | undefined,
   onNodeClick?: (executorId: string, data: ExecutorNodeData) => void,
@@ -314,4 +311,282 @@ export function convertWorkflowDumpToNodes(
   }))
 
   return nodes
+}
+
+export function convertWorkflowDumpToEdges(
+  workflowDump: Workflow | Record<string, unknown> | undefined,
+): EdgeMetadata[] {
+  if (!workflowDump) {
+    console.warn('convertWorkflowDumpToEdges: workflowDump is undefined')
+    return []
+  }
+
+  // Try to get typed workflow first, then fall back to generic handling
+  const typedWorkflow = getTypedWorkflow(workflowDump)
+
+  let connections: WorkflowDumpConnection[]
+
+  if (typedWorkflow) {
+    // Use typed workflow structure to extract connections from edge_groups
+    connections = []
+    typedWorkflow.edge_groups.forEach((group) => {
+      group.edges.forEach((edge) => {
+        connections.push({
+          source: edge.source_id,
+          target: edge.target_id,
+          condition: edge.condition_name,
+        })
+      })
+    })
+  } else {
+    // Fall back to generic handling for backwards compatibility
+    connections = getConnectionsFromDump(workflowDump as Record<string, unknown>)
+  }
+
+  if (!connections || !Array.isArray(connections) || connections.length === 0) {
+    console.warn(
+      'No connections found in workflow dump. Available keys:',
+      Object.keys(workflowDump),
+    )
+    return []
+  }
+
+  const edges = connections.map((connection) => {
+    const isSelfLoop = connection.source === connection.target
+    return {
+      id: `${connection.source}-${connection.target}`,
+      source: connection.source,
+      target: connection.target,
+      sourceHandle: 'source',
+      targetHandle: 'target',
+      type: isSelfLoop ? 'selfLoop' : 'default',
+      animated: false,
+      style: {
+        stroke: '#6b7280',
+        strokeWidth: 2,
+      },
+    }
+  })
+
+  return edges
+}
+
+/**
+ * Extract connections from workflow dump - handles different possible structures
+ */
+function getConnectionsFromDump(workflowDump: Record<string, unknown>): WorkflowDumpConnection[] {
+  // Handle edge_groups structure (actual dump format)
+  if (workflowDump['edge_groups'] && Array.isArray(workflowDump['edge_groups'])) {
+    const connections: WorkflowDumpConnection[] = []
+    workflowDump['edge_groups'].forEach((group: unknown) => {
+      if (typeof group === 'object' && group !== null && 'edges' in group) {
+        const edges = (group as { edges: unknown }).edges
+        if (Array.isArray(edges)) {
+          edges.forEach((edge: unknown) => {
+            if (
+              typeof edge === 'object' &&
+              edge !== null &&
+              'source_id' in edge &&
+              'target_id' in edge
+            ) {
+              const edgeObj = edge as {
+                source_id: string
+                target_id: string
+                condition_name?: string
+              }
+              connections.push({
+                source: edgeObj.source_id,
+                target: edgeObj.target_id,
+                condition: edgeObj.condition_name || undefined,
+              })
+            }
+          })
+        }
+      }
+    })
+    return connections
+  }
+
+  // Try different possible keys where connections might be stored
+  const possibleKeys = ['connections', 'edges', 'transitions', 'links']
+
+  for (const key of possibleKeys) {
+    if (workflowDump[key] && Array.isArray(workflowDump[key])) {
+      return workflowDump[key] as WorkflowDumpConnection[]
+    }
+  }
+
+  // If no direct array, try to extract from nested structures
+  if (workflowDump['config'] && typeof workflowDump['config'] === 'object') {
+    return getConnectionsFromDump(workflowDump['config'] as Record<string, unknown>)
+  }
+
+  return []
+}
+
+/**
+ * Apply auto-layout to nodes using a lightweight algorithm
+ * Replaces dagre to eliminate 4.88MB lodash dependency
+ */
+export function applyDagreLayout(
+  nodes: NodeMetadata[],
+  edges: EdgeMetadata[],
+  direction: 'TB' | 'LR' = 'LR',
+): NodeMetadata[] {
+  return applySimpleLayout(nodes, edges, direction)
+}
+
+/**
+ * Process workflow events and extract node updates
+ * Handles both standard OpenAI events and fallback workflow_event format
+ */
+export function processWorkflowEvents(
+  events: ExtendedResponseStreamEvent[],
+  startExecutorId?: string,
+): Record<string, NodeUpdate> {
+  const nodeUpdates: Record<string, NodeUpdate> = {}
+  let hasWorkflowStarted = false
+
+  // Track the latest item ID for each executor to handle multiple runs
+  const latestItemIds: Record<string, string> = {}
+
+  events.forEach((event) => {
+    // Handle new standard OpenAI events
+    if (event.type === 'response.output_item.added' || event.type === 'response.output_item.done') {
+      const outputEvent = event as ResponseOutputItemAddedEvent | ResponseOutputItemDoneEvent
+      const item = outputEvent.item
+      if (item && item.type === 'executor_action' && 'executor_id' in item) {
+        const executorId = item.executor_id as string
+        const itemId = item.id
+
+        // Track the latest item ID for this executor
+        if (event.type === 'response.output_item.added') {
+          latestItemIds[executorId] = itemId
+        }
+
+        // Only process this event if it's for the latest item ID of this executor
+        // This prevents older "done" events from overwriting newer "added" events
+        const isLatestItem = latestItemIds[executorId] === itemId
+
+        if (!isLatestItem && event.type === 'response.output_item.done') {
+          return // Skip this old completion event
+        }
+
+        let state: ExecutorState = 'pending'
+        let error: string | undefined
+
+        if (event.type === 'response.output_item.added') {
+          state = 'running'
+        } else if (event.type === 'response.output_item.done') {
+          if (item.status === 'completed') {
+            state = 'completed'
+          } else if (item.status === 'failed') {
+            state = 'failed'
+            error = item.error
+              ? typeof item.error === 'string'
+                ? item.error
+                : JSON.stringify(item.error)
+              : 'Execution failed'
+          } else if (item.status === 'cancelled') {
+            state = 'cancelled'
+          }
+        }
+
+        nodeUpdates[executorId] = {
+          nodeId: executorId,
+          state,
+          data: item.result,
+          error,
+          timestamp: new Date().toISOString(),
+        }
+      }
+    }
+    // Handle workflow lifecycle events
+    else if (event.type === 'response.created' || event.type === 'response.in_progress') {
+      hasWorkflowStarted = true
+    }
+    // Handle workflow event format
+    else if (event.type === 'response.workflow_event.completed' && 'data' in event && event.data) {
+      const workflowEvent = event as ResponseWorkflowEventComplete
+      const data = workflowEvent.data
+      const executorId = data.executor_id
+      const eventType = data.event_type
+      const eventData = data.data
+
+      let state: ExecutorState = 'pending'
+      let error: string | undefined
+
+      // Map event types to executor states
+      if (eventType === 'ExecutorInvokedEvent') {
+        state = 'running'
+      } else if (eventType === 'ExecutorCompletedEvent') {
+        state = 'completed'
+      } else if (eventType?.includes('Error') || eventType?.includes('Failed')) {
+        state = 'failed'
+        error = typeof eventData === 'string' ? eventData : 'Execution failed'
+      } else if (eventType?.includes('Cancel')) {
+        state = 'cancelled'
+      } else if (eventType === 'WorkflowCompletedEvent' || eventType === 'WorkflowOutputEvent') {
+        state = 'completed'
+      } else if (eventType === 'WorkflowStartedEvent') {
+        // Mark that workflow has started - we'll set start node to running
+        hasWorkflowStarted = true
+      }
+
+      // Update the node state (keep most recent update per executor)
+      if (executorId) {
+        nodeUpdates[executorId] = {
+          nodeId: executorId,
+          state,
+          data: eventData,
+          error,
+          timestamp: new Date().toISOString(),
+        }
+      }
+    }
+  })
+
+  // FALLBACK LOGIC: If workflow has started and we have a start executor, set it to running
+  // ONLY if it hasn't received any explicit executor events
+  // This prevents overwriting the actual state after the executor has run
+  if (hasWorkflowStarted && startExecutorId && !nodeUpdates[startExecutorId]) {
+    // Additional check: only set to running if we don't have completion/failure events for this executor
+    // This prevents setting to "running" after the executor has already completed
+    const hasCompletionEvent = events.some((event) => {
+      if (event.type === 'response.output_item.done') {
+        const outputEvent = event as ResponseOutputItemDoneEvent
+        const item = outputEvent.item
+        return (
+          item &&
+          item.type === 'executor_action' &&
+          'executor_id' in item &&
+          item.executor_id === startExecutorId
+        )
+      }
+      if (event.type === 'response.workflow_event.completed' && 'data' in event && event.data) {
+        const data = event.data as Record<string, unknown>
+        return (
+          data['executor_id'] === startExecutorId &&
+          (data['event_type'] === 'ExecutorCompletedEvent' ||
+            data['event_type'] === 'ExecutorFailedEvent' ||
+            (typeof data['event_type'] === 'string' && data['event_type'].includes('Error')) ||
+            (typeof data['event_type'] === 'string' && data['event_type'].includes('Failed')))
+        )
+      }
+      return false
+    })
+
+    // Only set to running if the executor hasn't completed yet
+    if (!hasCompletionEvent) {
+      nodeUpdates[startExecutorId] = {
+        nodeId: startExecutorId,
+        state: 'running',
+        data: undefined,
+        error: undefined,
+        timestamp: new Date().toISOString(),
+      }
+    }
+  }
+
+  return nodeUpdates
 }
