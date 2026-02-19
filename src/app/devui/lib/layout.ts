@@ -763,3 +763,55 @@ export function updateEdgesWithSequenceAnalysis(
     }
   })
 }
+
+export function consolidateBidirectionalEdges(edges: EdgeMetadata[]): EdgeMetadata[] {
+  const edgeMap = new Map<string, EdgeMetadata>()
+  const bidirectionalKeys = new Set<string>()
+
+  edges.forEach((edge) => {
+    const forwardKey = `${edge.source}-${edge.target}`
+    const reverseKey = `${edge.target}-${edge.source}`
+
+    // Self-loops (source === target) should always be preserved as-is
+    // They are not bidirectional edges, just a node pointing to itself
+    if (edge.source === edge.target) {
+      edgeMap.set(forwardKey, edge)
+      return
+    }
+
+    // Check if we already have the reverse edge
+    if (edgeMap.has(reverseKey)) {
+      // Mark both keys as bidirectional
+      bidirectionalKeys.add(reverseKey)
+      bidirectionalKeys.add(forwardKey)
+
+      // Update the existing reverse edge to be bidirectional
+      const existingEdge = edgeMap.get(reverseKey)!
+
+      // Keep the existing edge's handles (they follow the primary workflow direction)
+      // Add bidirectional arrows to show two-way communication
+      edgeMap.set(reverseKey, {
+        ...existingEdge,
+        markerStart: {
+          type: 'arrow' as const,
+          width: 20,
+          height: 20,
+        },
+        markerEnd: {
+          type: 'arrow' as const,
+          width: 20,
+          height: 20,
+        },
+        data: {
+          ...existingEdge['data'],
+          isBidirectional: true,
+        },
+      })
+    } else if (!bidirectionalKeys.has(forwardKey)) {
+      // Only add if this isn't the reverse of a bidirectional pair
+      edgeMap.set(forwardKey, edge)
+    }
+  })
+
+  return Array.from(edgeMap.values())
+}
