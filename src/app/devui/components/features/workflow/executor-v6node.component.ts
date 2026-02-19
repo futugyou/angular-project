@@ -1,6 +1,5 @@
-import { input, Component, ChangeDetectionStrategy, signal, computed } from '@angular/core'
-import { NgClass, NgStyle } from '@angular/common'
-import { XYFlowModule } from 'ngx-xyflow'
+import { input, Component, effect, signal, computed } from '@angular/core'
+import type { Node } from '@antv/x6'
 import { NgIconComponent } from '@ng-icons/core'
 import { cn, truncateText } from '../../../lib/utils'
 
@@ -28,9 +27,9 @@ export interface ExecutorNodeData {
   template: `
     <div
       [class]="containerClasses()"
-      [class.ring-2]="selected()"
-      [class.ring-blue-500]="selected()"
-      [class.ring-offset-2]="selected()"
+      [class.ring-2]="isSelected()"
+      [class.ring-blue-500]="isSelected()"
+      [class.ring-offset-2]="isSelected()"
     >
       <div class="p-3">
         <div class="flex items-start gap-3">
@@ -119,47 +118,64 @@ export interface ExecutorNodeData {
   },
 })
 export class ExecutorNode {
-  node = input.required<any>()
+  node = input.required<Node>()
+
+  isSelected = signal(false)
+  isOutputExpanded = signal(false)
+
+  constructor() {
+    effect((onCleanup) => {
+      const n = this.node()
+      if (!n) return
+
+      const model = n.model
+      if (model) {
+        const graph = model.graph
+        if (graph) {
+          this.isSelected.set(graph.isSelected(n))
+        }
+      }
+
+      const onSelected = () => this.isSelected.set(true)
+      const onUnselected = () => this.isSelected.set(false)
+
+      n.on('selected', onSelected)
+      n.on('unselected', onUnselected)
+
+      onCleanup(() => {
+        n.off('selected', onSelected)
+        n.off('unselected', onUnselected)
+      })
+    })
+  }
 
   nodeData = computed<ExecutorNodeData>(() => this.node().getData() || {})
-  selected = computed(() => this.node().isSelected?.() || false)
-
-  isOutputExpanded = signal(false)
 
   config = computed(() => {
     const state = this.nodeData().state
-    switch (state) {
-      case 'running':
-        return {
-          borderColor: 'border-[#643FB2] dark:border-[#8B5CF6]',
-          glow: 'shadow-lg shadow-[#643FB2]/20',
-          badgeColor: 'bg-[#643FB2] dark:bg-[#8B5CF6]',
-        }
-      case 'completed':
-        return {
-          borderColor: 'border-green-500 dark:border-green-400',
-          glow: 'shadow-lg shadow-green-500/20',
-          badgeColor: 'bg-green-500 dark:bg-green-400',
-        }
-      case 'failed':
-        return {
-          borderColor: 'border-red-500 dark:border-red-400',
-          glow: 'shadow-lg shadow-red-500/20',
-          badgeColor: 'bg-red-500 dark:bg-red-400',
-        }
-      case 'cancelled':
-        return {
-          borderColor: 'border-orange-500 dark:border-orange-400',
-          glow: 'shadow-lg shadow-orange-500/20',
-          badgeColor: 'bg-orange-500 dark:bg-orange-400',
-        }
-      default:
-        return {
-          borderColor: 'border-gray-300 dark:border-gray-600',
-          glow: '',
-          badgeColor: 'bg-gray-400 dark:bg-gray-500',
-        }
+    const configs: Record<ExecutorState, any> = {
+      running: {
+        borderColor: 'border-[#643FB2] dark:border-[#8B5CF6]',
+        glow: 'shadow-lg shadow-[#643FB2]/20',
+      },
+      completed: {
+        borderColor: 'border-green-500 dark:border-green-400',
+        glow: 'shadow-lg shadow-green-500/20',
+      },
+      failed: {
+        borderColor: 'border-red-500 dark:border-red-400',
+        glow: 'shadow-lg shadow-red-500/20',
+      },
+      cancelled: {
+        borderColor: 'border-orange-500 dark:border-orange-400',
+        glow: 'shadow-lg shadow-orange-500/20',
+      },
+      pending: {
+        borderColor: 'border-gray-300 dark:border-gray-600',
+        glow: '',
+      },
     }
+    return configs[state] || configs.pending
   })
 
   isRunning = computed(() => this.nodeData().state === 'running')
@@ -176,7 +192,7 @@ export class ExecutorNode {
 
   truncatedError = computed(() => {
     const err = this.nodeData().error
-    return err ? truncateText(err, 200) : ''
+    return typeof err === 'string' ? truncateText(err, 200) : ''
   })
 
   formattedOutput = computed(() => {

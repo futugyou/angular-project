@@ -17,6 +17,8 @@
     "@angular/platform-browser": "^21.1.4",
     "@angular/platform-browser-dynamic": "^21.1.4",
     "@angular/router": "^21.1.4",
+    "@antv/x6": "^3.1.6",
+    "@antv/x6-angular-shape": "^3.0.1",
     "@ng-icons/core": "^33.1.0",
     "@ng-icons/lucide": "^33.1.0",
     "@tailwindcss/postcss": "^4.1.18",
