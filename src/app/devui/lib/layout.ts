@@ -590,3 +590,83 @@ export function processWorkflowEvents(
 
   return nodeUpdates
 }
+
+/**
+ * Update node states based on event processing
+ */
+export function updateNodesWithEvents(
+  nodes: NodeMetadata[],
+  nodeUpdates: Record<string, NodeUpdate>,
+  isStreaming: boolean = true,
+): NodeMetadata[] {
+  return nodes.map((node) => {
+    const update = nodeUpdates[node.id!]
+    if (update) {
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          state: update.state,
+          outputData: update.data,
+          error: update.error,
+          // Add isStreaming to control spinning animation
+          isStreaming: isStreaming,
+          // Preserve layoutDirection
+          layoutDirection: node.data.layoutDirection,
+        },
+      }
+    }
+    return node
+  })
+}
+
+/**
+ * Get executors that are currently in execution (invoked but not yet completed)
+ */
+export function getCurrentlyExecutingExecutors(events: ExtendedResponseStreamEvent[]): string[] {
+  const executorTimeline: Record<string, { lastEvent: string; timestamp: string }> = {}
+
+  // Process events to find the most recent event for each executor
+  events.forEach((event) => {
+    // Handle new standard OpenAI events
+    if (event.type === 'response.output_item.added' || event.type === 'response.output_item.done') {
+      const outputEvent = event as ResponseOutputItemAddedEvent | ResponseOutputItemDoneEvent
+      const item = outputEvent.item
+      if (item && item.type === 'executor_action' && 'executor_id' in item) {
+        const executorId = item.executor_id as string
+
+        executorTimeline[executorId] = {
+          lastEvent:
+            event.type === 'response.output_item.added'
+              ? 'ExecutorInvokedEvent'
+              : 'ExecutorCompletedEvent',
+          timestamp: new Date().toISOString(),
+        }
+      }
+    }
+    // Handle workflow event format
+    else if (event.type === 'response.workflow_event.completed' && 'data' in event && event.data) {
+      const workflowEvent = event as ResponseWorkflowEventComplete
+      const data = workflowEvent.data
+      const executorId = data.executor_id
+      const eventType = data.event_type
+
+      if (
+        executorId &&
+        (eventType === 'ExecutorInvokedEvent' || eventType === 'ExecutorCompletedEvent')
+      ) {
+        executorTimeline[executorId] = {
+          lastEvent: eventType,
+          timestamp: new Date().toISOString(),
+        }
+      }
+    }
+  })
+
+  // Find executors that were invoked but haven't completed yet
+  const currentlyExecuting = Object.entries(executorTimeline)
+    .filter(([, timeline]) => timeline.lastEvent === 'ExecutorInvokedEvent')
+    .map(([executorId]) => executorId)
+
+  return currentlyExecuting
+}
