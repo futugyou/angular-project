@@ -670,3 +670,96 @@ export function getCurrentlyExecutingExecutors(events: ExtendedResponseStreamEve
 
   return currentlyExecuting
 }
+
+function resolveTerminalId(terminal: EdgeMetadata['source']): string | undefined {
+  if (!terminal) return
+  if (typeof terminal === 'string') return terminal
+  if ('cell' in terminal) return terminal.cell as string
+  return
+}
+
+/**
+ * Update edges with sequence-based animation
+ */
+export function updateEdgesWithSequenceAnalysis(
+  edges: EdgeMetadata[],
+  events: ExtendedResponseStreamEvent[],
+): EdgeMetadata[] {
+  const currentlyExecuting = getCurrentlyExecutingExecutors(events)
+
+  // Build simple state tracking for each executor
+  const executorStates: Record<string, { completed: boolean; invoked: boolean }> = {}
+
+  events.forEach((event) => {
+    if (event.type === 'response.workflow_event.completed' && 'data' in event && event.data) {
+      const workflowEvent = event as ResponseWorkflowEventComplete
+      const data = workflowEvent.data
+      const executorId = data.executor_id
+      const eventType = data.event_type
+
+      if (executorId && eventType) {
+        if (!executorStates[executorId]) {
+          executorStates[executorId] = { completed: false, invoked: false }
+        }
+
+        if (eventType === 'ExecutorInvokedEvent') {
+          executorStates[executorId].invoked = true
+        } else if (eventType === 'ExecutorCompletedEvent') {
+          executorStates[executorId].completed = true
+        }
+      }
+    }
+  })
+
+  return edges.map((edge) => {
+    const sourceid = resolveTerminalId(edge.source)
+    const targetid = resolveTerminalId(edge.target)
+    if (!sourceid || !targetid) {
+      return edge
+    }
+
+    const sourceState = executorStates[sourceid]
+    const targetState = executorStates[targetid]
+    const targetIsExecuting = currentlyExecuting.includes(targetid)
+
+    let style = { ...edge['style'] }
+    let animated = false
+
+    // Active edge: source completed and target is currently executing
+    if (sourceState?.completed && targetIsExecuting) {
+      style = {
+        stroke: '#643FB2', // Purple accent
+        strokeWidth: 3,
+        strokeDasharray: '5,5',
+      }
+      animated = true
+    }
+    // Completed edge: both source and target have completed
+    else if (sourceState?.completed && targetState?.completed) {
+      style = {
+        stroke: '#10b981', // Green
+        strokeWidth: 2,
+      }
+    }
+    // Invoked edge: source completed and target invoked (but not necessarily executing)
+    else if (sourceState?.completed && targetState?.invoked) {
+      style = {
+        stroke: '#f59e0b', // Orange
+        strokeWidth: 2,
+      }
+    }
+    // Default: Not traversed
+    else {
+      style = {
+        stroke: '#6b7280', // Gray
+        strokeWidth: 2,
+      }
+    }
+
+    return {
+      ...edge,
+      style,
+      animated,
+    }
+  })
+}
