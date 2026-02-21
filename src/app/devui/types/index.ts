@@ -145,6 +145,9 @@ export type {
   WorkflowItem,
   ExecutorActionItem,
   ConversationItem,
+  ConversationFunctionCall,
+  ConversationFunctionCallOutput,
+  MessageTextContent,
 } from './openai'
 
 export { isExecutorAction } from './openai'

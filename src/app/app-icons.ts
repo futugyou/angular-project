@@ -64,6 +64,11 @@ import {
   lucideShuffle,
   lucideArrowDown,
   lucideArrowLeftRight,
+  lucidePanelRightOpen,
+  lucideServerOff,
+  lucideRocket,
+  lucideLock,
+  lucideCheckCheck,
 } from '@ng-icons/lucide'
 
 export const APP_ICONS = {
@@ -132,4 +137,9 @@ export const APP_ICONS = {
   lucideShuffle,
   lucideArrowDown,
   lucideArrowLeftRight,
+  lucidePanelRightOpen,
+  lucideServerOff,
+  lucideRocket,
+  lucideLock,
+  lucideCheckCheck,
 }
