@@ -57,6 +57,13 @@ import {
   lucideSettings,
   lucideRefreshCw,
   lucidePlayCircle,
+  lucideMoreVertical,
+  lucideMap,
+  lucideGrid3X3,
+  lucideMaximize,
+  lucideShuffle,
+  lucideArrowDown,
+  lucideArrowLeftRight,
 } from '@ng-icons/lucide'
 
 export const APP_ICONS = {
@@ -118,4 +125,11 @@ export const APP_ICONS = {
   lucideMessageSquare,
   lucideRefreshCw,
   lucidePlayCircle,
+  lucideMoreVertical,
+  lucideMap,
+  lucideGrid3X3,
+  lucideMaximize,
+  lucideShuffle,
+  lucideArrowDown,
+  lucideArrowLeftRight,
 }
