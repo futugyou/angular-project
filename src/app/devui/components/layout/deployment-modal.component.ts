@@ -68,9 +68,6 @@ export class AeploymentModalComponent {
   deploymentLogs = computed(() => this.store.deploymentLogs)
   lastDeployment = computed(() => this.store.lastDeployment)
   startDeployment = computed(() => this.store.startDeployment)
-  addDeploymentLog = computed(() => this.store.addDeploymentLog)
-  setDeploymentResult = computed(() => this.store.setDeploymentResult)
-  stopDeployment = computed(() => this.store.stopDeployment)
   clearDeploymentState = computed(() => this.store.clearDeploymentState)
 
   // Context-aware tab ordering: Azure first if deployable, Docker first otherwise
@@ -156,5 +153,90 @@ export class AeploymentModalComponent {
     }
 
     return null
+  }
+
+  handleDeploy = async () => {
+    const entity = this.entity()
+    const resourceGroup = this.resourceGroup()
+    const appName = this.appName()
+    if (!entity?.id || !resourceGroup || !appName) return
+
+    // Trim whitespace from inputs
+    const trimmedResourceGroup = resourceGroup.trim()
+    const trimmedAppName = appName.trim()
+
+    // Validate trimmed app name before deployment
+    const nameError = this.validateAppName(trimmedAppName)
+    if (nameError) {
+      this.appNameError.set(nameError)
+      return
+    }
+
+    try {
+      this.startDeployment()
+
+      for await (const event of this.apiClient.streamDeployment({
+        entity_id: entity.id,
+        resource_group: trimmedResourceGroup,
+        app_name: trimmedAppName,
+        region: this.region(),
+        ui_mode: 'user',
+      })) {
+        this.store.addDeploymentLog(event.message)
+
+        if (event.type === 'deploy.completed' && event.url && event.auth_token) {
+          this.store.setDeploymentResult({
+            url: event.url,
+            authToken: event.auth_token,
+          })
+        } else if (event.type === 'deploy.failed') {
+          // Stop deploying but keep logs visible
+          this.store.stopDeployment()
+        }
+      }
+    } catch (error) {
+      this.store.addDeploymentLog(
+        `Error: ${error instanceof Error ? error.message : 'Deployment failed'}`,
+      )
+      this.store.stopDeployment()
+    }
+  }
+
+  private timeoutId = signal<any>(null)
+
+  startTimer() {
+    this.stopTimer()
+    const id = setTimeout(() => {
+      console.log('Action!')
+    }, 3000)
+
+    this.timeoutId.set(id)
+  }
+
+  stopTimer() {
+    const id = this.timeoutId()
+    if (id) {
+      clearTimeout(id)
+      this.timeoutId.set(null)
+    }
+  }
+
+  handleCopy = async (template: string, templateName: string) => {
+    try {
+      await navigator.clipboard.writeText(template)
+      this.copiedTemplate.set(templateName)
+      const timeoutId = this.timeoutId()
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+        this.timeoutId.set(null)
+      }
+      const id = setTimeout(() => {
+        this.copiedTemplate.set(null)
+      }, 3000)
+
+      this.timeoutId.set(id)
+    } catch {
+      this.copiedTemplate.set(null)
+    }
   }
 }
