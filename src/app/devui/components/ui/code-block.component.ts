@@ -1,11 +1,11 @@
 import { Component, input, signal } from '@angular/core'
-import { CommonModule } from '@angular/common'
+
 import { NgIconComponent } from '@ng-icons/core'
 
 @Component({
   selector: 'app-code-block',
   standalone: true,
-  imports: [CommonModule, NgIconComponent],
+  imports: [NgIconComponent],
   template: `
     <div class="relative group">
       <pre
