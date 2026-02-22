@@ -69,6 +69,8 @@ import {
   lucideRocket,
   lucideLock,
   lucideCheckCheck,
+  lucideContainer,
+  lucideCloud,
 } from '@ng-icons/lucide'
 
 export const APP_ICONS = {
@@ -142,4 +144,6 @@ export const APP_ICONS = {
   lucideRocket,
   lucideLock,
   lucideCheckCheck,
+  lucideContainer,
+  lucideCloud,
 }
