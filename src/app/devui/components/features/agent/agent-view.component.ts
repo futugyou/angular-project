@@ -34,8 +34,13 @@ import type {
   Conversation,
   ExtendedResponseStreamEvent,
   ConversationItem,
+  ResponseInputParam,
 } from '../../../types'
-import { ConversationMessage } from '../../../types/openai'
+import {
+  ConversationMessage,
+  MessageFunctionApprovalRequestContent,
+  MessageFunctionApprovalResponseContent,
+} from '../../../types/openai'
 import { DevUIStore } from '../../../stores'
 import { AgentConversationService } from '../../../services/agent.serivce'
 import { CancellableRequestService } from '../../../services/cancellable-request.service'
@@ -373,5 +378,61 @@ export class AeploymentModalComponent {
     }
 
     this.accumulatedTextRef.set('')
+  }
+
+  handleApproval = async (request_id: string, approved: boolean) => {
+    const approval = this.pendingApprovals().find((a) => a.request_id === request_id)
+    if (!approval) return
+
+    // Add user's decision as a visible message in the chat
+    const messageTimestamp = Math.floor(Date.now() / 1000)
+    const userDecisionMessage: ConversationMessage = {
+      id: `user-approval-${Date.now()}`,
+      type: 'message',
+      role: 'user',
+      content: [
+        {
+          type: 'function_approval_request',
+          request_id: request_id,
+          status: approved ? 'approved' : 'rejected',
+          function_call: approval.function_call,
+        } as MessageFunctionApprovalRequestContent,
+      ],
+      status: 'completed',
+      created_at: messageTimestamp,
+    }
+
+    const currentItems = this.store.chatItems
+    this.store.setChatItems([...currentItems, userDecisionMessage])
+
+    // Create approval response in OpenAI-compatible format
+    const approvalInput: ResponseInputParam = [
+      {
+        type: 'message', // CRITICAL: Must set type for backend to recognize it
+        role: 'user',
+        content: [
+          {
+            type: 'function_approval_response',
+            request_id: request_id,
+            approved: approved,
+            function_call: approval.function_call,
+          } as MessageFunctionApprovalResponseContent,
+        ],
+      },
+    ]
+
+    // Send approval response through the conversation
+    const request: RunAgentRequest = {
+      input: approvalInput,
+      conversation_id: this.currentConversation()?.id,
+    }
+
+    // Remove from pending immediately
+    this.store.setPendingApprovals(
+      this.store.pendingApprovals.filter((a) => a.request_id !== request_id),
+    )
+
+    // Trigger send (we'll call this from the UI button handler)
+    return request
   }
 }
