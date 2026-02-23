@@ -1,10 +1,16 @@
-import { Injectable, inject, signal } from '@angular/core'
+import { Injectable, WritableSignal, inject, signal } from '@angular/core'
 import { ApiClient } from './api.service'
 import { DevUIStore } from '../stores/devuiStore'
 import { Conversation, AgentInfo, ExtendedResponseStreamEvent } from '../types'
 import { loadStreamingState } from './streaming-state.service'
 
 type DebugEventHandler = (event: ExtendedResponseStreamEvent | 'clear') => void
+
+type ConversationError = {
+  message: string
+  code?: string
+  type?: string
+}
 
 @Injectable({
   providedIn: 'root',
@@ -15,16 +21,13 @@ export class AgentConversationService {
 
   private accumulatedText = ''
   private currentMessageUsage: any = null
-  private _conversationError = signal<{
-    message: string
-    code?: string
-    type?: string
-  } | null>(null)
-  public conversationError = this._conversationError.asReadonly()
-
+  conversationError = signal<ConversationError | null>(null)
   private activeDebugHandler?: DebugEventHandler
 
-  async onAgentChange(selectedAgent: AgentInfo | undefined, activeDebugHandler: DebugEventHandler) {
+  async onAgentChange(
+    selectedAgent: AgentInfo | undefined,
+    activeDebugHandler: DebugEventHandler | undefined,
+  ) {
     this.store.setChatItems([])
     this.store.setIsStreaming(false)
     this.store.setCurrentConversation(undefined)
@@ -60,7 +63,6 @@ export class AgentConversationService {
         try {
           const convs = JSON.parse(cached) as Conversation[]
           if (convs.length > 0) {
-            // 验证后端是否存在
             await this.apiClient.listConversationItems(convs[0].id)
             this.store.setAvailableConversations(convs)
             this.store.setCurrentConversation(convs[0])
@@ -72,14 +74,13 @@ export class AgentConversationService {
         }
       }
 
-      // --- Step 3: 创建新会话 ---
       const newConversation = await this.apiClient.createConversation({ agent_id: agent.id })
       this.store.setCurrentConversation(newConversation)
       this.store.setAvailableConversations([newConversation])
       this.store.setChatItems([])
       localStorage.setItem(`devui_convs_${agent.id}`, JSON.stringify([newConversation]))
     } catch (error: any) {
-      this._conversationError.set({
+      this.conversationError.set({
         message: error?.message || 'Failed to initialize conversation',
         type: 'conversation_creation_error',
       })

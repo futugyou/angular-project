@@ -467,6 +467,22 @@ export class DevUIStore implements DevUIActions {
     })
   }
 
+  setConversationUsage = ({
+    total_tokens,
+    message_count,
+  }: {
+    total_tokens: number
+    message_count: number
+  }) => {
+    const s = this._state()
+    this.patch({
+      conversationUsage: {
+        total_tokens: total_tokens,
+        message_count: message_count,
+      },
+    })
+  }
+
   setPendingApprovals = (approvals: any[]) => this.patch({ pendingApprovals: approvals })
   setCurrentSession = (session: any) => this.patch({ currentSession: session })
   setAvailableSessions = (sessions: any[]) => this.patch({ availableSessions: sessions })
