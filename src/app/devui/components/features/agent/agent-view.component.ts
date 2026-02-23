@@ -33,11 +33,14 @@ import type {
   RunAgentRequest,
   Conversation,
   ExtendedResponseStreamEvent,
+  ConversationItem,
 } from '../../../types'
+import { ConversationMessage } from '../../../types/openai'
 import { DevUIStore } from '../../../stores'
 import { AgentConversationService } from '../../../services/agent.serivce'
 import { CancellableRequestService } from '../../../services/cancellable-request.service'
 import { DragDropDirective } from '../../../directives/drag-drop.directive'
+import { loadStreamingState } from '../../../services/streaming-state.service'
 
 type DebugEventHandler = (event: ExtendedResponseStreamEvent | 'clear') => void
 
@@ -273,5 +276,102 @@ export class AeploymentModalComponent {
     } finally {
       this.isReloading.set(false)
     }
+  }
+
+  handleConversationSelect = async (conversationId: string) => {
+    const conversation = this.availableConversations().find((c) => c.id === conversationId)
+    if (!conversation) return
+
+    this.store.setCurrentConversation(conversation)
+
+    // Clear debug panel when switching conversations
+    this.onDebugEvent()('clear')
+
+    try {
+      // Load conversation history from backend with pagination
+      let allItems: unknown[] = []
+      let hasMore = true
+      let after: string | undefined = undefined
+      let storedTraces: unknown[] = []
+
+      while (hasMore) {
+        const result = await this.apiClient.listConversationItems(conversationId, {
+          order: 'asc', // Load in chronological order (oldest first)
+          after,
+        })
+        allItems = allItems.concat(result.data)
+        hasMore = result.has_more
+
+        // Capture traces from metadata (only need from one response, they accumulate)
+        if (result.metadata?.traces && result.metadata.traces.length > 0) {
+          storedTraces = result.metadata.traces
+        }
+
+        // Get the last item's ID for pagination
+        if (hasMore && result.data.length > 0) {
+          const lastItem = result.data[result.data.length - 1] as { id?: string }
+          after = lastItem.id
+        }
+      }
+
+      // Use OpenAI ConversationItems directly (no conversion!)
+      const items = allItems as ConversationItem[]
+
+      this.store.setChatItems(items)
+      this.store.setIsStreaming(false)
+
+      // Restore stored traces as debug events for context inspection
+      if (storedTraces.length > 0) {
+        for (const trace of storedTraces) {
+          // Convert stored trace back to ResponseTraceComplete event format
+          const traceEvent: ExtendedResponseStreamEvent = {
+            type: 'response.trace.completed',
+            data: trace as Record<string, unknown>,
+            sequence_number: 0, // Not used for display
+          }
+          this.onDebugEvent()(traceEvent)
+        }
+      }
+
+      // Calculate usage from loaded items
+      this.store.setConversationUsage({
+        total_tokens: 0, // We don't have usage info in stored items
+        message_count: items.length,
+      })
+      // Check for incomplete stream and restore accumulated text
+      const state = loadStreamingState(conversationId)
+      if (state?.accumulatedText) {
+        this.accumulatedTextRef.set(state.accumulatedText)
+        // Add assistant message with resumed text - streaming will continue automatically
+        const assistantMsg: ConversationMessage = {
+          id: `assistant-${Date.now()}`,
+          type: 'message',
+          role: 'assistant',
+          content: [{ type: 'output_text', text: state.accumulatedText }],
+          status: 'in_progress',
+        }
+        this.store.setChatItems([...items, assistantMsg])
+        this.store.setIsStreaming(true)
+      }
+
+      // Scroll to bottom after loading conversation
+      setTimeout(() => {
+        const endAnchor = this.messagesEnd()?.nativeElement
+        if (!endAnchor) return
+
+        requestAnimationFrame(() => {
+          endAnchor.scrollIntoView({ behavior: 'smooth' })
+        })
+      }, 100)
+    } catch {
+      // 404 means conversation doesn't exist or has no items yet
+      // This can happen if server restarted (in-memory store cleared)
+      console.debug(`No items found for conversation ${conversationId}, starting with empty chat`)
+      this.store.setChatItems([])
+      this.store.setIsStreaming(false)
+      this.store.setConversationUsage({ total_tokens: 0, message_count: 0 })
+    }
+
+    this.accumulatedTextRef.set('')
   }
 }
