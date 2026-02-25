@@ -45,6 +45,7 @@ import type {
   ResponseOutputItemAddedEvent,
   ResponseFunctionToolCall,
   ConversationFunctionCall,
+  ResponseInputContent,
 } from '../../../types'
 import {
   ConversationMessage,
@@ -1133,6 +1134,42 @@ export class AeploymentModalComponent {
 
       const currentItems = this.store.chatItems
       this.store.setChatItems([...currentItems, assistantMessage])
+    } finally {
+      this.store.setIsSubmitting(false)
+    }
+  }
+
+  handleChatInputSubmit = async (content: ResponseInputContent[]) => {
+    const selectedAgent = this.selectedAgent()
+    if (!selectedAgent || content.length === 0) return
+
+    // Set flag to force scroll when user sends message
+    this.userJustSentMessage = true
+    this.wasCancelled.set(false) // Reset cancelled state for new message
+
+    this.store.setIsSubmitting(true)
+
+    try {
+      // Create OpenAI Responses API format
+      const openaiInput: ResponseInputParam = [
+        {
+          type: 'message',
+          role: 'user',
+          content,
+        },
+      ]
+
+      const request = {
+        input: openaiInput,
+        conversation_id: this.currentConversation()?.id,
+      }
+
+      // Use streaming or non-streaming based on setting
+      if (this.streamingEnabled()) {
+        await this.handleSendMessage(request)
+      } else {
+        await this.handleSendMessageSync(request)
+      }
     } finally {
       this.store.setIsSubmitting(false)
     }
