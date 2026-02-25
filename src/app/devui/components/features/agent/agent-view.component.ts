@@ -10,12 +10,12 @@ import {
   ElementRef,
   untracked,
 } from '@angular/core'
-import { NgClass } from '@angular/common'
+import { DatePipe, DecimalPipe, JsonPipe, NgClass, SlicePipe } from '@angular/common'
 import { NgIconComponent } from '@ng-icons/core'
 import { ButtonComponent } from '../../ui/button.component'
 import { ScrollAreaComponent } from '../../ui/scroll-area.component'
 import { ChatMessageInputComponent } from '../../ui/chat-message-input.component'
-import { OpenAIMessageRenderer } from './message-renderers/message-renderer.component'
+
 import {
   Select,
   SelectContent,
@@ -46,6 +46,7 @@ import type {
   ResponseFunctionToolCall,
   ConversationFunctionCall,
   ResponseInputContent,
+  PendingApproval,
 } from '../../../types'
 import {
   ConversationMessage,
@@ -76,8 +77,6 @@ type DebugEventHandler = (event: ExtendedResponseStreamEvent | 'clear') => void
   imports: [
     ChatMessageInputComponent,
     NgIconComponent,
-    NgClass,
-    OpenAIMessageRenderer,
     ButtonComponent,
     ScrollAreaComponent,
     Select,
@@ -85,19 +84,321 @@ type DebugEventHandler = (event: ExtendedResponseStreamEvent | 'clear') => void
     SelectGroup,
     SelectItem,
     SelectTrigger,
-    SelectValue,
     AgentDetailsModalComponent,
     ConversationItemBubble,
     DragDropDirective,
+    SlicePipe,
+    DecimalPipe,
+    DatePipe,
+    JsonPipe,
   ],
-  template: `<app-scroll-area class="h-[500px]">
-    <div #areaViewport class="scroll-container">
-      @for (item of chatItems(); track item.id) {
-        <div class="message">{{ item.id }}</div>
+  template: `
+    <app-scroll-area class="h-[500px]">
+      <div #areaViewport class="scroll-container">
+        @for (item of chatItems(); track item.id) {
+          <div class="message">{{ item.id }}</div>
+        }
+        <div #messagesEnd></div>
+      </div>
+    </app-scroll-area>
+    <div
+      class="flex h-[calc(100vh-3.5rem)] flex-col relative"
+      appDragDrop
+      #dd="dragDrop"
+      (filesDropped)="handleFiles($event)"
+      [appDragDropDisabled]="isSubmitting()"
+    >
+      @if (dd.isDragOver()) {
+        <div
+          class="absolute inset-0 z-50 bg-blue-50/95 dark:bg-blue-950/95 backdrop-blur-sm flex items-center justify-center border-2 border-dashed border-blue-400 dark:border-blue-500 rounded-lg m-2"
+        >
+          <div class="text-center p-8">
+            <div class="text-blue-600 dark:text-blue-400 text-lg font-medium mb-2">
+              Drop files here
+            </div>
+            <div class="text-blue-500/80 dark:text-blue-400/70 text-sm">
+              Images, PDFs, audio, and other files
+            </div>
+          </div>
+        </div>
       }
-      <div #messagesEnd></div>
+
+      <div class="border-b pb-2 p-4 flex-shrink-0">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-3">
+          <div class="flex items-center gap-2 min-w-0">
+            <h2 class="font-semibold text-sm truncate">
+              <div class="flex items-center gap-2">
+                <ng-icon name="lucideBot" class="h-4 w-4 flex-shrink-0" />
+                <span class="truncate">
+                  {{
+                    oaiMode().enabled
+                      ? 'Chat with ' + oaiMode().model
+                      : 'Chat with ' + (selectedAgent().name || selectedAgent().id)
+                  }}
+                </span>
+              </div>
+            </h2>
+
+            @if (!oaiMode().enabled && uiMode() === 'developer') {
+              <button
+                [appButton]
+                variant="ghost"
+                size="sm"
+                (click)="detailsModalOpen.set(true)"
+                class="h-6 w-6 p-0 flex-shrink-0"
+                title="View agent details"
+              >
+                <ng-icon name="lucideInfo" class="h-4 w-4  " />
+              </button>
+
+              @if (selectedAgent().source !== 'in_memory') {
+                <button
+                  [appButton]
+                  variant="ghost"
+                  size="sm"
+                  (click)="handleReloadEntity()"
+                  [disabled]="isReloading()"
+                  class="h-6 w-6 p-0 flex-shrink-0"
+                  [title]="isReloading() ? 'Reloading...' : 'Reload entity code (hot reload)'"
+                >
+                  <ng-icon name="lucideRefreshCw" class="h-4 w-4" />
+                </button>
+              }
+            }
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-shrink-0">
+            @let conversation = currentConversation();
+            @let usage = conversationUsage();
+            <app-select
+              [value]="conversation?.id || ''"
+              (valueChange)="handleConversationSelect($event)"
+              [disabled]="loadingConversations() || isSubmitting()"
+              class="w-full sm:w-64"
+            >
+              <app-select-trigger>
+                @if (conversation) {
+                  <div class="flex items-center gap-2 text-xs">
+                    <span>Conversation {{ conversation.id | slice: -8 }}</span>
+                    @if (usage.total_tokens > 0) {
+                      <span class="text-muted-foreground">•</span>
+                      <span class="text-muted-foreground">
+                        {{
+                          usage.total_tokens >= 1000
+                            ? (usage.total_tokens / 1000 | number: '1.1-1') + 'k'
+                            : usage.total_tokens
+                        }}
+                        tokens
+                      </span>
+                    }
+                  </div>
+                } @else {
+                  {{ loadingConversations() ? 'Loading...' : 'Select conversation' }}
+                }
+              </app-select-trigger>
+
+              <app-select-content>
+                <app-select-group>
+                  @for (conversation of availableConversations(); track conversation.id) {
+                    <app-select-item [value]="conversation.id">
+                      <div class="flex items-center justify-between w-full">
+                        <span>Conversation {{ conversation.id | slice: -8 }}</span>
+                        @if (conversation.created_at) {
+                          <span class="text-xs text-muted-foreground ml-3">
+                            {{ conversation.created_at * 1000 | date: 'shortDate' }}
+                          </span>
+                        }
+                      </div>
+                    </app-select-item>
+                  } @empty {
+                    <div class="p-2 text-xs text-muted-foreground">No conversations</div>
+                  }
+                </app-select-group>
+              </app-select-content>
+            </app-select>
+
+            <button
+              [appButton]
+              variant="outline"
+              size="icon"
+              (click)="conversation && handleDeleteConversation(conversation.id)"
+              [disabled]="!conversation || isSubmitting()"
+              [title]="
+                conversation
+                  ? 'Delete Conversation ' + (conversation.id | slice: -8)
+                  : 'No conversation selected'
+              "
+            >
+              <ng-icon name="lucideTrash2" class="h-4 w-4" />
+            </button>
+
+            <button
+              [appButton]
+              variant="outline"
+              size="lg"
+              (click)="handleNewConversation()"
+              [disabled]="!selectedAgent || isSubmitting"
+              class="whitespace-nowrap"
+            >
+              <ng-icon name="lucidePlus" class="h-4 w-4 mr-2" />
+              <span class="hidden md:inline"> New Conversation</span>
+            </button>
+          </div>
+        </div>
+
+        @if (oaiMode().enabled) {
+          <p class="text-sm text-muted-foreground">
+            Using OpenAI model directly. Local agent tools and instructions are not applied.
+          </p>
+        } @else if (selectedAgent().description) {
+          <p class="text-sm text-muted-foreground">
+            {{ selectedAgent().description }}
+          </p>
+        }
+      </div>
+
+      @let conversationErrorValue = conversationError();
+      @if (conversationErrorValue) {
+        <div
+          class="mx-4 mt-2 p-3 bg-destructive/10 border border-destructive/30 rounded-md flex items-start gap-2"
+        >
+          <ng-icon name="lucideCircle" class="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-destructive">Failed to Create Conversation</div>
+            <div class="text-xs text-destructive/90 mt-1 break-words">
+              {{ conversationErrorValue.message }}
+            </div>
+            @if (conversationErrorValue.code) {
+              <div class="text-xs text-destructive/70 mt-1">
+                Error Code: {{ conversationErrorValue.code }}
+              </div>
+            }
+          </div>
+          <button
+            (click)="conversationError.set(null)"
+            class="text-destructive hover:text-destructive/80 flex-shrink-0"
+          >
+            <ng-icon name="lucideX" class="h-4 w-4" />
+          </button>
+        </div>
+      }
+
+      <app-scroll-area class="flex-1 p-4 h-0" #scrollArea>
+        <div class="space-y-4">
+          @for (group of processedChatItems(); track group.id) {
+            <app-conversation-item-bubble
+              [item]="group.message"
+              [toolCalls]="group.toolCalls"
+              [toolResults]="group.toolResults"
+            />
+          } @empty {
+            <div class="flex flex-col items-center justify-center h-32 text-center">
+              <div class="text-muted-foreground text-sm">
+                Start a conversation with {{ selectedAgent().name || selectedAgent().id }}
+              </div>
+              <div class="text-xs text-muted-foreground mt-1">Type a message below to begin</div>
+            </div>
+          }
+
+          @if (wasCancelled() && !isStreaming) {
+            <div class="px-4 py-2">
+              <div
+                class="border rounded-lg border-orange-500/40 bg-orange-500/5 dark:bg-orange-500/10"
+              >
+                <div class="px-4 py-3 flex items-center gap-2">
+                  <ng-icon
+                    name="lucideSquare"
+                    class="w-4 h-4 text-orange-500 dark:text-orange-400 fill-current"
+                  />
+                  <span class="font-medium text-sm text-orange-700 dark:text-orange-300"
+                    >Response stopped by user</span
+                  >
+                </div>
+              </div>
+            </div>
+          }
+
+          <div #messagesEnd></div>
+        </div>
+      </app-scroll-area>
+
+      @let pendingApprovalsValue = pendingApprovals();
+      @if (pendingApprovalsValue.length > 0) {
+        <div class="border-t bg-amber-50 dark:bg-amber-950/20 p-4 flex-shrink-0">
+          <div class="flex items-start gap-3">
+            <ng-icon
+              name="lucideAlertCircle"
+              class="h-5 w-5 text-amber-600 dark:text-amber-500 mt-0.5 flex-shrink-0"
+            />
+            <div class="flex-1 min-w-0">
+              <h4 class="font-medium text-sm mb-2">Approval Required</h4>
+              <div class="space-y-2">
+                @for (approval of pendingApprovalsValue; track approval.request_id) {
+                  <div
+                    class="bg-white dark:bg-gray-900 rounded-lg p-3 border border-amber-200 dark:border-amber-900"
+                  >
+                    <div class="font-mono text-xs mb-3 break-all">
+                      <span class="text-blue-600 dark:text-blue-400 font-semibold">{{
+                        approval.function_call.name
+                      }}</span>
+                      <span class="text-gray-500">(</span>
+                      <span class="text-gray-700 dark:text-gray-300">{{
+                        approval.function_call.arguments | json
+                      }}</span>
+                      <span class="text-gray-500">)</span>
+                    </div>
+                    <div class="flex gap-2">
+                      <button
+                        [appButton]
+                        size="sm"
+                        (click)="onApprove(approval)"
+                        class="flex-1 sm:flex-none"
+                      >
+                        <ng-icon name="lucideCheck" class="h-4 w-4 mr-1" />Approve
+                      </button>
+                      <button
+                        [appButton]
+                        size="sm"
+                        variant="outline"
+                        (click)="onReject(approval)"
+                        class="flex-1 sm:flex-none"
+                      >
+                        <ng-icon name="lucideX" class="h-4 w-4 mr-1" />Reject
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="border-t flex-shrink-0">
+        <div class="p-4">
+          <app-chat-message-input
+            (onSubmit)="handleChatInputSubmit($event)"
+            [isSubmitting]="isSubmitting()"
+            [isStreaming]="isStreaming()"
+            (onCancel)="handleCancel()"
+            [isCancelling]="isCancelling()"
+            [placeholder]="'Message ' + (selectedAgent().name || selectedAgent().id) + '...'"
+            [showFileUpload]="true"
+            [entityName]="selectedAgent().name || selectedAgent().id"
+            [disabled]="!selectedAgent() || isSubmitting()"
+            [externalFiles]="droppedFiles"
+            (onExternalFilesProcessed)="clearDroppedFiles()"
+          />
+        </div>
+      </div>
+
+      <app-agent-details-modal
+        [agent]="selectedAgent()"
+        [open]="detailsModalOpen()"
+        (onOpenChange)="detailsModalOpen.set($event)"
+      />
     </div>
-  </app-scroll-area>`,
+  `,
   host: {
     class: 'block',
   },
@@ -148,6 +449,7 @@ export class AeploymentModalComponent {
   readonly areaViewport = viewChild<ElementRef<HTMLDivElement>>('areaViewport')
   readonly messagesEnd = viewChild<ElementRef<HTMLDivElement>>('messagesEnd')
   private userJustSentMessage = false
+  droppedFiles: File[] | undefined
 
   constructor() {
     effect(() => {
@@ -1173,5 +1475,88 @@ export class AeploymentModalComponent {
     } finally {
       this.store.setIsSubmitting(false)
     }
+  }
+
+  processedChatItems = computed(() => {
+    const items = this.chatItems()
+    if (items.length === 0) return []
+
+    const toolCallsByMessage = new Map<string, any[]>()
+    const toolResultsByMessage = new Map<string, any[]>()
+
+    let lastAssistantMessageId: string | null = null
+    const orphanedToolCalls: any[] = []
+    const orphanedToolResults: any[] = []
+
+    // 第一遍：建立关联 (对应你 React 代码里的第一个循环)
+    for (const item of items) {
+      if (item.type === 'message' && item.role === 'assistant') {
+        if (!toolCallsByMessage.has(item.id)) {
+          toolCallsByMessage.set(item.id, [])
+          toolResultsByMessage.set(item.id, [])
+        }
+
+        if (orphanedToolCalls.length > 0) {
+          toolCallsByMessage.get(item.id)?.push(...orphanedToolCalls)
+          orphanedToolCalls.length = 0
+        }
+
+        if (orphanedToolResults.length > 0) {
+          toolResultsByMessage.get(item.id)?.push(...orphanedToolResults)
+          orphanedToolResults.length = 0
+        }
+
+        lastAssistantMessageId = item.id
+      } else if (item.type === 'function_call') {
+        if (lastAssistantMessageId) {
+          toolCallsByMessage.get(lastAssistantMessageId)?.push(item)
+        } else {
+          orphanedToolCalls.push(item)
+        }
+      } else if (item.type === 'function_call_output') {
+        if (lastAssistantMessageId) {
+          toolResultsByMessage.get(lastAssistantMessageId)?.push(item)
+        } else {
+          orphanedToolResults.push(item)
+        }
+      } else if (item.type === 'message' && item.role === 'user') {
+        lastAssistantMessageId = null
+      }
+    }
+
+    return items
+      .filter((item) => item.type === 'message')
+      .map((item) => ({
+        id: item.id,
+        message: item,
+        toolCalls: toolCallsByMessage.get(item.id) || [],
+        toolResults: toolResultsByMessage.get(item.id) || [],
+      }))
+  })
+
+  trackByItemId(index: number, item: any) {
+    return item.id
+  }
+
+  async onApprove(approval: PendingApproval) {
+    const request = await this.handleApproval(approval.request_id, true)
+    if (request) {
+      await this.handleSendMessage(request)
+    }
+  }
+
+  async onReject(approval: PendingApproval) {
+    const request = await this.handleApproval(approval.request_id, false)
+    if (request) {
+      await this.handleSendMessage(request)
+    }
+  }
+
+  handleFiles(files: File[]) {
+    this.droppedFiles = files
+  }
+
+  clearDroppedFiles() {
+    this.droppedFiles = undefined
   }
 }
