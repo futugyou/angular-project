@@ -11,6 +11,7 @@ import { Directive, input, output, signal } from '@angular/core'
 @Directive({
   selector: '[appDragDrop]',
   standalone: true,
+  exportAs: 'dragDrop',
   host: {
     '[class.drag-over]': 'isDragOver()',
     '(dragover)': 'onDragOver($event)',
@@ -23,7 +24,7 @@ export class DragDropDirective {
   disabled = input(false, { alias: 'appDragDropDisabled' })
   filesDropped = output<File[]>()
 
-  protected isDragOver = signal(false)
+  public isDragOver = signal(false)
   private dragCounter = 0
 
   protected onDragOver(event: DragEvent) {

@@ -9,6 +9,7 @@ import {
   forwardRef,
   effect,
   ElementRef,
+  computed,
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { OverlayModule } from '@angular/cdk/overlay'
@@ -34,7 +35,11 @@ import { cn } from '../../lib/utils'
 })
 export class Select implements ControlValueAccessor {
   value = model<any>()
-  disabled = signal(false)
+
+  disabledInput = input<boolean>(false, { alias: 'disabled' })
+  private _formDisabled = signal(false)
+  isDisabled = computed(() => this.disabledInput() || this._formDisabled())
+
   isOpen = signal(false)
   triggerWidth = signal<number>(0)
 
@@ -57,11 +62,11 @@ export class Select implements ControlValueAccessor {
     this.onTouched = fn
   }
   setDisabledState(isDisabled: boolean): void {
-    this.disabled.set(isDisabled)
+    this._formDisabled.set(isDisabled)
   }
 
   toggle() {
-    if (!this.disabled()) this.isOpen.update((v) => !v)
+    if (!this.isDisabled()) this.isOpen.update((v) => !v)
   }
 
   close() {
@@ -69,7 +74,6 @@ export class Select implements ControlValueAccessor {
     this.onTouched()
   }
 }
-
 /**
  * SELECT TRIGGER
  */
