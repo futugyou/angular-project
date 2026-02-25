@@ -1488,7 +1488,6 @@ export class AeploymentModalComponent {
     const orphanedToolCalls: any[] = []
     const orphanedToolResults: any[] = []
 
-    // 第一遍：建立关联 (对应你 React 代码里的第一个循环)
     for (const item of items) {
       if (item.type === 'message' && item.role === 'assistant') {
         if (!toolCallsByMessage.has(item.id)) {
