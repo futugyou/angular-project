@@ -26,6 +26,17 @@ export class GraphService {
   }
 
   fitView(arg0: { nodes?: Node<NodeProperties>[]; duration: number; padding: number }) {
-    // TODO:
+    const graph = this.graph()
+    if (!graph) return
+
+    if (arg0.nodes) {
+      graph.addNodes(arg0.nodes)
+    }
+
+    graph.resize()
+    graph.zoomToFit({
+      padding: arg0.padding,
+      maxScale: 1,
+    })
   }
 }

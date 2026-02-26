@@ -10,6 +10,7 @@ import {
   effect,
   Directive,
   inject,
+  untracked,
 } from '@angular/core'
 import { Graph, Node } from '@antv/x6'
 import '@antv/x6-angular-shape'
@@ -288,6 +289,34 @@ export class WorkflowAnimationDirective {
           padding: 0.2,
         })
       }
+    })
+  }
+}
+
+@Component({
+  selector: 'app-timeline-resize-handler',
+  standalone: true,
+  template: '',
+})
+export class TimelineResizeHandlerComponent {
+  timelineVisible = input.required<boolean>()
+
+  private reactFlowService = inject(GraphService)
+
+  constructor() {
+    effect((onCleanup) => {
+      const visible = this.timelineVisible()
+
+      untracked(() => {
+        const timeoutId = setTimeout(() => {
+          this.reactFlowService.fitView({
+            padding: 0.2,
+            duration: 300,
+          })
+        }, 350)
+
+        onCleanup(() => clearTimeout(timeoutId))
+      })
     })
   }
 }
