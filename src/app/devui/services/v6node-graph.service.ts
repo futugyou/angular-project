@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core'
-import { Graph, Node } from '@antv/x6'
+import { Graph, Node, NodeProperties } from '@antv/x6'
 
 @Injectable()
 export class GraphService {
@@ -23,5 +23,9 @@ export class GraphService {
       this.cacheTrigger()[id]
       return this.graph()?.getCellById(id) as Node | undefined
     })
+  }
+
+  fitView(arg0: { nodes?: Node<NodeProperties>[]; duration: number; padding: number }) {
+    // TODO:
   }
 }

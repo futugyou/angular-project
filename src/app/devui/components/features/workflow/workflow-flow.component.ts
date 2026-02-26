@@ -8,8 +8,10 @@ import {
   output,
   viewChild,
   effect,
+  Directive,
+  inject,
 } from '@angular/core'
-import { Graph } from '@antv/x6'
+import { Graph, Node } from '@antv/x6'
 import '@antv/x6-angular-shape'
 
 import { NgIconComponent } from '@ng-icons/core'
@@ -22,6 +24,7 @@ import {
   DropdownMenu,
 } from '../../../components/ui/dropdown.component'
 import { GridDrawOptions } from '@antv/x6/lib/graph/grid'
+import { GraphService } from '../../../services/v6node-graph.service'
 
 @Component({
   selector: 'app-workflow-graph',
@@ -248,5 +251,43 @@ export class WorkflowGraphComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.graph?.dispose()
+  }
+}
+
+@Directive({
+  selector: '[appWorkflowAnimation]',
+  standalone: true,
+})
+export class WorkflowAnimationDirective {
+  private rfService = inject(GraphService)
+
+  nodes = input<Node[]>([])
+  isStreaming = input<boolean>(false)
+  animateRun = input<boolean>(false)
+
+  constructor() {
+    effect(() => {
+      const animate = this.animateRun()
+      const streaming = this.isStreaming()
+      const currentNodes = this.nodes()
+
+      if (!animate) return
+
+      if (streaming) {
+        const runningNode = currentNodes.find((n) => n.data.state === 'running')
+        if (runningNode) {
+          this.rfService.fitView({
+            nodes: [runningNode],
+            duration: 800,
+            padding: 0.3,
+          })
+        }
+      } else if (currentNodes.length > 0) {
+        this.rfService.fitView({
+          duration: 1000,
+          padding: 0.2,
+        })
+      }
+    })
   }
 }
