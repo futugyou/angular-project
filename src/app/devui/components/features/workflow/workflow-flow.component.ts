@@ -11,6 +11,9 @@ import {
   Directive,
   inject,
   untracked,
+  ChangeDetectionStrategy,
+  OnInit,
+  computed,
 } from '@angular/core'
 import { Graph, Node } from '@antv/x6'
 import '@antv/x6-angular-shape'
@@ -26,6 +29,13 @@ import {
 } from '../../../components/ui/dropdown.component'
 import { GridDrawOptions } from '@antv/x6/lib/graph/grid'
 import { GraphService } from '../../../services/v6node-graph.service'
+import { CommonModule, JsonPipe } from '@angular/common'
+import {
+  consolidateBidirectionalEdges,
+  convertWorkflowDumpToEdges,
+  convertWorkflowDumpToNodes,
+  processWorkflowEvents,
+} from '../../../lib/layout'
 
 @Component({
   selector: 'app-workflow-graph',
@@ -318,5 +328,191 @@ export class TimelineResizeHandlerComponent {
         onCleanup(() => clearTimeout(timeoutId))
       })
     })
+  }
+}
+
+@Component({
+  selector: 'app-workflow-flow',
+  standalone: true,
+  imports: [CommonModule, JsonPipe],
+  template: `
+    <div [class]="'h-full w-full ' + className()">
+      @if (!workflowDump()) {
+        <div
+          class="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700"
+        >
+          <div class="text-center text-gray-500 dark:text-gray-400">
+            <div class="text-lg font-medium mb-2">No Workflow Data</div>
+            <div class="text-sm">Workflow dump is not available.</div>
+          </div>
+        </div>
+      } @else if (initialNodes().length === 0) {
+        <div
+          class="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700"
+        >
+          <div class="text-center text-gray-500 dark:text-gray-400">
+            <div class="text-lg font-medium mb-2">No Executors Found</div>
+            <div class="text-sm">Could not extract executors from workflow dump.</div>
+            <details class="mt-2 text-xs">
+              <summary class="cursor-pointer">Debug Info</summary>
+              <pre class="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded text-left overflow-auto">{{
+                workflowDump() | json
+              }}</pre>
+            </details>
+          </div>
+        </div>
+      } @else {
+        <div class="h-full w-full relative">
+          <div #container class="h-full w-full"></div>
+
+          @if (viewOptions().showGrid) {
+            <div class="absolute inset-0 pointer-events-none x6-grid-placeholder"></div>
+          }
+
+          <div class="absolute bottom-4 left-4 z-10"></div>
+
+          @if (viewOptions().showMinimap) {
+            <div
+              class="absolute bottom-4 right-4 z-10 w-40 h-32 border bg-white/90 dark:bg-gray-800/90 shadow-sm rounded"
+            ></div>
+          }
+
+          <ng-content></ng-content>
+        </div>
+      }
+
+      <style>
+        .react-flow__edge-path {
+          transition:
+            stroke 0.3s ease,
+            stroke-width 0.3s ease;
+        }
+        .react-flow__edge.animated .react-flow__edge-path {
+          stroke-dasharray: 5 5;
+          animation: dash 1s linear infinite;
+        }
+        @keyframes dash {
+          0% {
+            stroke-dashoffset: 0;
+          }
+          100% {
+            stroke-dashoffset: -10;
+          }
+        }
+        .dark .react-flow__controls {
+          background-color: rgba(31, 41, 55, 0.9) !important;
+          border-color: rgb(75, 85, 99) !important;
+        }
+      </style>
+    </div>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class WorkflowFlowComponent implements OnInit, OnDestroy {
+  protected readonly graphService = inject(GraphService)
+
+  workflowDump = input.required<any>()
+  events = input<any[]>([])
+  isStreaming = input<boolean>(false)
+  className = input<string>('')
+  onNodeSelect = output<any>()
+  viewOptions = input({
+    showMinimap: false,
+    showGrid: true,
+    animateRun: true,
+    consolidateBidirectionalEdges: true,
+  })
+  onToggleViewOption = output<string>()
+  layoutDirection = input<'TB' | 'LR'>('TB')
+  onLayoutDirectionChange = output<string>()
+  timelineVisible = input<boolean>(false)
+
+  container = viewChild<ElementRef<HTMLDivElement>>('container')
+
+  initialGraphData = computed(() => {
+    const dump = this.workflowDump()
+    if (!dump) return { initialNodes: [], initialEdges: [] }
+
+    const nodes = convertWorkflowDumpToNodes(
+      dump,
+      (id: string, data: any) => this.onNodeSelect.emit({ id, data }),
+      this.layoutDirection(),
+    )
+    const edges = convertWorkflowDumpToEdges(dump)
+
+    const finalEdges = this.viewOptions().consolidateBidirectionalEdges
+      ? consolidateBidirectionalEdges(edges)
+      : edges
+
+    return { initialNodes: nodes, initialEdges: finalEdges }
+  })
+
+  initialNodes = computed(() => this.initialGraphData().initialNodes)
+  initialEdges = computed(() => this.initialGraphData().initialEdges)
+
+  nodeUpdates = computed(() => {
+    return processWorkflowEvents(this.events(), this.workflowDump()?.start_executor_id)
+  })
+
+  constructor() {
+    effect(() => {
+      const nodes = this.initialNodes()
+      const edges = this.initialEdges()
+      if (nodes.length > 0 && this.graphService.isInitialized()) {
+        untracked(() => {
+          this.graphService.setNodes(nodes)
+          this.graphService.setEdges(edges)
+        })
+      }
+    })
+
+    effect(() => {
+      const updates = this.nodeUpdates()
+      const streaming = this.isStreaming()
+      const events = this.events()
+
+      if (this.graphService.isInitialized()) {
+        untracked(() => {
+          if (Object.keys(updates).length > 0) {
+            this.graphService.updateNodesWithEvents(updates, streaming)
+          } else if (events.length === 0) {
+            this.graphService.resetNodesToPending()
+          }
+        })
+      }
+    })
+
+    effect(() => {
+      const events = this.events()
+      const consolidate = this.viewOptions().consolidateBidirectionalEdges
+
+      if (this.graphService.isInitialized()) {
+        untracked(() => {
+          if (events.length > 0) {
+            this.graphService.updateEdgesWithSequenceAnalysis(events, consolidate)
+          } else {
+            this.graphService.resetEdgesToDefault(consolidate)
+          }
+        })
+      }
+    })
+
+    effect(() => {
+      const streaming = this.isStreaming()
+      if (this.graphService.isInitialized()) {
+        untracked(() => this.graphService.setNodesDraggable(!streaming))
+      }
+    })
+  }
+
+  ngOnInit() {
+    const el = this.container()
+    if (el) {
+      this.graphService.initGraph(el.nativeElement)
+    }
+  }
+
+  ngOnDestroy() {
+    this.graphService.dispose()
   }
 }
