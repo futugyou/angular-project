@@ -78,6 +78,20 @@ function isAbortError(error: unknown): boolean {
 
 type DebugEventHandler = (event: ExtendedResponseStreamEvent | 'clear') => void
 
+interface ViewOptions {
+  showMinimap: boolean
+  showGrid: boolean
+  animateRun: boolean
+  consolidateBidirectionalEdges: boolean
+}
+
+const DEFAULT_OPTIONS: ViewOptions = {
+  showMinimap: false,
+  showGrid: true,
+  animateRun: false,
+  consolidateBidirectionalEdges: true,
+}
+
 @Component({
   selector: 'app-workflow-view',
   standalone: true,
@@ -156,4 +170,83 @@ export class WorkflowViewComponent {
   loadingSessions = computed(() => this.store.loadingSessions)
   runtime = computed(() => this.store.runtime)
   streamingEnabled = computed(() => this.store.streamingEnabled)
+
+  readonly viewOptions = signal(
+    (() => {
+      const saved = localStorage.getItem('workflowViewOptions')
+      const defaults = {
+        showMinimap: false,
+        showGrid: true,
+        animateRun: false,
+        consolidateBidirectionalEdges: true,
+      }
+
+      if (saved) {
+        try {
+          return { ...defaults, ...JSON.parse(saved) }
+        } catch {
+          return defaults
+        }
+      }
+      return defaults
+    })(),
+  )
+
+  readonly layoutDirection = signal<'LR' | 'TB'>(
+    (localStorage.getItem('workflowLayoutDirection') as 'LR' | 'TB') || 'TB',
+  )
+
+  constructor() {
+    effect(() => {
+      localStorage.setItem('workflowViewOptions', JSON.stringify(this.viewOptions()))
+    })
+
+    effect(() => {
+      localStorage.setItem('workflowLayoutDirection', this.layoutDirection())
+    })
+  }
+
+  updateOptions(newOptions: Partial<ReturnType<typeof this.viewOptions>>) {
+    this.viewOptions.update((prev) => ({ ...prev, ...newOptions }))
+  }
+
+  toggleViewOption = (key: keyof typeof this.viewOptions) => {
+    this.updateOptions({ [key]: !this.viewOptions()[key] })
+  }
+
+  handleReloadEntity = async () => {
+    if (this.isReloading() || !this.selectedWorkflow()) return
+
+    this.isReloading.set(true)
+
+    try {
+      // Call backend reload endpoint
+      await this.apiClient.reloadEntity(this.selectedWorkflow().id)
+
+      // Fetch updated workflow info
+      const updatedWorkflow = await this.apiClient.getWorkflowInfo(this.selectedWorkflow().id)
+
+      // Update store with fresh metadata
+      this.store.updateWorkflow(updatedWorkflow)
+
+      // Update local state
+      this.workflowInfo.set(updatedWorkflow)
+
+      // Show success toast
+      this.store.addToast({
+        message: `${this.selectedWorkflow().name} has been reloaded successfully`,
+        type: 'success',
+      })
+    } catch (error) {
+      // Show error toast
+      const errorMessage = error instanceof Error ? error.message : 'Failed to reload entity'
+      this.store.addToast({
+        message: `Failed to reload: ${errorMessage}`,
+        type: 'error',
+        duration: 6000,
+      })
+    } finally {
+      this.isReloading.set(false)
+    }
+  }
 }
