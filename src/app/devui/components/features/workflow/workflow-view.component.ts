@@ -204,6 +204,42 @@ export class WorkflowViewComponent {
     effect(() => {
       localStorage.setItem('workflowLayoutDirection', this.layoutDirection())
     })
+
+    effect(async (onCleanup) => {
+      this.openAIEvents.set([])
+      this.isStreaming.set(false)
+      this.selectedExecutorId.set(null)
+      // Timeline stays visible (we changed this to always show)
+      this.workflowResult.set('')
+      this.workflowLoadError.set(null)
+
+      const itemOutputs = this.itemOutputs()?.nativeElement
+      if (itemOutputs) {
+        itemOutputs.innerHTML = ''
+      }
+      this.currentStreamingItemId.set(null)
+      this.workflowMetadata.set({})
+
+      if (this.selectedWorkflow()?.type !== 'workflow') return
+
+      this.workflowLoading.set(true)
+      this.workflowLoadError.set(null)
+      try {
+        const info = await this.apiClient.getWorkflowInfo(this.selectedWorkflow().id)
+        this.workflowInfo.set(info)
+        this.workflowLoadError.set(null)
+
+        // Note: Checkpoints are now loaded per-session via WorkflowSessionManager
+        // When user selects a session, checkpoints will be loaded for that session
+      } catch (error) {
+        this.workflowInfo.set(null)
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        this.workflowLoadError.set(errorMessage)
+        console.error('Error loading workflow info:', error)
+      } finally {
+        this.workflowLoading.set(false)
+      }
+    })
   }
 
   updateOptions(newOptions: Partial<ReturnType<typeof this.viewOptions>>) {
