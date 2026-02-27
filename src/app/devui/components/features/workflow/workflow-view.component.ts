@@ -285,4 +285,70 @@ export class WorkflowViewComponent {
       this.isReloading.set(false)
     }
   }
+
+  handleSessionChange = async (session: any) => {
+    if (!session || !this.workflowInfo()) return
+
+    // Reset workflow view state when switching checkpoint storages
+    this.openAIEvents.set([])
+    this.isStreaming.set(false)
+    this.wasCancelled.set(false)
+    this.selectedExecutorId.set(null)
+    this.timelineMinimized.set(false)
+    this.workflowResult.set('')
+    this.pendingHilRequests.set([])
+    this.hilResponses.set({})
+    const itemOutputs = this.itemOutputs()?.nativeElement
+    if (itemOutputs) {
+      itemOutputs.innerHTML = ''
+    }
+    this.currentStreamingItemId.set(null)
+    this.workflowMetadata.set({})
+  }
+
+  loadSessions = async () => {
+    const workflowInfo = this.workflowInfo()
+    const runtime = this.runtime()
+    const currentSession = this.currentSession()
+    if (!workflowInfo) return
+
+    this.store.setLoadingSessions(true)
+    try {
+      const response = await this.apiClient.listWorkflowSessions(workflowInfo.id)
+
+      // If no sessions exist, auto-create one
+      if (response.data.length === 0) {
+        const newSession = await this.apiClient.createWorkflowSession(workflowInfo.id, {
+          name: `Checkpoint Storage ${new Date().toLocaleString()}`,
+        })
+        this.store.setAvailableSessions([newSession])
+        this.store.setCurrentSession(newSession)
+      } else {
+        // Sort by created_at descending (most recent first)
+        const sortedSessions = [...response.data].sort((a, b) => b.created_at - a.created_at)
+
+        this.store.setAvailableSessions(sortedSessions)
+
+        // Auto-select most recent session if none selected (but keep current if it exists)
+        if (!currentSession) {
+          const firstSession = sortedSessions[0]
+          this.store.setCurrentSession(firstSession)
+          await this.handleSessionChange(firstSession)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load sessions:', error)
+
+      // Silently handle for .NET backend (doesn't support conversations yet)
+      // Only show error for Python backend where this is unexpected
+      if (runtime !== 'dotnet') {
+        this.store.addToast({
+          message: 'Failed to load sessions',
+          type: 'error',
+        })
+      }
+    } finally {
+      this.store.setLoadingSessions(false)
+    }
+  }
 }
