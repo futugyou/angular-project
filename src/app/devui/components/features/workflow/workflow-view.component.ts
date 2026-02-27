@@ -205,40 +205,65 @@ export class WorkflowViewComponent {
       localStorage.setItem('workflowLayoutDirection', this.layoutDirection())
     })
 
-    effect(async (onCleanup) => {
-      this.openAIEvents.set([])
-      this.isStreaming.set(false)
-      this.selectedExecutorId.set(null)
-      // Timeline stays visible (we changed this to always show)
-      this.workflowResult.set('')
-      this.workflowLoadError.set(null)
+    effect(() => {
+      const info = this.workflowInfo()
+      const rt = this.runtime()
 
-      const itemOutputs = this.itemOutputs()?.nativeElement
-      if (itemOutputs) {
-        itemOutputs.innerHTML = ''
+      if (info?.id) {
+        untracked(() => {
+          this.loadSessions()
+        })
       }
-      this.currentStreamingItemId.set(null)
-      this.workflowMetadata.set({})
+    })
 
-      if (this.selectedWorkflow()?.type !== 'workflow') return
+    effect((onCleanup) => {
+      const workflow = this.selectedWorkflow()
 
-      this.workflowLoading.set(true)
-      this.workflowLoadError.set(null)
-      try {
-        const info = await this.apiClient.getWorkflowInfo(this.selectedWorkflow().id)
-        this.workflowInfo.set(info)
+      let isCancelled = false
+      onCleanup(() => {
+        isCancelled = true
+      })
+
+      untracked(async () => {
+        this.openAIEvents.set([])
+        this.isStreaming.set(false)
+        this.selectedExecutorId.set(null)
+        this.workflowResult.set('')
         this.workflowLoadError.set(null)
+        this.currentStreamingItemId.set(null)
+        this.workflowMetadata.set({})
 
-        // Note: Checkpoints are now loaded per-session via WorkflowSessionManager
-        // When user selects a session, checkpoints will be loaded for that session
-      } catch (error) {
-        this.workflowInfo.set(null)
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        this.workflowLoadError.set(errorMessage)
-        console.error('Error loading workflow info:', error)
-      } finally {
-        this.workflowLoading.set(false)
-      }
+        const itemOutputs = this.itemOutputs()?.nativeElement
+        if (itemOutputs) {
+          itemOutputs.innerHTML = ''
+        }
+
+        if (workflow?.type !== 'workflow') {
+          this.workflowInfo.set(null)
+          return
+        }
+
+        this.workflowLoading.set(true)
+
+        try {
+          const info = await this.apiClient.getWorkflowInfo(workflow.id)
+
+          if (isCancelled) return
+
+          this.workflowInfo.set(info)
+        } catch (error) {
+          if (isCancelled) return
+
+          this.workflowInfo.set(null)
+          const errorMessage = error instanceof Error ? error.message : String(error)
+          this.workflowLoadError.set(errorMessage)
+          console.error('Error loading workflow info:', error)
+        } finally {
+          if (!isCancelled) {
+            this.workflowLoading.set(false)
+          }
+        }
+      })
     })
   }
 
