@@ -54,6 +54,7 @@ import type {
   WorkflowInfo,
   CheckpointItem,
   JSONSchemaProperty,
+  ResponseOutputItemDoneEvent,
 } from '../../../types'
 import {
   ConversationMessage,
@@ -91,6 +92,17 @@ const DEFAULT_OPTIONS: ViewOptions = {
   animateRun: false,
   consolidateBidirectionalEdges: true,
 }
+
+const WORKFLOW_EVENT_TYPES = [
+  'response.output_item.added',
+  'response.output_item.done',
+  'response.created',
+  'response.in_progress',
+  'response.completed',
+  'response.failed',
+  'response.workflow_event.completed',
+  'response.workflow_event.complete',
+]
 
 @Component({
   selector: 'app-workflow-view',
@@ -465,4 +477,70 @@ export class WorkflowViewComponent {
       this.store.addToast({ message: 'Failed to delete session', type: 'error' })
     }
   }
+
+  workflowEvents = computed(() => {
+    return this.openAIEvents().filter((event) => WORKFLOW_EVENT_TYPES.includes(event.type))
+  })
+
+  executorHistory = computed(() => {
+    const history: Array<{
+      executorId: string
+      message: string
+      timestamp: string
+      status: 'running' | 'completed' | 'error'
+    }> = []
+
+    this.workflowEvents().forEach((event) => {
+      // Handle new standard OpenAI events
+      if (
+        event.type === 'response.output_item.added' ||
+        event.type === 'response.output_item.done'
+      ) {
+        const item = (event as ResponseOutputItemAddedEvent | ResponseOutputItemDoneEvent).item
+        if (item && item.type === 'executor_action' && 'executor_id' in item && item.executor_id) {
+          history.push({
+            executorId: String(item.executor_id),
+            message:
+              event.type === 'response.output_item.added'
+                ? 'Executor started'
+                : item.status === 'completed'
+                  ? 'Executor completed'
+                  : item.status === 'failed'
+                    ? 'Executor failed'
+                    : 'Executor processing',
+            timestamp: new Date().toISOString(),
+            status:
+              item.status === 'completed'
+                ? 'completed'
+                : item.status === 'failed'
+                  ? 'error'
+                  : 'running',
+          })
+        }
+      }
+      // Fallback: handle .complete variant for backwards compatibility
+      else if (
+        event.type === 'response.workflow_event.complete' &&
+        'data' in event &&
+        event.data &&
+        typeof event.data === 'object'
+      ) {
+        const data = event.data as Record<string, unknown>
+        if (data['executor_id'] != null) {
+          history.push({
+            executorId: String(data['executor_id']),
+            message: String(data['event_type'] || 'Processing'),
+            timestamp: String(data['timestamp'] || new Date().toISOString()),
+            status: String(data['event_type'] || '').includes('Completed')
+              ? 'completed'
+              : String(data['event_type'] || '').includes('Error')
+                ? 'error'
+                : 'running',
+          })
+        }
+      }
+    })
+
+    return history
+  })
 }
