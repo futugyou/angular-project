@@ -216,6 +216,15 @@ export class WorkflowViewComponent {
       }
     })
 
+    effect(() => {
+      const currentSession = this.currentSession()
+      if (currentSession) {
+        untracked(() => {
+          this.loadCheckpoints()
+        })
+      }
+    })
+
     effect((onCleanup) => {
       const workflow = this.selectedWorkflow()
 
@@ -374,6 +383,34 @@ export class WorkflowViewComponent {
       }
     } finally {
       this.store.setLoadingSessions(false)
+    }
+  }
+
+  loadCheckpoints = async () => {
+    const currentSession = this.currentSession()
+    if (!currentSession) {
+      this.sessionCheckpoints.set([])
+      return
+    }
+
+    try {
+      const response = await this.apiClient.listConversationItems(currentSession.conversation_id, {
+        limit: 100,
+      })
+      const checkpointItems = response.data.filter(
+        (item): item is CheckpointItem =>
+          typeof item === 'object' &&
+          item !== null &&
+          'type' in item &&
+          (item as { type: string }).type === 'checkpoint',
+      )
+      this.sessionCheckpoints.set(checkpointItems)
+    } catch (error) {
+      console.error(
+        `Failed to load checkpoints for session ${currentSession.conversation_id}:`,
+        error,
+      )
+      this.sessionCheckpoints.set([])
     }
   }
 }
