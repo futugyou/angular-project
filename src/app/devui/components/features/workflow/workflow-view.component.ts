@@ -66,6 +66,7 @@ import {
   ResponseFunctionApprovalRequestedEvent,
   ResponseFunctionCallArgumentsDelta,
   ResponseOutputMessage,
+  ResponseRequestInfoEvent,
 } from '../../../types/openai'
 import { DevUIStore } from '../../../stores'
 import { AgentConversationService } from '../../../services/agent.serivce'
@@ -173,7 +174,7 @@ export class WorkflowViewComponent {
 
   hilResponses = signal<Record<string, Record<string, unknown>>>({})
 
-  readonly itemOutputs = viewChild<ElementRef<HTMLDivElement>>('itemOutputs')
+  itemOutputs = signal<Record<string, string>>({})
   currentStreamingItemId = signal<string | null>(null)
   workflowMetadata = signal<Record<string, unknown>>({})
 
@@ -254,10 +255,7 @@ export class WorkflowViewComponent {
         this.currentStreamingItemId.set(null)
         this.workflowMetadata.set({})
 
-        const itemOutputs = this.itemOutputs()?.nativeElement
-        if (itemOutputs) {
-          itemOutputs.innerHTML = ''
-        }
+        this.itemOutputs.set({})
 
         if (workflow?.type !== 'workflow') {
           this.workflowInfo.set(null)
@@ -344,10 +342,7 @@ export class WorkflowViewComponent {
     this.workflowResult.set('')
     this.pendingHilRequests.set([])
     this.hilResponses.set({})
-    const itemOutputs = this.itemOutputs()?.nativeElement
-    if (itemOutputs) {
-      itemOutputs.innerHTML = ''
-    }
+    this.itemOutputs.set({})
     this.currentStreamingItemId.set(null)
     this.workflowMetadata.set({})
   }
@@ -543,4 +538,289 @@ export class WorkflowViewComponent {
 
     return history
   })
+
+  activeExecutors = computed(() => {
+    if (!this.isStreaming()) return []
+    const recent = this.executorHistory()
+      .filter((h) => h.status === 'running')
+      .slice(-2)
+    return recent.map((h) => h.executorId)
+  })
+
+  handleSendWorkflowData = async (inputData: Record<string, unknown>, checkpointId?: string) => {
+    const selectedWorkflow = this.selectedWorkflow()
+    if (!selectedWorkflow || selectedWorkflow.type !== 'workflow') return
+
+    this.isStreaming.set(true)
+    this.wasCancelled.set(false) // Reset cancelled state for new run
+    this.openAIEvents.set([]) // Clear previous OpenAI events for new execution
+
+    // Clear per-item outputs and metadata for new run
+    this.workflowResult.set('')
+
+    this.itemOutputs.set({})
+    this.currentStreamingItemId.set(null)
+    this.workflowMetadata.set({})
+
+    // Clear HIL state for new workflow run
+    this.pendingHilRequests.set([])
+    this.hilResponses.set({})
+
+    // Clear debug panel events for new workflow run
+    this.onDebugEvent()('clear')
+
+    // Create new AbortController for this request
+    const signal = this.createAbortSignal()
+    const currentSession = this.currentSession()
+    try {
+      // Debug logging to track conversation ID usage
+      console.log('[WorkflowView] Running workflow with:')
+      console.log('  - Current session ID:', currentSession?.conversation_id)
+      console.log('  - Input data:', inputData)
+
+      const request = {
+        input_data: inputData,
+        conversation_id: currentSession?.conversation_id || undefined, // Pass session conversation_id for checkpoint support
+        checkpoint_id: checkpointId, // Pass checkpoint ID when resuming from a checkpoint
+      }
+
+      // Clear any previous streaming state before starting new workflow execution
+      // Use conversation ID if available, otherwise use workflow ID
+      if (currentSession?.conversation_id) {
+        this.apiClient.clearStreamingState(currentSession.conversation_id)
+      } else {
+        this.apiClient.clearStreamingState(selectedWorkflow.id)
+      }
+
+      // Use OpenAI-compatible API streaming - direct event handling
+      const streamGenerator = this.apiClient.streamWorkflowExecutionOpenAI(
+        selectedWorkflow.id,
+        request,
+        signal,
+      )
+
+      for await (const openAIEvent of streamGenerator) {
+        // Store workflow-related events for tracking
+        if (WORKFLOW_EVENT_TYPES.includes(openAIEvent.type)) {
+          this.openAIEvents.update((prev) => {
+            // Generate unique timestamp for each event
+            const baseTimestamp = Math.floor(Date.now() / 1000)
+            const lastTimestamp =
+              prev.length > 0
+                ? (prev[prev.length - 1] as { _uiTimestamp?: number })._uiTimestamp || 0
+                : 0
+            const uniqueTimestamp = Math.max(baseTimestamp, lastTimestamp + 1)
+
+            return [
+              ...prev,
+              {
+                ...openAIEvent,
+                _uiTimestamp: uniqueTimestamp,
+              } as ExtendedResponseStreamEvent & { _uiTimestamp: number },
+            ]
+          })
+        }
+
+        // Pass to debug panel
+        this.onDebugEvent()(openAIEvent)
+
+        // Handle new standard OpenAI events
+        if (openAIEvent.type === 'response.output_item.added') {
+          const item = (openAIEvent as ResponseOutputItemAddedEvent).item
+
+          // Handle executor action items
+          if (item && item.type === 'executor_action' && item.executor_id && item.id) {
+            // Track this item ID as the current streaming target
+            this.currentStreamingItemId.set(item.id)
+            // Initialize output for this specific item (not executor!)
+            if (!this.itemOutputs()[item.id]) {
+              this.itemOutputs()[item.id] = ''
+            }
+          }
+
+          // Handle message items from Magentic agents (Option A implementation)
+          if (
+            item &&
+            item.type === 'message' &&
+            'metadata' in item &&
+            (item['metadata'] as { source?: string } | undefined)?.source === 'magentic' &&
+            item.id
+          ) {
+            // Track this message ID as the current streaming target for Magentic agents
+            this.currentStreamingItemId.set(item.id)
+            // Initialize output for this message
+            if (!this.itemOutputs()[item.id]) {
+              this.itemOutputs()[item.id] = ''
+            }
+          }
+
+          // Handle workflow output messages (from ctx.yield_output) - different from agent messages
+          if (
+            item &&
+            item.type === 'message' &&
+            (!('metadata' in item) ||
+              !(item['metadata'] as { source?: string } | undefined)?.source) &&
+            'content' in item &&
+            Array.isArray(item['content'])
+          ) {
+            // Extract text from message content
+            for (const content of item['content'] as Array<{ type: string; text?: string }>) {
+              if (content.type === 'output_text' && content.text) {
+                const text = content.text // Capture for closure
+                // Append to workflow result (support multiple yield_output calls)
+                this.workflowResult.update((prev) => {
+                  if (prev && prev.length > 0) {
+                    // If there's existing output, add separator
+                    return prev + '\n\n' + text
+                  }
+                  return text
+                })
+
+                // Try to parse as JSON for structured metadata
+                try {
+                  const parsed = JSON.parse(content.text)
+                  if (typeof parsed === 'object' && parsed !== null) {
+                    this.workflowMetadata.set(parsed)
+                  }
+                } catch {
+                  // Not JSON, keep as text
+                }
+              }
+            }
+          }
+        }
+
+        // Handle workflow completion
+        if (openAIEvent.type === 'response.completed') {
+          // Workflow completed successfully
+          // Final output is already in workflowResult from text streaming or output_item.added
+        }
+
+        // Handle workflow failure
+        if (openAIEvent.type === 'response.failed') {
+          // Error will be displayed in timeline
+        }
+
+        // Fallback support for workflow_event format (used for unhandled event types)
+        if (
+          openAIEvent.type === 'response.workflow_event.completed' &&
+          'data' in openAIEvent &&
+          openAIEvent.data
+        ) {
+          const data = openAIEvent.data as {
+            event_type?: string
+            data?: unknown
+            executor_id?: string | null
+          }
+
+          // Track when executor starts (fallback for old workflow_event format)
+          if (data.event_type === 'ExecutorInvokedEvent' && data.executor_id) {
+            // Create synthetic item ID for fallback format (no real item.id available)
+            const syntheticItemId = `fallback_${data.executor_id}_${Date.now()}`
+            this.currentStreamingItemId.set(syntheticItemId)
+            // Initialize output for this item
+            if (!this.itemOutputs()[syntheticItemId]) {
+              this.itemOutputs()[syntheticItemId] = ''
+            }
+          }
+
+          // Handle workflow completion and output events
+          if (
+            (data.event_type === 'WorkflowCompletedEvent' ||
+              data.event_type === 'WorkflowOutputEvent') &&
+            data.data
+          ) {
+            // Store object data for metadata
+            if (typeof data.data === 'object') {
+              this.workflowMetadata.set(data.data as Record<string, unknown>)
+            }
+            this.currentStreamingItemId.set(null)
+          }
+        }
+
+        // Handle text output - assign to current item (not executor!)
+        if (
+          openAIEvent.type === 'response.output_text.delta' &&
+          'delta' in openAIEvent &&
+          openAIEvent.delta
+        ) {
+          // Use the item_id from the event itself (for concurrent workflows)
+          // Fall back to currentStreamingItemId for backwards compatibility
+          const itemId = openAIEvent.item_id || this.currentStreamingItemId()
+
+          if (itemId) {
+            // Initialize item output if needed
+            if (!this.itemOutputs()[itemId]) {
+              this.itemOutputs()[itemId] = ''
+            }
+
+            // Append to specific ITEM's output (not all runs of this executor!)
+            this.itemOutputs()[itemId] += openAIEvent.delta
+          }
+        }
+
+        // Handle HIL (Human-in-the-Loop) requests
+        if (openAIEvent.type === 'response.request_info.requested') {
+          const hilEvent = openAIEvent as ResponseRequestInfoEvent
+
+          this.pendingHilRequests.update((prev) => [
+            ...prev,
+            {
+              request_id: hilEvent.request_id,
+              request_data: hilEvent.request_data,
+              request_schema: hilEvent.request_schema as unknown as JSONSchemaProperty,
+            },
+          ])
+
+          // Initialize responses with default values from schema
+          // For enum fields, set to first option; for other fields with defaults, use those
+          const schema = hilEvent.request_schema as unknown as JSONSchemaProperty
+          const defaultValues: Record<string, unknown> = {}
+
+          if (schema.properties) {
+            Object.entries(schema.properties).forEach(([fieldName, fieldSchema]) => {
+              const field = fieldSchema as JSONSchemaProperty
+              // Set default for enum fields to first option
+              if (field.enum && field.enum.length > 0) {
+                defaultValues[fieldName] = field.enum[0]
+              }
+              // Use explicit default value if provided
+              else if (field.default !== undefined) {
+                defaultValues[fieldName] = field.default
+              }
+            })
+          }
+
+          this.hilResponses.update((prev) => ({
+            ...prev,
+            [hilEvent.request_id]: defaultValues,
+          }))
+        }
+
+        // Handle errors (ResponseErrorEvent - fallback error format)
+        if (openAIEvent.type === 'error') {
+          // Error will be displayed in timeline
+          break
+        }
+      }
+
+      this.isStreaming.set(false)
+    } catch (error) {
+      // Handle abort separately - don't show error message
+      if (isAbortError(error)) {
+        // User cancelled - just stop gracefully
+        console.log('Workflow execution cancelled by user')
+        this.wasCancelled.set(true) // Mark as cancelled for UI feedback
+        // Leave the last state visible to show where workflow was when cancelled
+        // Clear any pending HIL requests since workflow is cancelled
+        this.pendingHilRequests.set([])
+        this.hilResponses.set({})
+      } else {
+        // Other errors - log them
+        console.error('Workflow execution error:', error)
+      }
+      this.isStreaming.set(false)
+      this.resetCancelling()
+    }
+  }
 }
