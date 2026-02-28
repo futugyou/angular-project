@@ -413,4 +413,39 @@ export class WorkflowViewComponent {
       this.sessionCheckpoints.set([])
     }
   }
+
+  handleSessionSelect = async (sessionId: string) => {
+    const session = this.availableSessions().find((s) => s.conversation_id === sessionId)
+    if (session) {
+      this.store.setCurrentSession(session)
+      await this.handleSessionChange(session)
+    }
+  }
+
+  handleNewSession = async () => {
+    const workflowInfo = this.workflowInfo()
+    if (!workflowInfo) return
+
+    try {
+      const newSession = await this.apiClient.createWorkflowSession(workflowInfo.id, {
+        name: `Checkpoint Storage ${new Date().toLocaleString()}`,
+      })
+
+      // Debug logging
+      console.log('[WorkflowView] Created new session:', newSession.conversation_id)
+      console.log('[WorkflowView] Previous session:', this.currentSession()?.conversation_id)
+
+      this.store.addSession(newSession)
+      this.store.setCurrentSession(newSession)
+      await this.handleSessionChange(newSession)
+
+      // Force a small delay to ensure state is updated
+      await new Promise((resolve) => setTimeout(resolve, 100))
+
+      this.store.addToast({ message: 'New checkpoint storage created', type: 'success' })
+    } catch (error) {
+      console.error('Failed to create checkpoint storage:', error)
+      this.store.addToast({ message: 'Failed to create checkpoint storage', type: 'error' })
+    }
+  }
 }
