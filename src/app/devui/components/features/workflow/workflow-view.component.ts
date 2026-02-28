@@ -448,4 +448,21 @@ export class WorkflowViewComponent {
       this.store.addToast({ message: 'Failed to create checkpoint storage', type: 'error' })
     }
   }
+
+  handleDeleteSession = async () => {
+    const currentSession = this.currentSession()
+    const workflowInfo = this.workflowInfo()
+    if (!currentSession || !workflowInfo) return
+
+    if (!confirm('Delete this session? All checkpoints will be lost.')) return
+
+    try {
+      await this.apiClient.deleteWorkflowSession(workflowInfo.id, currentSession.conversation_id)
+      this.store.removeSession(currentSession.conversation_id)
+      this.store.addToast({ message: 'Session deleted', type: 'success' })
+    } catch (error) {
+      console.error('Failed to delete session:', error)
+      this.store.addToast({ message: 'Failed to delete session', type: 'error' })
+    }
+  }
 }
