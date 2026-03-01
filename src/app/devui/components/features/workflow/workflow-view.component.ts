@@ -31,7 +31,7 @@ import { ApiClient } from '../../../services/api.service'
 import { WorkflowFlowComponent } from './workflow-flow.component'
 import { CheckpointInfoModal } from './checkpoint-info-modal.component'
 import { ExecutionTimelineComponent } from './execution-timeline.component'
-import { SchemaFormRendererComponent } from './schema-form-renderer.component'
+import { SchemaFormRendererComponent, validateSchemaForm } from './schema-form-renderer.component'
 import type {
   AgentInfo,
   RunAgentRequest,
@@ -915,5 +915,17 @@ export class WorkflowViewComponent {
     } else {
       await this.handleSendWorkflowDataSync(inputData, checkpointId)
     }
+  }
+
+  areAllHilResponsesValid = () => {
+    // Check each pending request has a valid response
+    for (const request of this.pendingHilRequests()) {
+      const response = this.hilResponses()[request.request_id] || {}
+      // Use the same validation logic as HilTimelineItem
+      if (!validateSchemaForm(request.request_schema, response)) {
+        return false
+      }
+    }
+    return true
   }
 }
