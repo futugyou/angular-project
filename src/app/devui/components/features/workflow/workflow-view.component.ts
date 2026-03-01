@@ -1,78 +1,31 @@
-import {
-  Component,
-  computed,
-  input,
-  output,
-  inject,
-  effect,
-  signal,
-  viewChild,
-  ElementRef,
-  untracked,
-  AfterViewInit,
-  OnDestroy,
-} from '@angular/core'
-import { DatePipe, DecimalPipe, JsonPipe, NgClass, SlicePipe } from '@angular/common'
+import { Component, computed, input, inject, effect, signal, untracked } from '@angular/core'
+import { DatePipe } from '@angular/common'
 import { NgIconComponent } from '@ng-icons/core'
 import { ButtonComponent } from '../../ui/button.component'
-import { ScrollAreaComponent } from '../../ui/scroll-area.component'
-import { ChatMessageInputComponent } from '../../ui/chat-message-input.component'
+import { BadgeComponent } from '../../ui/badge.component'
+import { LoadingState } from '../../ui/loading-state.component'
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../ui/select.component'
+import { Select, SelectContent, SelectItem, SelectTrigger } from '../../ui/select.component'
 
 import { ApiClient } from '../../../services/api.service'
 import { WorkflowFlowComponent } from './workflow-flow.component'
 import { CheckpointInfoModal } from './checkpoint-info-modal.component'
 import { ExecutionTimelineComponent } from './execution-timeline.component'
-import { SchemaFormRendererComponent, validateSchemaForm } from './schema-form-renderer.component'
+import { validateSchemaForm } from './schema-form-renderer.component'
 import type {
-  AgentInfo,
-  RunAgentRequest,
-  Conversation,
   ExtendedResponseStreamEvent,
-  ConversationItem,
-  ResponseInputParam,
-  MessageContent,
-  ResponseInputFileParam,
-  ResponseCompletedEvent,
-  ResponseFailedEvent,
-  MessageTextContent,
-  ResponseFunctionResultComplete,
-  ConversationFunctionCallOutput,
   ResponseOutputItemAddedEvent,
-  ResponseFunctionToolCall,
-  ConversationFunctionCall,
-  ResponseInputContent,
-  PendingApproval,
   WorkflowInfo,
   CheckpointItem,
   JSONSchemaProperty,
   ResponseOutputItemDoneEvent,
 } from '../../../types'
-import {
-  ConversationMessage,
-  MessageFunctionApprovalRequestContent,
-  MessageFunctionApprovalResponseContent,
-  MessageOutputData,
-  MessageOutputFile,
-  MessageOutputImage,
-  ResponseFunctionApprovalRequestedEvent,
-  ResponseFunctionCallArgumentsDelta,
-  ResponseOutputMessage,
-  ResponseRequestInfoEvent,
-} from '../../../types/openai'
+import { ResponseRequestInfoEvent } from '../../../types/openai'
 import { DevUIStore } from '../../../stores'
 import { AgentConversationService } from '../../../services/agent.serivce'
 import { CancellableRequestService } from '../../../services/cancellable-request.service'
-import { DragDropDirective } from '../../../directives/drag-drop.directive'
-import { loadStreamingState } from '../../../services/streaming-state.service'
+import { RunWorkflowButtonComponent } from './run-workflow-button.component'
+import { WorkflowDetailsModalComponent } from './workflow-details-modal.component'
 
 function isAbortError(error: unknown): boolean {
   return error instanceof DOMException && error.name === 'AbortError'
@@ -109,31 +62,378 @@ const WORKFLOW_EVENT_TYPES = [
   selector: 'app-workflow-view',
   standalone: true,
   imports: [
-    NgClass,
     NgIconComponent,
-    ChatMessageInputComponent,
     NgIconComponent,
     ButtonComponent,
-    ScrollAreaComponent,
     Select,
     SelectContent,
-    SelectGroup,
     SelectItem,
     SelectTrigger,
     WorkflowFlowComponent,
     ExecutionTimelineComponent,
-    SchemaFormRendererComponent,
     CheckpointInfoModal,
-    DragDropDirective,
-    SlicePipe,
-    DecimalPipe,
     DatePipe,
-    JsonPipe,
+    LoadingState,
+    BadgeComponent,
+    RunWorkflowButtonComponent,
+    WorkflowDetailsModalComponent,
   ],
   host: {
     class: 'block relative w-full h-full',
   },
-  template: ` <div class="w-full h-full relative"></div> `,
+  template: `@if (workflowLoading()) {
+      <app-loading-state
+        message="Loading workflow..."
+        description="Fetching workflow structure and configuration"
+      ></app-loading-state>
+    } @else if (workflowLoadError()) {
+      <div class="flex items-center justify-center h-full">
+        <div class="text-center max-w-md p-6">
+          <div class="text-red-500 mb-4">
+            <svg class="w-16 h-16 mx-auto">...</svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Failed to Load Workflow</h3>
+          <p class="text-sm text-muted-foreground mb-4">{{ workflowLoadError() }}</p>
+          <p class="text-xs text-muted-foreground">
+            This may not be a valid workflow entity. Check the file contains a workflow export.
+          </p>
+        </div>
+      </div>
+    } @else if (!workflowInfo()?.workflow_dump && !executorHistory().length) {
+      <app-loading-state
+        message="Initializing workflow..."
+        description="Setting up workflow execution environment"
+      ></app-loading-state>
+    } @else {
+      <div class="workflow-view flex flex-col h-full">
+        <div class="border-b pb-2 p-4 flex-shrink-0">
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-3">
+            <div class="flex items-center gap-2 min-w-0">
+              <h2 class="font-semibold text-sm truncate">
+                <div class="flex items-center gap-2">
+                  <ng-icon name="lucideWorkflow" class="h-4 w-4 flex-shrink-0"></ng-icon>
+                  <span class="truncate">
+                    {{ selectedWorkflow().name || selectedWorkflow().id }}
+                  </span>
+                </div>
+              </h2>
+
+              <button
+                [appButton]
+                variant="ghost"
+                size="sm"
+                class="h-6 w-6 p-0 flex-shrink-0 btn-ghost"
+                [title]="'View workflow details'"
+                (click)="detailsModalOpen.set(true)"
+              >
+                <ng-icon name="lucideInfo" class="h-4 w-4"></ng-icon>
+              </button>
+
+              @if (selectedWorkflow().source === 'in_memory') {
+                <button
+                  [appButton]
+                  variant="ghost"
+                  size="sm"
+                  class="h-6 w-6 p-0 flex-shrink-0 btn-ghost"
+                  [disabled]="isReloading()"
+                  [title]="isReloading() ? 'Reloading...' : 'Reload entity code (hot reload)'"
+                  (click)="handleReloadEntity()"
+                >
+                  <ng-icon
+                    name="lucideRefreshCw"
+                    class="h-4 w-4"
+                    [class.animate-spin]="isReloading()"
+                  ></ng-icon>
+                </button>
+              }
+            </div>
+
+            @if (workflowInfo()) {
+              <div
+                class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-shrink-0"
+              >
+                <app-select
+                  [value]="currentSession()?.conversation_id || ''"
+                  (valueChange)="handleSessionSelect($event)"
+                  [disabled]="loadingSessions()"
+                >
+                  <app-select-trigger class="w-full sm:w-64">
+                    @if (currentSession()) {
+                      <div class="flex items-center gap-2 text-xs">
+                        <span class="truncate">
+                          {{
+                            currentSession()?.metadata?.name ||
+                              'Checkpoint Storage ' + currentSession()?.conversation_id?.slice(-8)
+                          }}
+                        </span>
+                        @if (currentSession()?.metadata?.checkpoint_summary; as summary) {
+                          <div class="flex items-center gap-1 flex-shrink-0">
+                            <app-badge variant="secondary" class="h-4 px-1.5 text-[10px]">
+                              {{ summary.count }}
+                            </app-badge>
+                            @if (summary.has_pending_hil) {
+                              <app-badge variant="secondary" class="h-4 px-1.5 text-[10px]"
+                                >HIL</app-badge
+                              >
+                            }
+                          </div>
+                        }
+                      </div>
+                    } @else {
+                      <span>{{
+                        loadingSessions()
+                          ? 'Loading...'
+                          : availableSessions().length === 0
+                            ? 'No checkpoint storages'
+                            : 'Select checkpoint storage'
+                      }}</span>
+                    }
+                  </app-select-trigger>
+
+                  <app-select-content>
+                    @for (session of availableSessions(); track session.conversation_id) {
+                      <app-select-item [value]="session.conversation_id">
+                        <div class="flex items-center justify-between w-full gap-2">
+                          <span class="truncate">
+                            {{
+                              session.metadata.name ||
+                                'Checkpoint Storage ' + session.conversation_id.slice(-8)
+                            }}
+                          </span>
+                          <div class="flex items-center gap-1 flex-shrink-0">
+                            @if (session.created_at) {
+                              <span class="text-xs text-muted-foreground">
+                                {{ session.created_at * 1000 | date: 'shortTime' }}
+                              </span>
+                            }
+                            @if (session.metadata.checkpoint_summary; as summary) {
+                              <app-badge variant="secondary" class="h-4 px-1.5 text-[10px]">
+                                {{ summary.count }}
+                              </app-badge>
+                              @if (summary.has_pending_hil) {
+                                <app-badge variant="secondary" class="h-4 px-1.5 text-[10px]"
+                                  >HIL</app-badge
+                                >
+                              }
+                            }
+                          </div>
+                        </div>
+                      </app-select-item>
+                    }
+                  </app-select-content>
+                </app-select>
+
+                <button
+                  [appButton]
+                  variant="ghost"
+                  size="sm"
+                  class="h-9 w-9 p-0 flex-shrink-0 btn-ghost"
+                  [disabled]="!currentSession()"
+                  (click)="checkpointInfoModalOpen.set(true)"
+                  title="View checkpoint details"
+                >
+                  <ng-icon name="lucideInfo" class="h-4 w-4"></ng-icon>
+                </button>
+
+                <button
+                  [appButton]
+                  variant="ghost"
+                  size="sm"
+                  class="h-9 w-9 p-0 btn-ghost"
+                  [disabled]="!currentSession() || loadingSessions()"
+                  (click)="handleDeleteSession()"
+                  title="Delete current session"
+                >
+                  <ng-icon name="lucideTrash2" class="h-4 w-4"></ng-icon>
+                </button>
+
+                <button
+                  [appButton]
+                  variant="ghost"
+                  size="sm"
+                  class="h-9 px-3 btn-ghost"
+                  [disabled]="loadingSessions()"
+                  (click)="handleNewSession()"
+                  title="New session"
+                >
+                  <ng-icon name="lucidePlus" class="h-4 w-4"></ng-icon>
+                </button>
+
+                @if (timelineMinimized()) {
+                  <app-run-workflow-button
+                    [inputSchema]="workflowInfo()?.input_schema"
+                    (run)="handleWorkflowRun($event.data, $event.checkpointId)"
+                    (cancel)="handleCancel()"
+                    [isSubmitting]="isStreaming()"
+                    [isCancelling]="isCancelling()"
+                    [workflowState]="
+                      isStreaming()
+                        ? 'running'
+                        : executorHistory().length > 0
+                          ? 'completed'
+                          : 'ready'
+                    "
+                    [checkpoints]="sessionCheckpoints()"
+                    [showCheckpoints]="false"
+                  ></app-run-workflow-button>
+                }
+              </div>
+            }
+          </div>
+
+          @if (selectedWorkflow().description) {
+            <p class="text-sm text-muted-foreground">
+              {{ selectedWorkflow().description }}
+            </p>
+          }
+        </div>
+
+        @if (pendingHilRequests().length > 0) {
+          <div
+            class="bg-orange-100 dark:bg-orange-950/30 border-b border-orange-300 dark:border-orange-800 px-4 py-2"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <ng-icon
+                  name="lucideAlertCircle"
+                  class="w-4 h-4 text-orange-600 dark:text-orange-400"
+                ></ng-icon>
+
+                <span class="text-sm font-medium text-orange-900 dark:text-orange-100">
+                  Workflow is waiting for your input ({{ pendingHilRequests().length }} request{{
+                    pendingHilRequests().length > 1 ? 's' : ''
+                  }})
+                </span>
+              </div>
+              <div class="flex items-center gap-2">
+                @if (pendingHilRequests().length > 1) {
+                  <button
+                    [appButton]
+                    variant="ghost"
+                    size="sm"
+                    class="btn-primary btn-sm gap-1"
+                    [disabled]="!areAllHilResponsesValid() || isStreaming()"
+                    (click)="handleSubmitHilResponses()"
+                  >
+                    Submit All
+                  </button>
+                }
+                <button
+                  [appButton]
+                  variant="ghost"
+                  size="sm"
+                  class="text-orange-700 hover:text-orange-900 dark:text-orange-400 dark:hover:text-orange-200"
+                  (click)="scrollToHilForm()"
+                >
+                  Jump to input →
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <div class="flex-1 min-h-0 flex gap-0">
+          <div class="flex-1 min-w-0 transition-all duration-300">
+            @if (workflowInfo()?.workflow_dump) {
+              <app-workflow-flow
+                [workflowDump]="workflowInfo()?.workflow_dump"
+                [events]="workflowEvents()"
+                [isStreaming]="isStreaming()"
+                (onNodeSelect)="selectedExecutorId.set($event)"
+                class="h-full"
+                [viewOptions]="viewOptions()"
+                [layoutDirection]="layoutDirection()"
+                [timelineVisible]="true"
+              ></app-workflow-flow>
+            }
+          </div>
+
+          <div
+            class="flex-shrink-0 overflow-hidden transition-all duration-300 ease-out border-l"
+            [style.width]="timelineMinimized() ? '2.5rem' : '28rem'"
+          >
+            @if (timelineMinimized()) {
+              <div
+                class="h-full w-10 bg-background flex flex-col items-center py-2 cursor-pointer hover:bg-accent/50"
+                (click)="timelineMinimized.set(false)"
+                title="Expand timeline"
+              >
+                <ng-icon name="lucideChevronLeft" class="h-4 w-4 text-muted-foreground"></ng-icon>
+                <div
+                  class="flex-1 flex flex-col items-center justify-center gap-2 pointer-events-none"
+                >
+                  <div
+                    class="text-xs text-muted-foreground select-none"
+                    style="writing-mode: vertical-rl; transform: rotate(180deg);"
+                  >
+                    Execution Timeline
+                  </div>
+                  @if (workflowEvents().length > 0) {
+                    <div
+                      class="bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-[10px]"
+                      [class.animate-pulse]="isStreaming()"
+                    >
+                      {{ workflowEvents().length }}
+                    </div>
+                  }
+                </div>
+              </div>
+            } @else {
+              <div class="w-[28rem] h-full flex flex-col">
+                <div class="flex items-center justify-between p-2 border-b">
+                  <div class="flex items-center gap-2">
+                    <h3 class="text-sm font-medium">Execution Timeline</h3>
+                    @if (workflowEvents().length > 0) {
+                      <div
+                        class="bg-primary text-primary-foreground rounded-full px-2 h-5 flex items-center justify-center text-[11px]"
+                        [class.animate-pulse]="isStreaming()"
+                      >
+                        {{ workflowEvents().length }}
+                      </div>
+                    }
+                  </div>
+                  <button
+                    [appButton]
+                    variant="ghost"
+                    size="sm"
+                    class="h-8 w-8 p-0 btn-ghost"
+                    (click)="timelineMinimized.set(true)"
+                  >
+                    <ng-icon name="lucideChevronRight" class="h-4 w-4"></ng-icon>
+                  </button>
+                </div>
+
+                <div class="flex-1 min-h-0 overflow-hidden">
+                  <app-execution-timeline
+                    [events]="workflowEvents()"
+                    [isStreaming]="isStreaming()"
+                    [selectedExecutorId]="selectedExecutorId()"
+                    [workflowResult]="workflowResult()"
+                    [pendingHilRequests]="pendingHilRequests()"
+                    [checkpoints]="sessionCheckpoints()"
+                    (onRun)="handleWorkflowRun($event.data, $event.checkpointId)"
+                    (cancel)="handleCancel()"
+                  ></app-execution-timeline>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <app-workflow-details-modal
+          [workflow]="selectedWorkflow()"
+          [open]="detailsModalOpen()"
+          (onOpenChange)="detailsModalOpen.set($event)"
+        ></app-workflow-details-modal>
+
+        <app-checkpoint-info-modal
+          [session]="currentSession() || null"
+          [checkpoints]="sessionCheckpoints()"
+          [open]="checkpointInfoModalOpen()"
+          (onOpenChange)="checkpointInfoModalOpen.set($event)"
+        ></app-checkpoint-info-modal>
+      </div>
+    }`,
 })
 export class WorkflowViewComponent {
   selectedWorkflow = input.required<WorkflowInfo>()
@@ -1158,5 +1458,13 @@ export class WorkflowViewComponent {
       // Refetch checkpoints even on error/cancel
       await this.loadCheckpoints()
     }
+  }
+
+  scrollToHilForm = () => {
+    const hilForm = document.querySelector('[data-hil-form]')
+    hilForm?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    })
   }
 }
