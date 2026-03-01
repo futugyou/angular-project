@@ -823,4 +823,89 @@ export class WorkflowViewComponent {
       this.resetCancelling()
     }
   }
+
+  handleSendWorkflowDataSync = async (
+    inputData: Record<string, unknown>,
+    checkpointId?: string,
+  ) => {
+    const selectedWorkflow = this.selectedWorkflow()
+    if (!selectedWorkflow || selectedWorkflow.type !== 'workflow') return
+
+    this.isStreaming.set(false) // Not actually streaming
+    this.wasCancelled.set(false)
+    this.openAIEvents.set([])
+    this.workflowResult.set('')
+    this.itemOutputs.set({})
+    this.currentStreamingItemId.set(null)
+    this.workflowMetadata.set({})
+    this.pendingHilRequests.set([])
+    this.hilResponses.set({})
+    this.onDebugEvent()('clear')
+
+    try {
+      const response = await this.apiClient.runWorkflowSync(selectedWorkflow.id, {
+        input_data: inputData,
+        conversation_id: this.currentSession()?.conversation_id || undefined,
+        checkpoint_id: checkpointId,
+      })
+
+      // Extract workflow result from response output
+      if (response.output) {
+        for (const outputItem of response.output) {
+          if (
+            outputItem.type === 'message' &&
+            'content' in outputItem &&
+            Array.isArray(outputItem.content)
+          ) {
+            for (const content of outputItem.content as Array<{ type: string; text?: string }>) {
+              if (content.type === 'output_text' && content.text) {
+                this.workflowResult.update((prev) => {
+                  if (prev && prev.length > 0) {
+                    return prev + '\n\n' + content.text
+                  }
+                  return content.text || ''
+                })
+
+                // Try to parse as JSON for structured metadata
+                try {
+                  const parsed = JSON.parse(content.text || '')
+                  if (typeof parsed === 'object' && parsed !== null) {
+                    this.workflowMetadata.set(parsed)
+                  }
+                } catch {
+                  // Not JSON, keep as text
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Create a synthetic completion event for the timeline
+      const completedEvent = {
+        type: 'response.completed',
+        response: response,
+        sequence_number: 0,
+      } as ExtendedResponseStreamEvent
+      this.openAIEvents.set([completedEvent])
+      this.onDebugEvent()(completedEvent)
+
+      // Refetch checkpoints after completion
+      await this.loadCheckpoints()
+    } catch (error) {
+      console.error('Workflow execution error:', error)
+
+      // Create a synthetic error event for the timeline
+      const errorMessage = error instanceof Error ? error.message : 'Workflow execution failed'
+      const errorEvent: ExtendedResponseStreamEvent = {
+        type: 'response.failed',
+        response: {
+          error: { message: errorMessage },
+        },
+        sequence_number: 0,
+      } as ExtendedResponseStreamEvent
+      this.openAIEvents.set([errorEvent])
+      this.onDebugEvent()(errorEvent)
+    }
+  }
 }
