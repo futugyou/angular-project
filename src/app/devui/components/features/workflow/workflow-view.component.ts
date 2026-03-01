@@ -928,4 +928,235 @@ export class WorkflowViewComponent {
     }
     return true
   }
+
+  handleSubmitHilResponses = async () => {
+    const selectedWorkflow = this.selectedWorkflow()
+    if (!selectedWorkflow || selectedWorkflow.type !== 'workflow') return
+
+    // Only submit if ALL forms are valid
+    if (!this.areAllHilResponsesValid()) {
+      console.warn('Cannot submit: Not all HIL forms are valid')
+      return
+    }
+
+    this.isStreaming.set(true)
+
+    // Clear pending HIL requests immediately after submission
+    // They've been submitted, so we shouldn't show them anymore
+    this.pendingHilRequests.set([])
+    this.hilResponses.set({})
+
+    // Create new AbortController for HIL submission
+    const signal = this.createAbortSignal()
+
+    try {
+      // Create OpenAI request with workflow_hil_response content type
+      const request = {
+        input_data: [
+          {
+            type: 'message',
+            content: [
+              {
+                type: 'workflow_hil_response',
+                responses: this.hilResponses(),
+              },
+            ],
+          },
+        ] as unknown as Record<string, unknown>, // OpenAI Responses API format, cast to satisfy RunWorkflowRequest type
+        conversation_id: this.currentSession()?.conversation_id || undefined,
+        // checkpoint_id: undefined, // Checkpoint functionality currently disabled
+      }
+
+      // Use OpenAI-compatible API streaming to continue workflow
+      const streamGenerator = this.apiClient.streamWorkflowExecutionOpenAI(
+        selectedWorkflow.id,
+        request,
+        signal,
+      )
+
+      // Track if new HIL requests arrive during response processing
+      let newHilRequestsArrived = false
+      const newHilRequests = []
+
+      for await (const openAIEvent of streamGenerator) {
+        // Store workflow-related events
+        if (
+          openAIEvent.type === 'response.output_item.added' ||
+          openAIEvent.type === 'response.output_item.done' ||
+          openAIEvent.type === 'response.created' ||
+          openAIEvent.type === 'response.in_progress' ||
+          openAIEvent.type === 'response.completed' ||
+          openAIEvent.type === 'response.failed' ||
+          openAIEvent.type === 'response.workflow_event.completed'
+        ) {
+          this.openAIEvents.update((prev) => {
+            // Generate unique timestamp for each event
+            const baseTimestamp = Math.floor(Date.now() / 1000)
+            const lastTimestamp =
+              prev.length > 0
+                ? (prev[prev.length - 1] as { _uiTimestamp?: number })._uiTimestamp || 0
+                : 0
+            const uniqueTimestamp = Math.max(baseTimestamp, lastTimestamp + 1)
+
+            return [
+              ...prev,
+              {
+                ...openAIEvent,
+                _uiTimestamp: uniqueTimestamp,
+              } as ExtendedResponseStreamEvent & { _uiTimestamp: number },
+            ]
+          })
+        }
+
+        // Pass to debug panel
+        this.onDebugEvent()(openAIEvent)
+
+        // Check for new HIL requests after sending responses - handles multi-round HIL
+        if (openAIEvent.type === 'response.request_info.requested') {
+          const hilEvent = openAIEvent as ResponseRequestInfoEvent
+          newHilRequestsArrived = true
+
+          // Cast to the correct type for setPendingHilRequests
+          const typedHilEvent = {
+            request_id: hilEvent.request_id,
+            request_data: hilEvent.request_data,
+            request_schema: hilEvent.request_schema as unknown as JSONSchemaProperty,
+          }
+
+          // Collect new requests (don't update state yet)
+          newHilRequests.push(typedHilEvent)
+
+          // Initialize response data with defaults from schema
+          const schema = hilEvent.request_schema as unknown as JSONSchemaProperty
+          const defaultValues: Record<string, unknown> = {}
+
+          if (schema.properties) {
+            Object.entries(schema.properties).forEach(([fieldName, fieldSchema]) => {
+              const field = fieldSchema as JSONSchemaProperty
+              // Set default for enum fields to first option
+              if (field.enum && field.enum.length > 0) {
+                defaultValues[fieldName] = field.enum[0]
+              }
+              // Use explicit default value if provided
+              else if (field.default !== undefined) {
+                defaultValues[fieldName] = field.default
+              }
+            })
+          }
+
+          this.hilResponses.update((prev) => ({
+            ...prev,
+            [hilEvent.request_id]: defaultValues,
+          }))
+        }
+
+        // Handle workflow output items (from ctx.yield_output)
+        if (openAIEvent.type === 'response.output_item.added') {
+          const item = (openAIEvent as ResponseOutputItemAddedEvent).item
+
+          // Handle executor action items
+          if (item && item.type === 'executor_action' && item.executor_id && item.id) {
+            this.currentStreamingItemId.set(item.id)
+            if (!this.itemOutputs()[item.id]) {
+              this.itemOutputs.update((prev) => ({
+                ...prev,
+                [item.id]: '',
+              }))
+            }
+          }
+
+          // Handle workflow output messages
+          if (
+            item &&
+            item.type === 'message' &&
+            'content' in item &&
+            Array.isArray(item['content'])
+          ) {
+            // Extract text from message content
+            for (const content of item['content'] as Array<{ type: string; text?: string }>) {
+              if (content.type === 'output_text' && content.text) {
+                const text = content.text // Capture for closure
+                // Append to workflow result (support multiple yield_output calls)
+                this.workflowResult.update((prev) => {
+                  if (prev && prev.length > 0) {
+                    // If there's existing output, add separator
+                    return prev + '\n\n' + text
+                  }
+                  return text
+                })
+
+                // Try to parse as JSON for structured metadata
+                try {
+                  const parsed = JSON.parse(text)
+                  if (typeof parsed === 'object' && parsed !== null) {
+                    this.workflowMetadata.update((prev) => ({ ...prev, current: parsed }))
+                  }
+                } catch {
+                  // Not JSON, keep as text
+                }
+              }
+            }
+          }
+        }
+
+        // Handle text output - assign to current item (not executor!)
+        if (
+          openAIEvent.type === 'response.output_text.delta' &&
+          'delta' in openAIEvent &&
+          openAIEvent.delta
+        ) {
+          const itemId = this.currentStreamingItemId()
+          if (itemId) {
+            if (!this.itemOutputs()[itemId]) {
+              this.itemOutputs.update((prev) => ({
+                ...prev,
+                [itemId]: '',
+              }))
+            }
+            this.itemOutputs.update((prev) => ({
+              ...prev,
+              [itemId]: prev[itemId] + openAIEvent.delta,
+            }))
+          }
+        }
+
+        // Handle completion
+        if (openAIEvent.type === 'response.completed') {
+          // Workflow completed successfully - refetch checkpoints
+          await this.loadCheckpoints()
+        }
+
+        // Handle errors
+        if (openAIEvent.type === 'response.failed') {
+          // Error will be displayed in timeline - refetch checkpoints
+          await this.loadCheckpoints()
+        }
+      }
+
+      // Handle new HIL requests if any arrived during processing
+      if (newHilRequestsArrived) {
+        // Set the new pending requests
+        this.pendingHilRequests.set(newHilRequests)
+        // Note: HIL responses are already initialized when requests arrive (lines 1198-1201)
+        // No need to reinitialize them here
+      }
+
+      // Stream is done - refetch checkpoints to update badge count
+      this.isStreaming.set(false)
+      await this.loadCheckpoints()
+    } catch (error) {
+      // Handle abort separately
+      if (isAbortError(error)) {
+        console.log('HIL submission cancelled by user')
+        this.wasCancelled.set(true) // Mark as cancelled for UI feedback
+      } else {
+        // Other errors
+        console.error('HIL submission error:', error)
+      }
+      this.isStreaming.set(false)
+      this.resetCancelling()
+      // Refetch checkpoints even on error/cancel
+      await this.loadCheckpoints()
+    }
+  }
 }
