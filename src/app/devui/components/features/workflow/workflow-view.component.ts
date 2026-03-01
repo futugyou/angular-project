@@ -908,4 +908,12 @@ export class WorkflowViewComponent {
       this.onDebugEvent()(errorEvent)
     }
   }
+
+  handleWorkflowRun = async (inputData: Record<string, unknown>, checkpointId?: string) => {
+    if (this.streamingEnabled()) {
+      await this.handleSendWorkflowData(inputData, checkpointId)
+    } else {
+      await this.handleSendWorkflowDataSync(inputData, checkpointId)
+    }
+  }
 }
