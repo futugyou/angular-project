@@ -72,7 +72,7 @@ function isAbortError(error: unknown): boolean {
 type DebugEventHandler = (event: ExtendedResponseStreamEvent | 'clear') => void
 
 @Component({
-  selector: 'app-header',
+  selector: 'app-agent-view',
   standalone: true,
   imports: [
     ChatMessageInputComponent,

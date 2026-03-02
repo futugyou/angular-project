@@ -30,7 +30,7 @@ import { ApiClient } from '../../services/api.service'
 type Tab = 'docker' | 'azure'
 
 @Component({
-  selector: 'app-header',
+  selector: 'app-deployment-modal',
   standalone: true,
   imports: [
     FormsModule,

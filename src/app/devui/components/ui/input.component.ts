@@ -1,4 +1,12 @@
-import { Component, input, computed, forwardRef, signal } from '@angular/core'
+import {
+  Component,
+  input,
+  computed,
+  forwardRef,
+  signal,
+  ElementRef,
+  viewChild,
+} from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { cn } from '../../lib/utils'
 
@@ -17,10 +25,11 @@ import { cn } from '../../lib/utils'
   },
   template: `
     <input
+      #input
       [type]="type()"
       [class]="classes()"
       [attr.placeholder]="placeholder()"
-      [disabled]="disabled()"
+      [disabled]="isEffectivelyDisabled()"
       [value]="value()"
       (input)="onInputChange($event)"
       (blur)="onTouched()"
@@ -30,11 +39,15 @@ import { cn } from '../../lib/utils'
 export class InputComponent implements ControlValueAccessor {
   type = input<string>('text')
   placeholder = input<string>('')
-  disabled = signal<boolean>(false)
+  disabled = input<boolean>(false)
+  private readonly _isCvaDisabled = signal(false)
+  readonly isEffectivelyDisabled = computed(() => this.disabled() || this._isCvaDisabled())
 
   readonly userClass = input<string>('', { alias: 'class' })
+  readonly inputElement = viewChild.required<ElementRef<HTMLInputElement>>('input')
 
-  value = signal<any>('')
+  readonly value = input<string>('')
+  private innerValue: string = ''
 
   onChange: any = () => {}
   onTouched: any = () => {}
@@ -50,12 +63,15 @@ export class InputComponent implements ControlValueAccessor {
 
   onInputChange(event: Event) {
     const val = (event.target as HTMLInputElement).value
-    this.value.set(val)
+    this.innerValue = val
     this.onChange(val)
   }
 
   writeValue(value: any): void {
-    this.value.set(value)
+    this.innerValue = value || ''
+    if (this.inputElement()) {
+      this.inputElement().nativeElement.value = this.innerValue
+    }
   }
 
   registerOnChange(fn: any): void {
@@ -67,6 +83,6 @@ export class InputComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled.set(isDisabled)
+    this._isCvaDisabled.set(isDisabled)
   }
 }
