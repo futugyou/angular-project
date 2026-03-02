@@ -59,6 +59,36 @@ export class DevuiComponent {
   oaiMode = computed(() => this.store.oaiMode)
   uiMode = computed(() => this.store.uiMode)
 
+  handleAuthTokenSubmit = async () => {
+    const authToken = this.authToken()
+    if (!authToken.trim()) return
+
+    this.isTestingToken.set(true)
+    this.authError.set('')
+
+    try {
+      // Set token in API client (stores in localStorage)
+      this.apiClient.setAuthToken(authToken.trim())
+
+      // Test the token with an actual PROTECTED endpoint (not /meta which is public)
+      await this.apiClient.getEntities()
+
+      // If successful, reload to initialize with new token
+      window.location.reload()
+    } catch (error) {
+      // Token is invalid - clear it and show error
+      this.apiClient.clearAuthToken()
+      this.isTestingToken.set(false)
+
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error'
+      if (errorMsg === 'UNAUTHORIZED') {
+        this.authError.set('Invalid token. Please check and try again.')
+      } else {
+        this.authError.set(`Failed to connect: ${errorMsg}`)
+      }
+    }
+  }
+
   constructor() {
     effect(() => {
       const loadData = async () => {
