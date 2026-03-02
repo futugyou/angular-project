@@ -207,5 +207,17 @@ export class DevuiComponent {
 
       untracked(() => loadData())
     })
+
+    effect(() => {
+      if (this.oaiMode().enabled && this.selectedAgent()?.type === 'workflow') {
+        // Workflows don't work with OpenAI proxy - switch to first available agent
+        const firstAgent = this.agents()[0]
+        if (firstAgent) {
+          untracked(() => {
+            this.store.selectEntity(firstAgent)
+          })
+        }
+      }
+    })
   }
 }
