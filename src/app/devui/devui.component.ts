@@ -137,6 +137,14 @@ export class DevuiComponent {
     }
   }
 
+  handleDebugEvent = (event: ExtendedResponseStreamEvent | 'clear') => {
+    if (event === 'clear') {
+      this.store.clearDebugEvents()
+    } else {
+      this.store.addDebugEvent(event)
+    }
+  }
+
   constructor() {
     effect(() => {
       const loadData = async () => {
