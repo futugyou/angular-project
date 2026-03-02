@@ -6,7 +6,7 @@ import { DeploymentModalComponent } from './components/layout/deployment-modal.c
 import { GalleryViewComponent } from './components/features/gallery/gallery-view.component'
 import { AgentViewModalComponent } from './components/features/agent/agent-view.component'
 import { WorkflowViewComponent } from './components/features/workflow/workflow-view.component'
-import { Toast, ToastContainer } from './components/ui/toast.component'
+import { Toast, ToastContainer, ToastService } from './components/ui/toast.component'
 import { ApiClient } from './services/api.service'
 import { NgIconComponent } from '@ng-icons/core'
 import type { AgentInfo, WorkflowInfo, ExtendedResponseStreamEvent } from './types'
@@ -26,7 +26,6 @@ import { DevUIStore } from './stores'
     SettingsModalComponent,
     DeploymentModalComponent,
     DeploymentModalComponent,
-    GalleryViewComponent,
     GalleryViewComponent,
     AgentViewModalComponent,
     WorkflowViewComponent,
@@ -54,9 +53,7 @@ import { DevUIStore } from './stores'
           </div>
         </div>
       </div>
-    }
-
-    @if (entityError()) {
+    } @else if (entityError()) {
       <div class="h-screen flex flex-col bg-background">
         <app-header [agents]="[]" [workflows]="[]" />
 
@@ -190,6 +187,166 @@ import { DevUIStore } from './stores'
           (onBackendUrlChange)="this.store.setShowAboutModal(false)"
         />
       </div>
+    } @else {
+      <div class="h-screen flex flex-col bg-background max-h-screen">
+        <app-header
+          [agents]="agents()"
+          [workflows]="workflows()"
+          [entities]="entities()"
+          [selectedItem]="selectedAgent()"
+          (onSelect)="handleEntitySelect($event)"
+          (onBrowseGallery)="this.store.setShowGallery(true)"
+          [isLoading]="isLoadingEntities()"
+          (onSettingsClick)="this.store.setShowAboutModal(true)"
+        />
+
+        <div class="flex flex-1 overflow-hidden">
+          @if (showGallery()) {
+            <div class="flex-1 w-full">
+              <app-gallery-view
+                variant="route"
+                (onClose)="this.store.setShowGallery(false)"
+                [hasExistingEntities]="agents.length > 0 || workflows.length > 0"
+              ></app-gallery-view>
+            </div>
+          } @else if (agents.length === 0 && workflows.length === 0) {
+            <app-gallery-view variant="inline"></app-gallery-view>
+          } @else {
+            <div class="flex-1 min-w-0">
+              @let selectedAgentValue = selectedAgent();
+              @if (selectedAgentValue) {
+                @if (selectedAgentValue.type === 'agent') {
+                  <app-agent-view
+                    [selectedAgent]="$any(selectedAgentValue)"
+                    [onDebugEvent]="handleDebugEvent"
+                  ></app-agent-view>
+                } @else {
+                  <app-workflow-view
+                    [selectedWorkflow]="$any(selectedAgentValue)"
+                    [onDebugEvent]="handleDebugEvent"
+                  ></app-workflow-view>
+                }
+              } @else {
+                <div class="flex-1 flex items-center justify-center text-muted-foreground">
+                  Select an agent or workflow to get started.
+                </div>
+              }
+            </div>
+
+            @if (uiMode() === 'developer') {
+              @if (showDebugPanel()) {
+                <div
+                  class="w-1 cursor-col-resize flex-shrink-0 relative group transition-colors duration-200 ease-in-out"
+                  [class.bg-primary/40]="isResizing()"
+                  [class.bg-border]="!isResizing()"
+                  (mousedown)="handleMouseDown($event)"
+                >
+                  <div class="absolute inset-y-0 -left-2 -right-2 flex items-center justify-center">
+                    <div
+                      class="h-12 w-1 rounded-full transition-all duration-200 ease-in-out"
+                      [class.bg-primary]="isResizing()"
+                      [class.shadow-lg]="isResizing()"
+                      [class.shadow-primary/25]="isResizing()"
+                      [class.bg-primary/30]="!isResizing()"
+                    ></div>
+                  </div>
+                </div>
+
+                <div
+                  class="flex-shrink-0 flex flex-col h-[calc(100vh-3.7rem)]"
+                  [style.width]="debugPanelMinimized() ? '2.5rem' : debugPanelWidth() + 'px'"
+                >
+                  @if (debugPanelMinimized()) {
+                    <div
+                      class="h-full w-10 bg-background border-l flex flex-col items-center py-2 cursor-pointer hover:bg-accent/50 transition-colors"
+                      (click)="this.store.setDebugPanelMinimized(false)"
+                      title="Expand debug panel"
+                    >
+                      <ng-icon name="lucideChevronLeft" class="h-4 w-4 text-muted-foreground" />
+                      <div
+                        class="flex-1 flex flex-col items-center justify-center gap-2 pointer-events-none"
+                      >
+                        <div
+                          class="text-xs text-muted-foreground select-none"
+                          style="writing-mode: vertical-rl; transform: rotate(180deg);"
+                        >
+                          Debug Panel
+                        </div>
+                        @if (debugEvents().length > 0) {
+                          <div
+                            class="bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-[10px]"
+                          >
+                            {{ debugEvents().length }}
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  } @else {
+                    <app-debug-panel
+                      [events]="debugEvents()"
+                      [isStreaming]="false"
+                      (onMinimize)="this.store.setDebugPanelMinimized(true)"
+                    ></app-debug-panel>
+
+                    <div class="border-t bg-muted/30 px-3 py-2.5 flex-shrink-0">
+                      <button
+                        class="w-full btn-outline btn-sm"
+                        (click)="this.store.setShowDeployModal(true)"
+                      >
+                        <ng-icon name="lucideRocket" class="h-3 w-3 mr-2" />
+                        <span class="truncate text-xs">
+                          {{
+                            azureDeploymentEnabled() && selectedAgent()?.deployment_supported
+                              ? 'Deploy to Azure'
+                              : 'Deployment Guide'
+                          }}
+                        </span>
+                      </button>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="flex-shrink-0">
+                  <button
+                    class="h-full w-10 rounded-none border-l btn-ghost btn-sm"
+                    (click)="this.store.setShowDebugPanel(true)"
+                    title="Show debug panel"
+                  >
+                    <ng-icon name="lucidePanelRightOpen" class="h-4 w-4"></ng-icon>
+                  </button>
+                </div>
+              }
+            }
+          }
+        </div>
+
+        <app-settings-modal
+          [showModal]="showAboutModal()"
+          (onBackendUrlChange)="(this.store.setShowAboutModal)"
+        ></app-settings-modal>
+
+        @if (showDeployModal()) {
+          <app-deployment-modal
+            [open]="showDeployModal()"
+            (onOpenChange)="this.store.setShowDeployModal(false)"
+            [agentName]="selectedAgent()?.name || ''"
+            [entity]="selectedAgent()"
+          ></app-deployment-modal>
+        }
+
+        @if (showEntityNotFoundToast()) {
+          <app-toast
+            message="Entity not found..."
+            type="info"
+            (closeToast)="store.setShowEntityNotFoundToast(false)"
+          />
+        }
+
+        <app-toast-container
+          [toasts]="toastService.toasts()"
+          (onRemove)="toastService.remove($event)"
+        />
+      </div>
     }`,
   host: {
     class: 'block',
@@ -201,7 +358,8 @@ export class DevuiComponent {
   isTestingToken = signal(false)
   authError = signal('')
   private apiClient = inject(ApiClient)
-  store = inject(DevUIStore)
+  protected store = inject(DevUIStore)
+  protected toastService = inject(ToastService)
 
   agents = computed(() => this.store.agents)
   workflows = computed(() => this.store.workflows)
