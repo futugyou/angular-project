@@ -89,6 +89,29 @@ export class DevuiComponent {
     }
   }
 
+  handleMouseDown = (e: MouseEvent) => {
+    e.preventDefault()
+    this.store.setIsResizing(true)
+
+    const startX = e.clientX
+    const startWidth = this.store.debugPanelWidth
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const deltaX = startX - e.clientX // Subtract because we're dragging from right
+      const newWidth = Math.max(200, Math.min(window.innerWidth * 0.5, startWidth + deltaX))
+      this.store.setDebugPanelWidth(newWidth)
+    }
+
+    const handleMouseUp = () => {
+      this.store.setIsResizing(false)
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+  }
+
   constructor() {
     effect(() => {
       const loadData = async () => {
