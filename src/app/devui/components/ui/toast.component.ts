@@ -111,7 +111,7 @@ export class Toast implements OnInit {
             [message]="toast.message"
             [type]="toast.type"
             [duration]="toast.duration"
-            (closeToast)="onRemove(toast.id)"
+            (closeToast)="onRemove.emit(toast.id)"
           />
         </div>
       }
@@ -119,53 +119,28 @@ export class Toast implements OnInit {
   `,
 })
 export class ToastContainer {
-  toasts = signal<ToastData[]>([])
-
-  onRemove(id: string) {
-    this.toasts.update((current) => current.filter((t) => t.id !== id))
-  }
-
-  add(toast: ToastData) {
-    this.toasts.update((current) => [...current, toast])
-  }
+  toasts = input.required<ToastData[]>()
+  onRemove = output<string>()
 }
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
-  private overlay = inject(Overlay)
-  private injector = inject(Injector)
-  private overlayRef?: OverlayRef
-  private containerRef?: ToastContainer
-
-  private createContainer() {
-    if (this.overlayRef) return this.containerRef!
-
-    this.overlayRef = this.overlay.create({
-      positionStrategy: this.overlay.position().global().top('0').right('0'),
-      scrollStrategy: this.overlay.scrollStrategies.noop(),
-      hasBackdrop: false,
-    })
-
-    const containerPortal = new ComponentPortal(ToastContainer, null, this.injector)
-    const componentRef = this.overlayRef.attach(containerPortal)
-    this.containerRef = componentRef.instance
-
-    return this.containerRef
-  }
+  private toastsSignal = signal<ToastData[]>([])
+  readonly toasts = this.toastsSignal.asReadonly()
 
   show(message: string, type: ToastData['type'] = 'info', duration: number = 4000) {
-    const container = this.createContainer()
     const id = Math.random().toString(36).substring(2, 9)
-    container.add({ id, message, type, duration })
+    this.toastsSignal.update((ts) => [...ts, { id, message, type, duration }])
   }
 
-  success(message: string) {
-    this.show(message, 'success')
+  remove(id: string) {
+    this.toastsSignal.update((ts) => ts.filter((t) => t.id !== id))
   }
-  error(message: string) {
-    this.show(message, 'error')
+
+  success(msg: string) {
+    this.show(msg, 'success')
   }
-  warning(message: string) {
-    this.show(message, 'warning')
+  error(msg: string) {
+    this.show(msg, 'error')
   }
 }
