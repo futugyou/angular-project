@@ -35,7 +35,162 @@ import { DevUIStore } from './stores'
     ToastContainer,
     InputComponent,
   ],
-  template: ``,
+  template: ` @if (isLoadingEntities()) {
+      <div class="h-screen flex flex-col bg-background">
+        <header class="flex h-14 items-center gap-4 border-b px-4">
+          <div class="w-64 h-9 bg-muted animate-pulse rounded-md"></div>
+          <div class="flex items-center gap-2 ml-auto">
+            <div class="w-8 h-8 bg-muted animate-pulse rounded-md"></div>
+            <div class="w-8 h-8 bg-muted animate-pulse rounded-md"></div>
+          </div>
+        </header>
+
+        <div class="flex-1 flex items-center justify-center">
+          <div class="text-center">
+            <div class="text-lg font-medium">Initializing DevUI...</div>
+            <div class="text-sm text-muted-foreground mt-2">
+              Loading agents and workflows from your configuration
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (entityError()) {
+      <div class="h-screen flex flex-col bg-background">
+        <app-header [agents]="[]" [workflows]="[]" />
+
+        <div class="flex-1 flex items-center justify-center p-8">
+          <div class="text-center space-y-6 max-w-2xl">
+            <div class="flex justify-center">
+              <div class="rounded-full bg-muted p-4 animate-pulse">
+                @if (isAuthError()) {
+                  <ng-icon name="lucideClock" class="h-12 w-12 text-muted-foreground" />
+                } @else {
+                  <ng-icon name="lucideServerOff" class="h-12 w-12 text-muted-foreground" />
+                }
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <h2 class="text-2xl font-semibold text-foreground">
+                {{ isAuthError() ? 'Authentication Required' : "Can't Connect to Backend" }}
+              </h2>
+              <p class="text-muted-foreground text-base">
+                {{
+                  isAuthError()
+                    ? 'This backend requires a bearer token to access.'
+                    : "No worries! Just start the DevUI backend server and you'll be good to go."
+                }}
+              </p>
+            </div>
+
+            @if (isAuthError()) {
+              <div class="space-y-4">
+                <div class="text-left bg-muted/50 rounded-lg p-4 space-y-3">
+                  <p class="text-sm font-medium text-foreground">Enter Authentication Token</p>
+                  <app-input
+                    type="password"
+                    placeholder="Paste token from server logs"
+                    [value]="authToken()"
+                    (change)="this.handleInputChange($event)"
+                    (keydown)="this.handleKeyDown($event)"
+                    [disabled]="isTestingToken()"
+                    class="font-mono text-sm"
+                  />
+                  <button
+                    [appButton]
+                    (click)="handleAuthTokenSubmit()"
+                    [disabled]="!authToken().trim() || isTestingToken()"
+                    class="w-full"
+                  >
+                    {{ isTestingToken() ? 'Verifying...' : 'Connect' }}
+                  </button>
+
+                  @if (authError()) {
+                    <p class="text-sm text-red-600 dark:text-red-400 text-center">
+                      {{ authError() }}
+                    </p>
+                  }
+                </div>
+
+                <details class="text-left group">
+                  <summary
+                    class="text-sm text-muted-foreground cursor-pointer hover:text-foreground flex items-center gap-2 justify-center"
+                  >
+                    <ng-icon
+                      name="lucideChevronDown"
+                      class="h-4 w-4 transition-transform group-open:rotate-180"
+                    />
+                    Where do I find the token?
+                  </summary>
+                  <div class="mt-3 text-left bg-muted/30 rounded-lg p-3 space-y-2">
+                    <p class="text-xs text-muted-foreground">
+                      Look for this in your DevUI server startup logs:
+                    </p>
+                    <code
+                      class="block bg-background px-2 py-1 rounded text-xs font-mono text-foreground"
+                    >
+                      🔑 DEV TOKEN (localhost only, shown once):
+                      <br />
+                      &nbsp;&nbsp; abc123xyz...
+                    </code>
+                  </div>
+                </details>
+              </div>
+            } @else {
+              <div class="space-y-3">
+                <div class="text-left bg-muted/50 rounded-lg p-4 space-y-3">
+                  <p class="text-sm font-medium text-foreground">Start the backend:</p>
+                  <code
+                    class="block bg-background px-3 py-2 rounded border text-sm font-mono text-foreground"
+                  >
+                    devui ./agents --port {{ backendPort() }}
+                  </code>
+                  <p class="text-xs text-muted-foreground">
+                    Or launch programmatically with " "
+                    <code class="text-xs">serve(entities=[agent])</code>
+                  </p>
+                </div>
+
+                <p class="text-xs text-muted-foreground">
+                  Default: " "
+                  <span class="font-mono">{{ currentBackendUrl() }}</span>
+                </p>
+              </div>
+
+              @if (entityError()) {
+                <details class="text-left group">
+                  <summary
+                    class="text-sm text-muted-foreground cursor-pointer hover:text-foreground flex items-center gap-2"
+                  >
+                    <ng-icon
+                      name="lucideChevronDown"
+                      class="h-4 w-4 transition-transform group-open:rotate-180"
+                    />
+                    Error details
+                  </summary>
+                  <p
+                    class="mt-2 text-xs text-muted-foreground font-mono bg-muted/30 p-3 rounded border"
+                  >
+                    {{ entityError() }}
+                  </p>
+                </details>
+              }
+
+              <button [appButton] (click)="this.windowReload()" variant="default" class="mt-2">
+                Retry Connection
+              </button>
+            }
+          </div>
+        </div>
+
+        <app-settings-modal
+          [showModal]="showAboutModal()"
+          (onBackendUrlChange)="this.store.setShowAboutModal(false)"
+        />
+      </div>
+    }`,
   host: {
     class: 'block',
   },
@@ -46,7 +201,7 @@ export class DevuiComponent {
   isTestingToken = signal(false)
   authError = signal('')
   private apiClient = inject(ApiClient)
-  private store = inject(DevUIStore)
+  store = inject(DevUIStore)
 
   agents = computed(() => this.store.agents)
   workflows = computed(() => this.store.workflows)
@@ -58,6 +213,45 @@ export class DevuiComponent {
 
   oaiMode = computed(() => this.store.oaiMode)
   uiMode = computed(() => this.store.uiMode)
+  showDebugPanel = computed(() => this.store.showDebugPanel)
+  debugPanelMinimized = computed(() => this.store.debugPanelMinimized)
+  debugPanelWidth = computed(() => this.store.debugPanelWidth)
+  debugEvents = computed(() => this.store.debugEvents)
+  isResizing = computed(() => this.store.isResizing)
+  showAboutModal = computed(() => this.store.showAboutModal)
+  showGallery = computed(() => this.store.showGallery)
+  showDeployModal = computed(() => this.store.showDeployModal)
+  showEntityNotFoundToast = computed(() => this.store.showEntityNotFoundToast)
+
+  currentBackendUrl = computed(() => this.apiClient.getBaseUrl())
+  isAuthError = computed(() => this.entityError() === 'UNAUTHORIZED' || this.authRequired())
+  backendPort = computed(() => {
+    let backendPort = '8080'
+    try {
+      const currentBackendUrl = this.currentBackendUrl()
+      if (currentBackendUrl) {
+        const url = new URL(currentBackendUrl)
+        backendPort = url.port || (url.protocol === 'https:' ? '443' : '80')
+      }
+    } catch {}
+
+    return backendPort
+  })
+
+  handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter' && !this.isTestingToken()) {
+      this.handleAuthTokenSubmit()
+    }
+  }
+
+  handleInputChange = (e: Event) => {
+    const target = e.target as HTMLInputElement
+    this.authToken.set(target.value || '')
+  }
+
+  windowReload = () => {
+    window.location.reload()
+  }
 
   handleAuthTokenSubmit = async () => {
     const authToken = this.authToken()
