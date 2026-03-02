@@ -112,6 +112,31 @@ export class DevuiComponent {
     document.addEventListener('mouseup', handleMouseUp)
   }
 
+  handleEntitySelect = async (item: AgentInfo | WorkflowInfo) => {
+    this.store.selectEntity(item) // This clears conversation state, debug events, and updates URL!
+
+    // If entity is sparse (not fully loaded), load full details
+    if (item.metadata?.['lazy_loaded'] === false) {
+      try {
+        if (item.type === 'agent') {
+          const fullAgent = await this.apiClient.getAgentInfo(item.id)
+          this.store.updateAgent(fullAgent)
+        } else {
+          const fullWorkflow = await this.apiClient.getWorkflowInfo(item.id)
+          this.store.updateWorkflow(fullWorkflow)
+        }
+      } catch (error) {
+        console.error(`Failed to load full info for ${item.id}:`, error)
+        // Show toast for entity load errors (don't use setEntityError - that kills the whole UI)
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        this.store.addToast({
+          type: 'error',
+          message: `Failed to load "${item.id}": ${errorMessage}`,
+        })
+      }
+    }
+  }
+
   constructor() {
     effect(() => {
       const loadData = async () => {
