@@ -272,6 +272,9 @@ export class DevUIStore implements DevUIActions {
   get workflows() {
     return this._state().workflows
   }
+  get entities() {
+    return this._state().entities
+  }
   get selectedAgent() {
     return this._state().selectedAgent
   }

@@ -84,7 +84,7 @@ import { EntitySelector } from './entity-selector.component'
     class: 'block',
   },
 })
-export class AppHeader {
+export class AppHeaderComponent {
   // Store Injection
   protected readonly store = inject(DevUIStore)
 

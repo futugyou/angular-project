@@ -403,7 +403,7 @@ type DebugEventHandler = (event: ExtendedResponseStreamEvent | 'clear') => void
     class: 'block',
   },
 })
-export class AeploymentModalComponent {
+export class AgentViewModalComponent {
   selectedAgent = input.required<AgentInfo>()
   onDebugEvent = input.required<DebugEventHandler>()
 

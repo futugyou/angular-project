@@ -338,7 +338,7 @@ type Tab = 'docker' | 'azure'
     class: 'block',
   },
 })
-export class AeploymentModalComponent {
+export class DeploymentModalComponent {
   open = input<boolean>(false)
   agentName = input<string>('Agent')
   entity = input<AgentInfo | WorkflowInfo>()
