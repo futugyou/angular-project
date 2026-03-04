@@ -194,13 +194,14 @@ export interface WorkflowDump {
   connections?: WorkflowDumpConnection[]
   start_executor?: string
   end_executors?: string[]
-  [key: string]: unknown // Allow for additional properties
+  [key: string]: any // Allow for additional properties
 }
 
 export interface NodeUpdate {
+  status?: string
   nodeId: string
   state: ExecutorState
-  data?: unknown
+  data?: any
   error?: string
   timestamp: string
 }

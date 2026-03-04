@@ -1,18 +1,63 @@
-import { Injectable, signal, computed } from '@angular/core'
-import { EdgeMetadata, Graph, Node, NodeMetadata, NodeProperties } from '@antv/x6'
-import { NodeUpdate } from '../lib/layout'
+import { Injectable, signal, computed, OnDestroy } from '@angular/core'
+import {
+  EdgeMetadata,
+  Graph,
+  Node,
+  NodeMetadata,
+  NodeProperties,
+  Cell,
+  Edge,
+  Model,
+} from '@antv/x6'
+import { DagreLayout } from '@antv/layout'
+import { NodeUpdate, WorkflowDump } from '../lib/layout'
 
-@Injectable()
-export class GraphService {
+@Injectable({
+  providedIn: 'root',
+})
+export class GraphService implements OnDestroy {
   private graph = signal<Graph | null>(null)
   private cacheTrigger = signal<Record<string, number>>({})
+
+  initGraph(container: HTMLDivElement): Graph {
+    const graph = new Graph({
+      container: container,
+      autoResize: true,
+      grid: { size: 10, visible: true, type: 'dot' },
+      panning: { enabled: true, eventTypes: ['leftMouseDown'] },
+      mousewheel: { enabled: true, modifiers: 'ctrl' },
+      connecting: {
+        router: 'manhattan',
+        connector: { name: 'rounded' },
+        anchor: 'center',
+        connectionPoint: 'anchor',
+        allowNode: false,
+      },
+      interacting: {
+        nodeMovable: true,
+      },
+    })
+
+    this.init(graph)
+    return graph
+  }
 
   init(graph: Graph) {
     this.graph.set(graph)
 
-    graph.on('node:change:position', ({ node }) => this.notify(node.id))
-    graph.on('node:change:size', ({ node }) => this.notify(node.id))
-    graph.on('node:change:data', ({ node }) => this.notify(node.id))
+    const events = [
+      'node:change:position',
+      'node:change:size',
+      'node:change:data',
+      'cell:added',
+      'cell:removed',
+    ]
+    events.forEach((event) => {
+      graph.on(event, (args: any) => {
+        const id = args.node?.id || args.cell?.id
+        if (id) this.notify(id)
+      })
+    })
   }
 
   private notify(id: string) {
@@ -26,73 +71,161 @@ export class GraphService {
     })
   }
 
-  fitView(arg0: { nodes?: Node<NodeProperties>[]; duration: number; padding: number }) {
+  convertWorkflowToX6Data(
+    dump: WorkflowDump,
+    options: { direction: 'TB' | 'LR'; consolidate: boolean },
+  ): { nodes: NodeMetadata[]; edges: EdgeMetadata[] } {
+    const nodes: NodeMetadata[] = dump['nodes'].map((n: any) => ({
+      id: n.id,
+      shape: 'custom-rect',
+      width: 180,
+      height: 60,
+      label: n.name,
+      data: { ...n, status: 'pending' },
+    }))
+
+    const edges: EdgeMetadata[] = dump['edges'].map((e: any) => ({
+      id: `${e.source}-${e.target}`,
+      source: e.source,
+      target: e.target,
+      attrs: {
+        line: { stroke: '#A2B1C3', strokeWidth: 2 },
+      },
+    }))
+
+    return { nodes, edges }
+  }
+
+  applyDagreLayout(direction: 'TB' | 'LR' = 'TB') {
     const graph = this.graph()
     if (!graph) return
 
-    if (arg0.nodes) {
-      graph.addNodes(arg0.nodes)
+    const dagreLayout = new DagreLayout({
+      // type: 'dagre',
+      // rankdir: direction,
+      // nodesep: 60,
+      // ranksep: 80,
+    })
+
+    const model = {
+      nodes: graph.getNodes().map((n) => n.toJSON()),
+      edges: graph.getEdges().map((e) => e.toJSON()),
     }
 
-    graph.resize()
-    graph.zoomToFit({
-      padding: arg0.padding,
-      maxScale: 1,
-    })
+    const newModel = dagreLayout.execute(model as any)
+    graph.fromJSON(newModel as any)
+    graph.centerContent()
   }
 
-  applyDagreLayout(direction: string) {
-    throw new Error('Method not implemented.')
-  }
-
-  render(nodes: any, edges: any) {
-    throw new Error('Method not implemented.')
-  }
-
-  convertWorkflowToX6Data(
-    dump: any,
-    arg1: { direction: 'TB' | 'LR'; consolidate: boolean },
-  ): { nodes: any; edges: any } {
-    throw new Error('Method not implemented.')
-  }
-
-  dispose() {
-    throw new Error('Method not implemented.')
-  }
-
-  initGraph(nativeElement: HTMLDivElement) {
-    throw new Error('Method not implemented.')
-  }
-
-  setNodesDraggable(arg0: boolean): any {
-    throw new Error('Method not implemented.')
-  }
-
-  resetEdgesToDefault(consolidate: boolean) {
-    throw new Error('Method not implemented.')
-  }
-
-  updateEdgesWithSequenceAnalysis(events: any[], consolidate: boolean) {
-    throw new Error('Method not implemented.')
-  }
-
-  resetNodesToPending() {
-    throw new Error('Method not implemented.')
+  render(nodes: NodeMetadata[], edges: EdgeMetadata[]) {
+    const graph = this.graph()
+    if (!graph) return
+    graph.fromJSON({ nodes, edges })
   }
 
   updateNodesWithEvents(updates: Record<string, NodeUpdate>, streaming: boolean) {
-    throw new Error('Method not implemented.')
+    const graph = this.graph()
+    if (!graph) return
+
+    graph.batchUpdate(() => {
+      Object.entries(updates).forEach(([id, update]) => {
+        const node = graph.getCellById(id) as Node
+        if (node) {
+          node.setData({ ...update, isStreaming: streaming }, { overwrite: false })
+
+          if (update.status === 'success') {
+            node.attr('body/stroke', '#52c41a')
+          }
+        }
+      })
+    })
   }
 
-  setNodes(nodes: NodeMetadata[]) {
-    throw new Error('Method not implemented.')
+  fitView(options: { nodes?: Node[]; duration: number; padding: number }) {
+    const graph = this.graph()
+    if (!graph) return
+
+    if (options.nodes && options.nodes.length > 0) {
+      graph.zoomToRect(graph.getCellsBBox(options.nodes), {
+        padding: options.padding,
+        maxScale: 1,
+      })
+    } else {
+      graph.zoomToFit({ padding: options.padding, maxScale: 1 })
+    }
   }
 
-  setEdges(edges: EdgeMetadata[]) {
-    throw new Error('Method not implemented.')
+  setNodesDraggable(enabled: boolean) {
+    const graph = this.graph()
+    if (!graph) return
+    graph.getNodes().forEach((n) => n.setProp('draggable', enabled))
+  }
+
+  resetNodesToPending() {
+    this.graph()
+      ?.getNodes()
+      .forEach((n) => n.setData({ status: 'pending' }))
   }
 
   isInitialized(): boolean {
-    throw new Error('Method not implemented.')
+    return !!this.graph()
+  }
+
+  dispose() {
+    this.graph()?.dispose()
+    this.graph.set(null)
+  }
+
+  ngOnDestroy() {
+    this.dispose()
+  }
+
+  setNodes(nodes: NodeMetadata[]) {
+    const graph = this.graph()
+    if (!graph) return
+    const nodeInstances = nodes.map((n) => graph.createNode(n))
+    graph.resetCells([...nodeInstances, ...graph.getEdges()])
+  }
+
+  setEdges(edges: EdgeMetadata[]) {
+    const graph = this.graph()
+    if (!graph) return
+    const edgeInstances = edges.map((e) => graph.createEdge(e))
+    graph.resetCells([...graph.getNodes(), ...edgeInstances])
+  }
+
+  resetEdgesToDefault(consolidate: boolean) {
+    const graph = this.graph()
+    if (!graph) return
+
+    graph.getEdges().forEach((edge) => {
+      edge.attr('line/stroke', '#A2B1C3')
+      edge.attr('line/strokeWidth', consolidate ? 3 : 2)
+      edge.attr('line/targetMarker', 'block')
+      edge.setLabels([])
+    })
+  }
+
+  updateEdgesWithSequenceAnalysis(events: any[], consolidate: boolean) {
+    const graph = this.graph()
+    if (!graph) return
+
+    this.resetEdgesToDefault(consolidate)
+
+    events.forEach((event, index) => {
+      const edges = graph.getEdges()
+      const targetEdge = edges.find(
+        (e) => e.getSourceCellId() === event.fromNodeId && e.getTargetCellId() === event.toNodeId,
+      )
+
+      if (targetEdge) {
+        targetEdge.attr('line/stroke', '#1890ff')
+        targetEdge.attr('line/strokeWidth', consolidate ? 4 : 3)
+
+        if (index === events.length - 1) {
+          targetEdge.attr('line/style/animation', 'ant-line-dash 30s infinite linear')
+        }
+      }
+    })
   }
 }
