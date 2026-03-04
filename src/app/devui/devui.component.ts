@@ -223,7 +223,7 @@ import { DevUIStore } from './stores'
                 } @else {
                   <app-workflow-view
                     [selectedWorkflow]="$any(selectedAgentValue)"
-                    [onDebugEvent]="handleDebugEvent"
+                    (debugEvent)="handleDebugEvent($event)"
                   ></app-workflow-view>
                 }
               } @else {

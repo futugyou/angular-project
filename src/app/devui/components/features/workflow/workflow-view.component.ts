@@ -1,4 +1,13 @@
-import { Component, computed, input, inject, effect, signal, untracked } from '@angular/core'
+import {
+  Component,
+  computed,
+  input,
+  inject,
+  effect,
+  signal,
+  untracked,
+  output,
+} from '@angular/core'
 import { DatePipe } from '@angular/common'
 import { NgIconComponent } from '@ng-icons/core'
 import { ButtonComponent } from '../../ui/button.component'
@@ -31,7 +40,7 @@ function isAbortError(error: unknown): boolean {
   return error instanceof DOMException && error.name === 'AbortError'
 }
 
-type DebugEventHandler = (event: ExtendedResponseStreamEvent | 'clear') => void
+type DebugEvent = ExtendedResponseStreamEvent | 'clear'
 
 interface ViewOptions {
   showMinimap: boolean
@@ -437,7 +446,7 @@ const WORKFLOW_EVENT_TYPES = [
 })
 export class WorkflowViewComponent {
   selectedWorkflow = input.required<WorkflowInfo>()
-  onDebugEvent = input.required<DebugEventHandler>()
+  debugEvent = output<DebugEvent>()
 
   // Store Injection
   protected readonly store = inject(DevUIStore)
@@ -867,7 +876,7 @@ export class WorkflowViewComponent {
     this.hilResponses.set({})
 
     // Clear debug panel events for new workflow run
-    this.onDebugEvent()('clear')
+    this.debugEvent.emit('clear')
 
     // Create new AbortController for this request
     const signal = this.createAbortSignal()
@@ -922,7 +931,7 @@ export class WorkflowViewComponent {
         }
 
         // Pass to debug panel
-        this.onDebugEvent()(openAIEvent)
+        this.debugEvent.emit(openAIEvent)
 
         // Handle new standard OpenAI events
         if (openAIEvent.type === 'response.output_item.added') {
@@ -1140,7 +1149,7 @@ export class WorkflowViewComponent {
     this.workflowMetadata.set({})
     this.pendingHilRequests.set([])
     this.hilResponses.set({})
-    this.onDebugEvent()('clear')
+    this.debugEvent.emit('clear')
 
     try {
       const response = await this.apiClient.runWorkflowSync(selectedWorkflow.id, {
@@ -1188,7 +1197,7 @@ export class WorkflowViewComponent {
         sequence_number: 0,
       } as ExtendedResponseStreamEvent
       this.openAIEvents.set([completedEvent])
-      this.onDebugEvent()(completedEvent)
+      this.debugEvent.emit(completedEvent)
 
       // Refetch checkpoints after completion
       await this.loadCheckpoints()
@@ -1205,7 +1214,7 @@ export class WorkflowViewComponent {
         sequence_number: 0,
       } as ExtendedResponseStreamEvent
       this.openAIEvents.set([errorEvent])
-      this.onDebugEvent()(errorEvent)
+      this.debugEvent.emit(errorEvent)
     }
   }
 
@@ -1309,7 +1318,7 @@ export class WorkflowViewComponent {
         }
 
         // Pass to debug panel
-        this.onDebugEvent()(openAIEvent)
+        this.debugEvent.emit(openAIEvent)
 
         // Check for new HIL requests after sending responses - handles multi-round HIL
         if (openAIEvent.type === 'response.request_info.requested') {
