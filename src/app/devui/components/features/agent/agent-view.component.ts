@@ -15,6 +15,7 @@ import { NgIconComponent } from '@ng-icons/core'
 import { ButtonComponent } from '../../ui/button.component'
 import { ScrollAreaComponent } from '../../ui/scroll-area.component'
 import { ChatMessageInputComponent } from '../../ui/chat-message-input.component'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 
 import {
   Select,
@@ -69,7 +70,7 @@ function isAbortError(error: unknown): boolean {
   return error instanceof DOMException && error.name === 'AbortError'
 }
 
-type DebugEventHandler = (event: ExtendedResponseStreamEvent | 'clear') => void
+type DebugEvent = ExtendedResponseStreamEvent | 'clear'
 
 @Component({
   selector: 'app-agent-view',
@@ -405,7 +406,7 @@ type DebugEventHandler = (event: ExtendedResponseStreamEvent | 'clear') => void
 })
 export class AgentViewModalComponent {
   selectedAgent = input.required<AgentInfo>()
-  onDebugEvent = input.required<DebugEventHandler>()
+  debugEvent = output<DebugEvent>()
 
   // Store Injection
   protected readonly store = inject(DevUIStore)
@@ -452,6 +453,10 @@ export class AgentViewModalComponent {
   droppedFiles: File[] | undefined
 
   constructor() {
+    this.chatService.debug$.pipe(takeUntilDestroyed()).subscribe((event) => {
+      this.debugEvent.emit(event)
+    })
+
     effect(() => {
       const items = this.chatItems()
       const streaming = this.isStreaming()
@@ -479,12 +484,12 @@ export class AgentViewModalComponent {
         })
       }
     })
-    effect(() => {}, { allowSignalWrites: true })
+
     effect(async () => {
       const agent = this.selectedAgent()
       if (!agent) return
 
-      await this.chatService.onAgentChange(agent, this.onDebugEvent())
+      await this.chatService.onAgentChange(agent)
     })
   }
 
@@ -510,7 +515,7 @@ export class AgentViewModalComponent {
       this.accumulatedTextRef.set('')
 
       // Clear debug panel for fresh conversation
-      this.onDebugEvent()('clear')
+      this.debugEvent.emit('clear')
 
       // Update localStorage cache with new conversation
       const cachedKey = `devui_convs_${selectedAgent.id}`
@@ -548,7 +553,7 @@ export class AgentViewModalComponent {
           this.handleSelectionAfterDelete()
         }
 
-        this.onDebugEvent()('clear')
+        this.debugEvent.emit('clear')
       }
     } catch (error) {
       console.error(error)
@@ -619,7 +624,7 @@ export class AgentViewModalComponent {
     this.store.setCurrentConversation(conversation)
 
     // Clear debug panel when switching conversations
-    this.onDebugEvent()('clear')
+    this.debugEvent.emit('clear')
 
     try {
       // Load conversation history from backend with pagination
@@ -663,7 +668,7 @@ export class AgentViewModalComponent {
             data: trace as Record<string, unknown>,
             sequence_number: 0, // Not used for display
           }
-          this.onDebugEvent()(traceEvent)
+          this.debugEvent.emit(traceEvent)
         }
       }
 
@@ -890,7 +895,7 @@ export class AgentViewModalComponent {
 
       for await (const openAIEvent of streamGenerator) {
         // Pass all events to debug panel
-        this.onDebugEvent()(openAIEvent)
+        this.debugEvent.emit(openAIEvent)
 
         // Handle response.completed event (OpenAI standard)
         if (openAIEvent.type === 'response.completed') {
@@ -1412,7 +1417,7 @@ export class AgentViewModalComponent {
       }
 
       // Send debug event with response completed
-      this.onDebugEvent()({
+      this.debugEvent.emit({
         type: 'response.completed',
         response: response,
         sequence_number: 0,

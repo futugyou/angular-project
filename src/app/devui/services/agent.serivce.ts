@@ -3,8 +3,7 @@ import { ApiClient } from './api.service'
 import { DevUIStore } from '../stores/devuiStore'
 import { Conversation, AgentInfo, ExtendedResponseStreamEvent } from '../types'
 import { loadStreamingState } from './streaming-state.service'
-
-type DebugEventHandler = (event: ExtendedResponseStreamEvent | 'clear') => void
+import { Subject } from 'rxjs'
 
 type ConversationError = {
   message: string
@@ -22,20 +21,19 @@ export class AgentConversationService {
   private accumulatedText = ''
   private currentMessageUsage: any = null
   conversationError = signal<ConversationError | null>(null)
-  private activeDebugHandler?: DebugEventHandler
+  private debugSubject = new Subject<ExtendedResponseStreamEvent | 'clear'>()
 
-  async onAgentChange(
-    selectedAgent: AgentInfo | undefined,
-    activeDebugHandler: DebugEventHandler | undefined,
-  ) {
+  debug$ = this.debugSubject.asObservable()
+
+  async onAgentChange(selectedAgent: AgentInfo | undefined) {
     this.store.setChatItems([])
     this.store.setIsStreaming(false)
     this.store.setCurrentConversation(undefined)
-    this.activeDebugHandler = activeDebugHandler
     this.accumulatedText = ''
 
-    if (!selectedAgent) return
+    this.debugSubject.next('clear')
 
+    if (!selectedAgent) return
     await this.loadConversations(selectedAgent)
   }
 
@@ -116,9 +114,9 @@ export class AgentConversationService {
       this.store.setChatItems(allItems)
 
       if (storedTraces.length > 0) {
-        this.activeDebugHandler?.('clear')
+        this.debugSubject.next('clear')
         storedTraces.forEach((trace) => {
-          this.activeDebugHandler?.({
+          this.debugSubject.next({
             type: 'response.trace.completed',
             data: trace,
             sequence_number: 0,
@@ -184,7 +182,7 @@ export class AgentConversationService {
       )
 
       for await (const event of streamGenerator) {
-        this.activeDebugHandler?.(event)
+        this.debugSubject.next(event)
         this.handleStreamEvent(event, assistantMessage)
       }
 
