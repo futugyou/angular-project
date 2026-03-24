@@ -95,7 +95,7 @@ import { WorkflowInputFormComponent } from './workflow-input-form.component'
     </div>
 
     <ng-template #workflowMenu>
-      <app-dropdown-menu-content class="w-80 max-h-[400px] overflow-y-auto">
+      <app-dropdown-menu-content class="w-80 max-h-100 overflow-y-auto">
         @if (hasCheckpoints()) {
           <button appDropdownMenuItem (click)="handleDirectRun(analysis, schema)">
             <ng-icon name="lucidePlay" class="w-4 h-4 mr-2"></ng-icon>
@@ -121,7 +121,7 @@ import { WorkflowInputFormComponent } from './workflow-input-form.component'
               class="flex flex-col items-start py-2 w-full"
             >
               <div class="flex items-center gap-2 w-full">
-                <ng-icon name="lucideRefreshCw" class="w-4 h-4 flex-shrink-0"></ng-icon>
+                <ng-icon name="lucideRefreshCw" class="w-4 h-4 shrink-0"></ng-icon>
                 <span class="font-medium">
                   {{
                     checkpoint.metadata.iteration_count === 0
@@ -152,14 +152,14 @@ import { WorkflowInputFormComponent } from './workflow-input-form.component'
     @if (schema) {
       <app-dialog [open]="showModal()" (openChange)="showModal.set($event)">
         <app-dialog-content
-          class="w-full min-w-[400px] max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col"
+          class="w-full min-w-100 max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col"
         >
           <app-dialog-header class="px-8 pt-6">
             <app-dialog-title>Configure Workflow Inputs</app-dialog-title>
             <app-dialog-close (onClose)="showModal.set(false)" />
           </app-dialog-header>
 
-          <div class="px-8 py-4 border-b flex-shrink-0">
+          <div class="px-8 py-4 border-b shrink-0">
             <div class="text-sm text-muted-foreground">
               <div class="flex items-center gap-3">
                 <span class="font-medium">Input Type:</span>

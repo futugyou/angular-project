@@ -37,14 +37,14 @@ const PRESET_MODELS = ['gpt-4.1', 'gpt-4.1-mini', 'o1', 'o1-mini', 'o3-mini'] as
   ],
   template: `
     <app-dialog [(open)]="showModal">
-      <app-dialog-content class="w-[600px] max-w-[90vw] flex flex-col max-h-[85vh]">
-        <app-dialog-header class="p-6 pb-2 flex-shrink-0">
+      <app-dialog-content class="w-150 max-w-[90vw] flex flex-col max-h-[85vh]">
+        <app-dialog-header class="p-6 pb-2 shrink-0">
           <app-dialog-title>Settings</app-dialog-title>
         </app-dialog-header>
 
         <app-dialog-close (close)="showModal.set(false)" />
 
-        <div class="flex border-b px-6 flex-shrink-0">
+        <div class="flex border-b px-6 shrink-0">
           @for (tab of tabs; track tab.id) {
             @if (tab.id !== 'proxy' || store.serverCapabilities.openai_proxy) {
               <button
@@ -65,7 +65,7 @@ const PRESET_MODELS = ['gpt-4.1', 'gpt-4.1-mini', 'o1', 'o1-mini', 'o3-mini'] as
           }
         </div>
 
-        <div class="px-6 pb-6 overflow-y-auto flex-1 min-h-[400px]">
+        <div class="px-6 pb-6 overflow-y-auto flex-1 min-h-100">
           @if (activeTab() === 'general') {
             <div class="space-y-6 pt-4">
               <div class="space-y-3">
@@ -99,7 +99,7 @@ const PRESET_MODELS = ['gpt-4.1', 'gpt-4.1-mini', 'o1', 'o1-mini', 'o3-mini'] as
                   Default: <span class="font-mono">{{ defaultUrl }}</span>
                 </p>
 
-                <div class="flex gap-2 pt-2 min-h-[36px]">
+                <div class="flex gap-2 pt-2 min-h-9">
                   @if (isModified()) {
                     <button [appButton] (click)="handleSave()" size="sm" class="flex-1">
                       Apply & Reload
@@ -141,7 +141,7 @@ const PRESET_MODELS = ['gpt-4.1', 'gpt-4.1-mini', 'o1', 'o1-mini', 'o3-mini'] as
                           variant="destructive"
                           size="sm"
                           (click)="handleClearAuthToken()"
-                          class="flex-shrink-0"
+                          class="shrink-0"
                         >
                           Clear
                         </button>

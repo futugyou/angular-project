@@ -33,7 +33,7 @@ export interface ExecutorNodeData {
     >
       <div class="p-3">
         <div class="flex items-start gap-3">
-          <div class="flex-shrink-0 relative">
+          <div class="shrink-0 relative">
             <div
               class="w-10 h-10 rounded-lg bg-gray-900/90 dark:bg-gray-800/90 flex items-center justify-center"
             >
@@ -60,7 +60,7 @@ export interface ExecutorNodeData {
                 <ng-icon
                   name="lucideLoader2"
                   [class.animate-spin]="shouldAnimate()"
-                  class="w-4 h-4 text-[#643FB2] dark:text-[#8B5CF6] flex-shrink-0"
+                  class="w-4 h-4 text-[#643FB2] dark:text-[#8B5CF6] shrink-0"
                 ></ng-icon>
               }
             </div>
@@ -89,7 +89,7 @@ export interface ExecutorNodeData {
               <div class="mt-2">
                 @if (nodeData().error) {
                   <div
-                    class="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 p-2 rounded border border-red-200 dark:border-red-800 break-words max-h-32 overflow-auto"
+                    class="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 p-2 rounded border border-red-200 dark:border-red-800 wrap-break-word max-h-32 overflow-auto"
                   >
                     {{ truncatedError() }}
                   </div>

@@ -56,7 +56,7 @@ export class CodeBlockComponent {
   imports: [CodeBlockComponent],
   template: `
     <div class="flex gap-4">
-      <div class="flex-shrink-0">
+      <div class="shrink-0">
         <div
           class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-semibold"
         >
@@ -114,7 +114,7 @@ export class SetupStepComponent {
         </app-dialog-header>
 
         <div class="px-6 pb-6">
-          <app-scroll-area class="h-[500px]">
+          <app-scroll-area class="h-125">
             <div class="space-y-6 pr-4 pt-4">
               <app-setup-step [number]="1" title="Download the sample file">
                 <button [appButton] size="sm">

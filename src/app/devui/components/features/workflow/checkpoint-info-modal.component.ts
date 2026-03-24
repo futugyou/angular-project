@@ -36,8 +36,8 @@ import type {
   ],
   template: `
     <app-dialog [open]="open()" (openChange)="onOpenChange.emit($event)">
-      <app-dialog-content class="w-[90vw] max-w-6xl min-w-[800px] h-[85vh] flex flex-col p-0">
-        <app-dialog-header class="px-6 pt-6 pb-4 border-b flex-shrink-0">
+      <app-dialog-content class="w-[90vw] max-w-6xl min-w-200 h-[85vh] flex flex-col p-0">
+        <app-dialog-header class="px-6 pt-6 pb-4 border-b shrink-0">
           <div class="flex items-center justify-between">
             <div class="flex-1">
               <app-dialog-title>{{ session()?.metadata?.name }}</app-dialog-title>
@@ -132,7 +132,7 @@ import type {
 
                       @if (index < checkpoints().length - 1) {
                         <div
-                          class="absolute left-[18px] top-[30px] w-px h-[calc(100%+8px)] bg-border"
+                          class="absolute left-4.5 top-7.5 w-px h-[calc(100%+8px)] bg-border"
                         ></div>
                       }
                     </div>

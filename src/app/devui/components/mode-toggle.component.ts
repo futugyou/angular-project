@@ -23,7 +23,7 @@ import { ThemeService } from '../services/theme.service'
       </button>
     </div>
 
-    <app-dropdown-menu-content #menu class="min-w-[8rem]">
+    <app-dropdown-menu-content #menu class="min-w-32">
       <button appDropdownMenuItem (triggered)="setTheme('light')">Light</button>
       <button appDropdownMenuItem (triggered)="setTheme('dark')">Dark</button>
       <button appDropdownMenuItem (triggered)="setTheme('system')">System</button>

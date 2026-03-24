@@ -51,14 +51,14 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
         </div>
       } @else {
         <div class="flex items-center gap-2 min-w-0">
-          <ng-icon [name]="selectedIcon()" class="h-4 w-4 flex-shrink-0" />
+          <ng-icon [name]="selectedIcon()" class="h-4 w-4 shrink-0" />
           <span class="truncate">{{ displayName() }}</span>
 
           @if (selectedValue(); as item) {
             @if (item.metadata?.['lazy_loaded'] === false) {
               <ng-icon
                 name="lucideLoader2"
-                class="h-3 w-3 text-muted-foreground animate-spin ml-auto flex-shrink-0"
+                class="h-3 w-3 text-muted-foreground animate-spin ml-auto shrink-0"
               />
             }
           }
@@ -118,7 +118,7 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
             (click)="handleSelect(item)"
           >
             <div class="flex items-center gap-2 min-w-0 flex-1">
-              <ng-icon name="lucideWorkflow" class="h-4 w-4 flex-shrink-0" />
+              <ng-icon name="lucideWorkflow" class="h-4 w-4 shrink-0" />
               <div class="min-w-0 flex-1">
                 <span class="truncate font-medium block">{{ item.name || item.id }}</span>
                 @if (item.metadata?.['lazy_loaded'] !== false && item.description) {
@@ -149,7 +149,7 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
             (click)="handleSelect(item)"
           >
             <div class="flex items-center gap-2 min-w-0 flex-1">
-              <ng-icon name="lucideBot" class="h-4 w-4 flex-shrink-0" />
+              <ng-icon name="lucideBot" class="h-4 w-4 shrink-0" />
               <div class="min-w-0 flex-1">
                 <span class="truncate font-medium block">{{ item.name || item.id }}</span>
                 @if (item.metadata?.['lazy_loaded'] !== false && item.description) {

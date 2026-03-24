@@ -15,7 +15,7 @@ import { CodeBlock } from './code-block.component'
     },
   ],
   template: `
-    <div [class]="'markdown-content break-words ' + className()">
+    <div [class]="'markdown-content wrap-break-word ' + className()">
       @for (el of elements(); track $index) {
         @switch (el.type) {
           @case ('code') {
@@ -27,16 +27,16 @@ import { CodeBlock } from './code-block.component'
           @case ('list') {
             @switch (el.listType) {
               @case ('ul') {
-                <ul class="my-2 ml-4 list-disc space-y-1 break-words">
+                <ul class="my-2 ml-4 list-disc space-y-1 wrap-break-word">
                   @for (item of el.items; track $index) {
-                    <li class="text-sm break-words" [innerHTML]="item"></li>
+                    <li class="text-sm wrap-break-word" [innerHTML]="item"></li>
                   }
                 </ul>
               }
               @case ('ol') {
-                <ol class="my-2 ml-4 list-decimal space-y-1 break-words">
+                <ol class="my-2 ml-4 list-decimal space-y-1 wrap-break-word">
                   @for (item of el.items; track $index) {
-                    <li class="text-sm break-words" [innerHTML]="item"></li>
+                    <li class="text-sm wrap-break-word" [innerHTML]="item"></li>
                   }
                 </ol>
               }
@@ -49,7 +49,7 @@ import { CodeBlock } from './code-block.component'
                   <tr>
                     @for (h of el.headers; track $index) {
                       <th
-                        class="border-b border-foreground/10 px-3 py-2 text-left font-semibold break-words"
+                        class="border-b border-foreground/10 px-3 py-2 text-left font-semibold wrap-break-word"
                         [innerHTML]="h"
                       ></th>
                     }
@@ -60,7 +60,7 @@ import { CodeBlock } from './code-block.component'
                     <tr class="border-b border-foreground/5 last:border-b-0">
                       @for (cell of row; track $index) {
                         <td
-                          class="px-3 py-2 border-r border-foreground/5 last:border-r-0 break-words"
+                          class="px-3 py-2 border-r border-foreground/5 last:border-r-0 wrap-break-word"
                           [innerHTML]="cell"
                         ></td>
                       }
@@ -72,10 +72,10 @@ import { CodeBlock } from './code-block.component'
           }
           @case ('quote') {
             <blockquote
-              class="my-2 pl-4 border-l-4 border-current/30 opacity-80 italic break-words"
+              class="my-2 pl-4 border-l-4 border-current/30 opacity-80 italic wrap-break-word"
             >
               @for (line of el.lines; track $index) {
-                <div class="break-words" [innerHTML]="line"></div>
+                <div class="wrap-break-word" [innerHTML]="line"></div>
               }
             </blockquote>
           }
@@ -86,7 +86,7 @@ import { CodeBlock } from './code-block.component'
             <div class="h-2"></div>
           }
           @case ('p') {
-            <p class="my-1 break-words" [innerHTML]="el.safeHtml"></p>
+            <p class="my-1 wrap-break-word" [innerHTML]="el.safeHtml"></p>
           }
         }
       }

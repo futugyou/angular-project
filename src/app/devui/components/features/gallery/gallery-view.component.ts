@@ -91,7 +91,7 @@ import { cn } from '../../../lib/utils'
                 <div class="flex items-center gap-2 min-w-0">
                   <ng-icon
                     name="lucideKey"
-                    class="h-3.5 w-3.5 text-amber-600 dark:text-amber-500 flex-shrink-0"
+                    class="h-3.5 w-3.5 text-amber-600 dark:text-amber-500 shrink-0"
                   />
                   <span class="text-xs font-medium text-amber-900 dark:text-amber-100 truncate">
                     Requires {{ sample().requiredEnvVars!.length }} env var{{
@@ -101,7 +101,7 @@ import { cn } from '../../../lib/utils'
                 </div>
                 <ng-icon
                   name="lucideChevronDown"
-                  class="h-3 w-3 text-amber-600 dark:text-amber-500 flex-shrink-0 group-open:rotate-180 transition-transform"
+                  class="h-3 w-3 text-amber-600 dark:text-amber-500 shrink-0 group-open:rotate-180 transition-transform"
                 />
               </summary>
               <div
@@ -110,11 +110,11 @@ import { cn } from '../../../lib/utils'
                 @for (envVar of sample().requiredEnvVars; track envVar.name) {
                   <div class="text-xs min-w-0 max-w-full overflow-hidden">
                     <div
-                      class="font-mono font-medium text-amber-900 dark:text-amber-100 break-words"
+                      class="font-mono font-medium text-amber-900 dark:text-amber-100 wrap-break-word"
                     >
                       {{ envVar.name }}
                     </div>
-                    <div class="text-amber-700 dark:text-amber-300 mt-0.5 break-words">
+                    <div class="text-amber-700 dark:text-amber-300 mt-0.5 wrap-break-word">
                       {{ envVar.description }}
                     </div>
                     @if (envVar.example) {
@@ -223,10 +223,7 @@ export class SampleEntityGridComponent {
         <div class="max-w-7xl mx-auto px-6 py-8">
           <div class="mb-8 p-4 bg-muted/50 border border-border rounded-lg">
             <div class="flex items-start gap-3">
-              <ng-icon
-                name="lucideTriangleAlert"
-                class="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5"
-              />
+              <ng-icon name="lucideTriangleAlert" class="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
               <div class="flex-1">
                 <h3 class="font-semibold mb-1">No agents or workflows configured yet!</h3>
                 <p class="text-sm text-muted-foreground mb-2">

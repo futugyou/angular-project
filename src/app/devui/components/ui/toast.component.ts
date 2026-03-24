@@ -29,14 +29,14 @@ export interface ToastData {
     <div
       #toastElement
       [class]="
-        'flex items-start gap-3 p-4 rounded-lg border shadow-lg max-w-md min-w-[300px] transition-transform ' +
+        'flex items-start gap-3 p-4 rounded-lg border shadow-lg max-w-md min-w-75 transition-transform ' +
         bgColorClass()
       "
     >
       <p [class]="'text-sm flex-1 ' + textColorClass()">{{ message() }}</p>
       <button
         (click)="close()"
-        [class]="'flex-shrink-0 hover:opacity-70 transition-opacity ' + textColorClass()"
+        [class]="'shrink-0 hover:opacity-70 transition-opacity ' + textColorClass()"
       >
         <ng-icon name="lucideX" class="h-4 w-4" />
       </button>
@@ -104,7 +104,7 @@ export class Toast implements OnInit {
   standalone: true,
   imports: [Toast],
   template: `
-    <div class="fixed top-4 right-4 z-[1000] flex flex-col gap-2 pointer-events-none">
+    <div class="fixed top-4 right-4 z-1000 flex flex-col gap-2 pointer-events-none">
       @for (toast of toasts(); track toast.id) {
         <div class="pointer-events-auto">
           <app-toast

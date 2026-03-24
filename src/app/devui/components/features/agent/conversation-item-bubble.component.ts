@@ -39,10 +39,7 @@ import { ConversationMessage } from '../../../types/openai'
             <div class="rounded px-3 py-2 text-sm" [class]="bubbleClass()">
               @if (isError()) {
                 <div class="flex items-start gap-2 mb-2">
-                  <ng-icon
-                    name="lucAlertCircle"
-                    class="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0"
-                  />
+                  <ng-icon name="lucAlertCircle" class="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
                   <span class="font-medium text-sm">Unable to process request</span>
                 </div>
               }
@@ -105,7 +102,7 @@ import { ConversationMessage } from '../../../types/openai'
                     <div class="flex items-start gap-2">
                       <ng-icon
                         name="lucWrench"
-                        class="h-3 w-3 text-muted-foreground mt-0.5 flex-shrink-0"
+                        class="h-3 w-3 text-muted-foreground mt-0.5 shrink-0"
                       />
                       <div class="flex-1 min-w-0">
                         <div class="font-mono text-muted-foreground">
@@ -122,7 +119,7 @@ import { ConversationMessage } from '../../../types/openai'
                             <div class="flex items-start gap-1">
                               <ng-icon
                                 name="lucCheck"
-                                class="h-3 w-3 text-green-600 mt-0.5 flex-shrink-0"
+                                class="h-3 w-3 text-green-600 mt-0.5 shrink-0"
                               />
                               <pre
                                 class="font-mono text-muted-foreground whitespace-pre-wrap break-all"
@@ -137,7 +134,7 @@ import { ConversationMessage } from '../../../types/openai'
                             <div class="flex items-start gap-1">
                               <ng-icon
                                 name="lucX"
-                                class="h-3 w-3 text-orange-600 mt-0.5 flex-shrink-0"
+                                class="h-3 w-3 text-orange-600 mt-0.5 shrink-0"
                               />
                               <span class="font-mono text-orange-600">Failed</span>
                             </div>

@@ -1590,7 +1590,7 @@ export class TraceGroupItemComponent {
             }"
             class="px-3 py-1.5 text-xs rounded transition-colors flex items-center gap-1.5 min-w-0"
           >
-            <ng-icon name="lucideBarChart3" class="h-3.5 w-3.5 flex-shrink-0" />
+            <ng-icon name="lucideBarChart3" class="h-3.5 w-3.5 shrink-0" />
             <span class="truncate">Context Inspector</span>
           </button>
         </div>
@@ -1599,7 +1599,7 @@ export class TraceGroupItemComponent {
       @if (subTab() === 'spans') {
         <div class="flex-1 flex flex-col min-h-0">
           @if (traceEvents().length > 0) {
-            <div class="p-3 border-b flex-shrink-0">
+            <div class="p-3 border-b shrink-0">
               <div class="flex items-center gap-2">
                 <ng-icon name="lucideSearch" class="h-4 w-4" />
                 <span class="font-medium text-sm">OTel Spans</span>
@@ -1614,7 +1614,7 @@ export class TraceGroupItemComponent {
             <div class="flex flex-col items-center text-center p-6 pt-9">
               <ng-icon name="lucideBarChart3" class="h-8 w-8 text-muted-foreground mb-3" />
               <div class="text-sm font-medium mb-1">No Data</div>
-              <div class="text-xs text-muted-foreground max-w-[200px]">
+              <div class="text-xs text-muted-foreground max-w-50">
                 Run
                 <span class="font-mono bg-accent/10 px-1 rounded"> devui --instrumentation </span>
                 and start a conversation.
@@ -1903,13 +1903,13 @@ export class ToolsTabComponent {
         (valueChange)="setActiveTab($any($event))"
         class="flex-1 flex flex-col min-h-0"
       >
-        <div class="px-3 pt-3 flex items-center gap-2 flex-shrink-0">
+        <div class="px-3 pt-3 flex items-center gap-2 shrink-0">
           <app-tabs-list class="flex-1">
             <button tabsTrigger value="events" class="flex-1 gap-1.5">
               Events
               @if (counts().eventsCount > 0) {
                 <span
-                  class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center"
+                  class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-5 text-center"
                 >
                   {{ counts().eventsCount }}
                 </span>
@@ -1920,7 +1920,7 @@ export class ToolsTabComponent {
               Traces
               @if (counts().tracesCount > 0) {
                 <span
-                  class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center"
+                  class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-5 text-center"
                 >
                   {{ counts().tracesCount }}
                 </span>
@@ -1931,7 +1931,7 @@ export class ToolsTabComponent {
               Tools
               @if (counts().toolsCount > 0) {
                 <span
-                  class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center"
+                  class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-5 text-center"
                 >
                   {{ counts().toolsCount }}
                 </span>
@@ -1944,7 +1944,7 @@ export class ToolsTabComponent {
               appButton="ghost"
               size="sm"
               (click)="onMinimize.emit()"
-              class="h-8 w-8 p-0 flex-shrink-0"
+              class="h-8 w-8 p-0 shrink-0"
               title="Minimize debug panel"
             >
               <ng-icon name="lucideChevronRight" class="h-4 w-4" />

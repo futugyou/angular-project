@@ -236,7 +236,7 @@ import { DevUIStore } from './stores'
             @if (uiMode() === 'developer') {
               @if (showDebugPanel()) {
                 <div
-                  class="w-1 cursor-col-resize flex-shrink-0 relative group transition-colors duration-200 ease-in-out"
+                  class="w-1 cursor-col-resize shrink-0 relative group transition-colors duration-200 ease-in-out"
                   [class.bg-primary/40]="isResizing()"
                   [class.bg-border]="!isResizing()"
                   (mousedown)="handleMouseDown($event)"
@@ -253,7 +253,7 @@ import { DevUIStore } from './stores'
                 </div>
 
                 <div
-                  class="flex-shrink-0 flex flex-col h-[calc(100vh-3.7rem)]"
+                  class="shrink-0 flex flex-col h-[calc(100vh-3.7rem)]"
                   [style.width]="debugPanelMinimized() ? '2.5rem' : debugPanelWidth() + 'px'"
                 >
                   @if (debugPanelMinimized()) {
@@ -288,7 +288,7 @@ import { DevUIStore } from './stores'
                       (onMinimize)="this.store.setDebugPanelMinimized(true)"
                     ></app-debug-panel>
 
-                    <div class="border-t bg-muted/30 px-3 py-2.5 flex-shrink-0">
+                    <div class="border-t bg-muted/30 px-3 py-2.5 shrink-0">
                       <button
                         class="w-full btn-outline btn-sm"
                         (click)="this.store.setShowDeployModal(true)"
@@ -306,7 +306,7 @@ import { DevUIStore } from './stores'
                   }
                 </div>
               } @else {
-                <div class="flex-shrink-0">
+                <div class="shrink-0">
                   <button
                     class="h-full w-10 rounded-none border-l btn-ghost btn-sm"
                     (click)="this.store.setShowDebugPanel(true)"

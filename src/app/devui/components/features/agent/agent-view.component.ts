@@ -94,7 +94,7 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
     JsonPipe,
   ],
   template: `
-    <app-scroll-area class="h-[500px]">
+    <app-scroll-area class="h-125">
       <div #areaViewport class="scroll-container">
         @for (item of chatItems(); track item.id) {
           <div class="message">{{ item.id }}</div>
@@ -124,12 +124,12 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
         </div>
       }
 
-      <div class="border-b pb-2 p-4 flex-shrink-0">
+      <div class="border-b pb-2 p-4 shrink-0">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-3">
           <div class="flex items-center gap-2 min-w-0">
             <h2 class="font-semibold text-sm truncate">
               <div class="flex items-center gap-2">
-                <ng-icon name="lucideBot" class="h-4 w-4 flex-shrink-0" />
+                <ng-icon name="lucideBot" class="h-4 w-4 shrink-0" />
                 <span class="truncate">
                   {{
                     oaiMode().enabled
@@ -146,7 +146,7 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
                 variant="ghost"
                 size="sm"
                 (click)="detailsModalOpen.set(true)"
-                class="h-6 w-6 p-0 flex-shrink-0"
+                class="h-6 w-6 p-0 shrink-0"
                 title="View agent details"
               >
                 <ng-icon name="lucideInfo" class="h-4 w-4  " />
@@ -159,7 +159,7 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
                   size="sm"
                   (click)="handleReloadEntity()"
                   [disabled]="isReloading()"
-                  class="h-6 w-6 p-0 flex-shrink-0"
+                  class="h-6 w-6 p-0 shrink-0"
                   [title]="isReloading() ? 'Reloading...' : 'Reload entity code (hot reload)'"
                 >
                   <ng-icon name="lucideRefreshCw" class="h-4 w-4" />
@@ -168,7 +168,7 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
             }
           </div>
 
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-shrink-0">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
             @let conversation = currentConversation();
             @let usage = conversationUsage();
             <app-select
@@ -263,10 +263,10 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
         <div
           class="mx-4 mt-2 p-3 bg-destructive/10 border border-destructive/30 rounded-md flex items-start gap-2"
         >
-          <ng-icon name="lucideCircle" class="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+          <ng-icon name="lucideCircle" class="h-4 w-4 text-destructive mt-0.5 shrink-0" />
           <div class="flex-1 min-w-0">
             <div class="text-sm font-medium text-destructive">Failed to Create Conversation</div>
-            <div class="text-xs text-destructive/90 mt-1 break-words">
+            <div class="text-xs text-destructive/90 mt-1 wrap-break-word">
               {{ conversationErrorValue.message }}
             </div>
             @if (conversationErrorValue.code) {
@@ -277,7 +277,7 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
           </div>
           <button
             (click)="conversationError.set(null)"
-            class="text-destructive hover:text-destructive/80 flex-shrink-0"
+            class="text-destructive hover:text-destructive/80 shrink-0"
           >
             <ng-icon name="lucideX" class="h-4 w-4" />
           </button>
@@ -325,11 +325,11 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
 
       @let pendingApprovalsValue = pendingApprovals();
       @if (pendingApprovalsValue.length > 0) {
-        <div class="border-t bg-amber-50 dark:bg-amber-950/20 p-4 flex-shrink-0">
+        <div class="border-t bg-amber-50 dark:bg-amber-950/20 p-4 shrink-0">
           <div class="flex items-start gap-3">
             <ng-icon
               name="lucideAlertCircle"
-              class="h-5 w-5 text-amber-600 dark:text-amber-500 mt-0.5 flex-shrink-0"
+              class="h-5 w-5 text-amber-600 dark:text-amber-500 mt-0.5 shrink-0"
             />
             <div class="flex-1 min-w-0">
               <h4 class="font-medium text-sm mb-2">Approval Required</h4>
@@ -375,7 +375,7 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
         </div>
       }
 
-      <div class="border-t flex-shrink-0">
+      <div class="border-t shrink-0">
         <div class="p-4">
           <app-chat-message-input
             (onSubmit)="handleChatInputSubmit($event)"

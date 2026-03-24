@@ -87,7 +87,7 @@ import { LoadingSpinnerComponent } from './loading-spinner.component'
       <form (submit)="handleSubmit($event)" class="flex gap-2 items-end">
         <app-textarea
           #textarea
-          class="flex-1 min-h-[40px] max-h-[200px] resize-none flex rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          class="flex-1 min-h-10 max-h-50 resize-none flex rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           [placeholder]="
             placeholder() || 'Message ' + entityName() + '... (Shift+Enter for new line)'
           "

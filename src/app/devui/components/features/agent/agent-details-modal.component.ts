@@ -48,7 +48,7 @@ export class DetailCardComponent {
       <app-dialog-content class="max-w-4xl max-h-[90vh] flex flex-col">
         @let info = agent();
 
-        <app-dialog-header class="px-6 pt-6 flex-shrink-0">
+        <app-dialog-header class="px-6 pt-6 shrink-0">
           <app-dialog-title>Agent Details</app-dialog-title>
           <app-dialog-close (close)="onOpenChange.emit(false)" />
         </app-dialog-header>

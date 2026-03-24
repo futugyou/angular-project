@@ -544,7 +544,7 @@ export class CompositionBreakdownComponent {
         (click)="isExpanded.set(!isExpanded())"
       >
         <div
-          class="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium flex-shrink-0"
+          class="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium shrink-0"
         >
           {{ index() + 1 }}
         </div>
@@ -554,7 +554,7 @@ export class CompositionBreakdownComponent {
             <app-segmented-bar [segments]="tokenSegments()" [maxValue]="maxValue()" [height]="20">
               <ng-template #renderLabel let-segs>
                 <div
-                  class="flex items-center gap-1 text-xs font-mono text-muted-foreground min-w-[80px] justify-end"
+                  class="flex items-center gap-1 text-xs font-mono text-muted-foreground min-w-20 justify-end"
                 >
                   <span class="text-blue-600 dark:text-blue-400"
                     >↑{{ formatToken(segs[0]?.value || 0) }}</span
@@ -573,7 +573,7 @@ export class CompositionBreakdownComponent {
               [height]="20"
             >
               <ng-template #renderLabel let-total>
-                <div class="text-xs font-mono text-muted-foreground min-w-[50px] text-right">
+                <div class="text-xs font-mono text-muted-foreground min-w-12.5 text-right">
                   {{ formatToken(mathRound(total / 4)) }}~
                 </div>
               </ng-template>
@@ -581,7 +581,7 @@ export class CompositionBreakdownComponent {
           }
         </div>
 
-        <div class="text-muted-foreground flex-shrink-0">
+        <div class="text-muted-foreground shrink-0">
           <ng-icon
             [name]="isExpanded() ? 'lucideChevronDown' : 'lucideChevronRight'"
             class="h-4 w-4"
@@ -592,7 +592,7 @@ export class CompositionBreakdownComponent {
       @if (isExpanded()) {
         <div class="pb-3">
           <div class="flex items-start gap-3 px-2">
-            <div class="w-6 flex justify-center flex-shrink-0">
+            <div class="w-6 flex justify-center shrink-0">
               <div class="w-px h-full bg-muted"></div>
             </div>
 
@@ -772,14 +772,14 @@ export class StatCardComponent {
       <div class="flex flex-col items-center text-center p-6 pt-9">
         <ng-icon name="lucideBarChart3" class="h-8 w-8 text-muted-foreground mb-3" />
         <div class="text-sm font-medium mb-1">No Data</div>
-        <div class="text-xs text-muted-foreground max-w-[200px]">
+        <div class="text-xs text-muted-foreground max-w-50">
           Run <span class="font-mono bg-accent/10 px-1 rounded">devui --instrumentation</span>
           and start a conversation.
         </div>
       </div>
     } @else {
       <div class="h-full flex flex-col">
-        <div class="p-3 border-b flex-shrink-0 space-y-2">
+        <div class="p-3 border-b shrink-0 space-y-2">
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-2">
               <ng-icon name="lucideBarChart3" class="h-4 w-4" />

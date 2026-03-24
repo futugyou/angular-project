@@ -183,7 +183,7 @@ export class ExecutorRunItemComponent {
   ],
   template: `
     <div class="h-full flex flex-col border-l bg-muted/30">
-      <div class="p-3 border-b bg-background flex items-center justify-between flex-shrink-0">
+      <div class="p-3 border-b bg-background flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
           <span class="font-medium text-sm">Execution Timeline</span>
           <app-badge variant="outline" className="text-xs">
@@ -272,7 +272,7 @@ export class ExecutorRunItemComponent {
       </app-scroll-area>
 
       @if ((canRun() || canCencal()) && pendingHilRequests().length === 0) {
-        <div class="border-t p-3 bg-background flex-shrink-0">
+        <div class="border-t p-3 bg-background shrink-0">
           @if (inputSchema() && isChatMessageSchema(inputSchema())) {
             <app-chat-message-input
               (submit)="(handleChatSubmit)"

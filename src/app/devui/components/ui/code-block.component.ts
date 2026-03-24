@@ -11,7 +11,7 @@ import { NgIconComponent } from '@ng-icons/core'
       <pre
         class="my-3 p-3 bg-foreground/5 dark:bg-foreground/10 rounded overflow-x-auto border border-foreground/10"
       >
-        <code class="text-xs font-mono block whitespace-pre-wrap break-words">
+        <code class="text-xs font-mono block whitespace-pre-wrap wrap-break-word">
           @if (language()) {
             <span class="opacity-60 text-[10px] mb-1 block uppercase">{{ language() }}</span>
           }

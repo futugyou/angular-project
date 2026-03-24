@@ -115,12 +115,12 @@ const WORKFLOW_EVENT_TYPES = [
       ></app-loading-state>
     } @else {
       <div class="workflow-view flex flex-col h-full">
-        <div class="border-b pb-2 p-4 flex-shrink-0">
+        <div class="border-b pb-2 p-4 shrink-0">
           <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-3">
             <div class="flex items-center gap-2 min-w-0">
               <h2 class="font-semibold text-sm truncate">
                 <div class="flex items-center gap-2">
-                  <ng-icon name="lucideWorkflow" class="h-4 w-4 flex-shrink-0"></ng-icon>
+                  <ng-icon name="lucideWorkflow" class="h-4 w-4 shrink-0"></ng-icon>
                   <span class="truncate">
                     {{ selectedWorkflow().name || selectedWorkflow().id }}
                   </span>
@@ -131,7 +131,7 @@ const WORKFLOW_EVENT_TYPES = [
                 [appButton]
                 variant="ghost"
                 size="sm"
-                class="h-6 w-6 p-0 flex-shrink-0 btn-ghost"
+                class="h-6 w-6 p-0 shrink-0 btn-ghost"
                 [title]="'View workflow details'"
                 (click)="detailsModalOpen.set(true)"
               >
@@ -143,7 +143,7 @@ const WORKFLOW_EVENT_TYPES = [
                   [appButton]
                   variant="ghost"
                   size="sm"
-                  class="h-6 w-6 p-0 flex-shrink-0 btn-ghost"
+                  class="h-6 w-6 p-0 shrink-0 btn-ghost"
                   [disabled]="isReloading()"
                   [title]="isReloading() ? 'Reloading...' : 'Reload entity code (hot reload)'"
                   (click)="handleReloadEntity()"
@@ -158,9 +158,7 @@ const WORKFLOW_EVENT_TYPES = [
             </div>
 
             @if (workflowInfo()) {
-              <div
-                class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-shrink-0"
-              >
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
                 <app-select
                   [value]="currentSession()?.conversation_id || ''"
                   (valueChange)="handleSessionSelect($event)"
@@ -176,7 +174,7 @@ const WORKFLOW_EVENT_TYPES = [
                           }}
                         </span>
                         @if (currentSession()?.metadata?.checkpoint_summary; as summary) {
-                          <div class="flex items-center gap-1 flex-shrink-0">
+                          <div class="flex items-center gap-1 shrink-0">
                             <app-badge variant="secondary" class="h-4 px-1.5 text-[10px]">
                               {{ summary.count }}
                             </app-badge>
@@ -209,7 +207,7 @@ const WORKFLOW_EVENT_TYPES = [
                                 'Checkpoint Storage ' + session.conversation_id.slice(-8)
                             }}
                           </span>
-                          <div class="flex items-center gap-1 flex-shrink-0">
+                          <div class="flex items-center gap-1 shrink-0">
                             @if (session.created_at) {
                               <span class="text-xs text-muted-foreground">
                                 {{ session.created_at * 1000 | date: 'shortTime' }}
@@ -236,7 +234,7 @@ const WORKFLOW_EVENT_TYPES = [
                   [appButton]
                   variant="ghost"
                   size="sm"
-                  class="h-9 w-9 p-0 flex-shrink-0 btn-ghost"
+                  class="h-9 w-9 p-0 shrink-0 btn-ghost"
                   [disabled]="!currentSession()"
                   (click)="checkpointInfoModalOpen.set(true)"
                   title="View checkpoint details"
@@ -358,7 +356,7 @@ const WORKFLOW_EVENT_TYPES = [
           </div>
 
           <div
-            class="flex-shrink-0 overflow-hidden transition-all duration-300 ease-out border-l"
+            class="shrink-0 overflow-hidden transition-all duration-300 ease-out border-l"
             [style.width]="timelineMinimized() ? '2.5rem' : '28rem'"
           >
             @if (timelineMinimized()) {
@@ -388,7 +386,7 @@ const WORKFLOW_EVENT_TYPES = [
                 </div>
               </div>
             } @else {
-              <div class="w-[28rem] h-full flex flex-col">
+              <div class="w-md h-full flex flex-col">
                 <div class="flex items-center justify-between p-2 border-b">
                   <div class="flex items-center gap-2">
                     <h3 class="text-sm font-medium">Execution Timeline</h3>

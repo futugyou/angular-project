@@ -46,7 +46,7 @@ type Tab = 'docker' | 'azure'
     DialogCloseComponent,
   ],
   template: ` <app-dialog [open]="open()" (openChange)="onOpenChange.emit($event)">
-    <app-dialog-content class="w-[800px] max-w-[90vw]">
+    <app-dialog-content class="w-200 max-w-[90vw]">
       <app-dialog-close (onClose)="onOpenChange.emit(false)"></app-dialog-close>
 
       <app-dialog-header class="p-6 pb-2">
@@ -95,8 +95,8 @@ type Tab = 'docker' | 'azure'
         }
       </div>
 
-      <div class="px-6 pb-6 min-h-[400px]">
-        <app-scroll-area class="h-[500px]">
+      <div class="px-6 pb-6 min-h-100">
+        <app-scroll-area class="h-125">
           <div class="pr-4">
             @if (activeTab() === 'docker') {
               <div class="space-y-4 pt-4">

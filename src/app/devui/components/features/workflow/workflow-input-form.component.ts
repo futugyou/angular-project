@@ -94,7 +94,7 @@ import type { JSONSchemaProperty } from '../../../types'
           <app-dialog-close (click)="isModalOpen.set(false)" />
         </app-dialog-header>
 
-        <div class="px-8 py-4 border-b flex-shrink-0">
+        <div class="px-8 py-4 border-b shrink-0">
           <div class="text-sm text-muted-foreground">
             <div class="flex items-center gap-3">
               <span class="font-medium">Input Type:</span>
@@ -114,7 +114,7 @@ import type { JSONSchemaProperty } from '../../../types'
           </form>
         </div>
 
-        <app-dialog-footer class="px-8 py-4 border-t flex-shrink-0">
+        <app-dialog-footer class="px-8 py-4 border-t shrink-0">
           <button
             [appButton]
             variant="outline"
@@ -147,7 +147,7 @@ import type { JSONSchemaProperty } from '../../../types'
             name="simple-input"
             [placeholder]="simplePlaceholder()"
             [rows]="4"
-            class="min-w-[300px] w-full"
+            class="min-w-75 w-full"
           />
           @if (inputSchema().description) {
             <p class="text-sm text-muted-foreground">{{ inputSchema().description }}</p>

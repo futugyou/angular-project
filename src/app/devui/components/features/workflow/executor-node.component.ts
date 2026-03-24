@@ -35,7 +35,7 @@ export interface ExecutorNodeData extends Record<string, unknown> {
         type="target"
         [position]="targetPosition()"
         id="target"
-        class="!w-2 !h-2 !rounded-full !border !border-gray-600 dark:!border-gray-500 transition-colors !min-w-0 !min-h-0"
+        class="w-2! h-2! rounded-full! border! border-gray-600! dark:border-gray-500! transition-colors min-w-0! min-h-0!"
         [ngStyle]="{ 'background-color': handleBgColor() }"
       />
 
@@ -43,13 +43,13 @@ export interface ExecutorNodeData extends Record<string, unknown> {
         type="source"
         [position]="sourcePosition()"
         id="source"
-        class="!w-2 !h-2 !rounded-full !border !border-gray-600 dark:!border-gray-500 transition-colors !min-w-0 !min-h-0"
+        class="w-2! h-2! rounded-full! border! border-gray-600! dark:border-gray-500! transition-colors min-w-0! min-h-0!"
         [ngStyle]="{ 'background-color': handleBgColor() }"
       />
 
       <div class="p-3">
         <div class="flex items-start gap-3">
-          <div class="flex-shrink-0 relative">
+          <div class="shrink-0 relative">
             <div
               class="w-10 h-10 rounded-lg bg-gray-900/90 dark:bg-gray-800/90 flex items-center justify-center"
             >
@@ -71,7 +71,7 @@ export interface ExecutorNodeData extends Record<string, unknown> {
                   name="lucideLoader2"
                   [class]="
                     cn(
-                      'w-4 h-4 text-[#643FB2] dark:text-[#8B5CF6] flex-shrink-0',
+                      'w-4 h-4 text-[#643FB2] dark:text-[#8B5CF6] shrink-0',
                       shouldAnimate() ? 'animate-spin' : ''
                     )
                   "
@@ -103,7 +103,7 @@ export interface ExecutorNodeData extends Record<string, unknown> {
               <div class="mt-2">
                 @if (nodeData().error) {
                   <div
-                    class="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 p-2 rounded border border-red-200 dark:border-red-800 break-words max-h-32 overflow-auto"
+                    class="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 p-2 rounded border border-red-200 dark:border-red-800 wrap-break-word max-h-32 overflow-auto"
                   >
                     {{ truncatedError() }}
                   </div>

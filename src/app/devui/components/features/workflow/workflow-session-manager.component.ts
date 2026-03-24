@@ -53,7 +53,7 @@ import type { WorkflowSession } from '../../../types'
             <div (click)="handleSelectSession(session)" [class]="getSessionClasses(session)">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2">
-                  <ng-icon name="lucideClock" class="h-4 w-4 text-gray-400 flex-shrink-0" />
+                  <ng-icon name="lucideClock" class="h-4 w-4 text-gray-400 shrink-0" />
                   <span class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                     {{ session.metadata.name || 'Unnamed Conversation' }}
                   </span>

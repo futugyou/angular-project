@@ -46,7 +46,7 @@ function useBase64ToBlobUrl(dataSignal: () => string | undefined, mimeType: stri
   imports: [MarkdownRendererComponent],
   template: `
     @if (isValidType()) {
-      <div [class]="'break-words ' + className()">
+      <div [class]="'wrap-break-word ' + className()">
         <app-markdown-renderer [content]="content().text" />
         @if (isStreaming() && content().text.length > 0) {
           <span class="ml-1 inline-block h-2 w-2 animate-pulse rounded-full bg-current"></span>
