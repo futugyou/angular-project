@@ -14,6 +14,7 @@ import {
   CdkMenuItemCheckbox,
   CdkMenuItemRadio,
   CdkMenuGroup,
+  CdkMenu,
 } from '@angular/cdk/menu'
 import { NgIconComponent } from '@ng-icons/core'
 import { cn } from '../../lib/utils'
@@ -27,32 +28,25 @@ import { cn } from '../../lib/utils'
       inputs: ['cdkMenuTriggerFor: appDropdownMenu'],
     },
   ],
-  host: {
-    type: 'button',
-  },
 })
-export class DropdownMenu {
-  appDropdownMenu = input.required<TemplateRef<any>>()
-}
+export class DropdownMenu {}
 
 @Component({
   selector: 'app-dropdown-menu-content',
   standalone: true,
   imports: [CdkMenuModule],
-  template: `
-    <div [class]="computedClasses()" cdkMenu cdkMenuGroup>
-      <ng-content />
-    </div>
-  `,
+  hostDirectives: [CdkMenu],
   host: {
     '[attr.data-slot]': '"dropdown-menu-content"',
+    '[class]': 'computedClasses()',
+    class: 'block',
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `<ng-content />`,
 })
 export class DropdownMenuContent {
   className = input<string>('', { alias: 'class' })
-
   computedClasses = computed(() =>
     cn(
       'bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md',
@@ -71,6 +65,7 @@ export class DropdownMenuContent {
     },
   ],
   host: {
+    type: 'button',
     '[attr.data-slot]': '"dropdown-menu-item"',
     '[attr.data-inset]': 'inset()',
     '[attr.data-variant]': 'variant()',
@@ -145,11 +140,21 @@ export class DropdownMenuSeparator {
 @Component({
   selector: 'button[appDropdownMenuSubTrigger]',
   standalone: true,
-  imports: [NgIconComponent],
+  imports: [NgIconComponent, CdkMenuModule],
+  hostDirectives: [
+    { directive: CdkMenuItem },
+    {
+      directive: CdkMenuTrigger,
+      inputs: ['cdkMenuTriggerFor: appDropdownMenuSubTrigger'],
+    },
+  ],
   host: {
+    type: 'button',
     '[attr.data-slot]': '"dropdown-menu-sub-trigger"',
     '[attr.data-inset]': 'inset()',
     '[class]': 'computedClasses()',
+    '[attr.aria-haspopup]': '"menu"',
+    '(click)': '$event.stopPropagation()',
   },
   template: `
     <ng-content />
@@ -157,16 +162,18 @@ export class DropdownMenuSeparator {
   `,
 })
 export class DropdownMenuSubTrigger {
+  appDropdownMenuSubTrigger = input.required<TemplateRef<any>>()
   className = input<string>('', { alias: 'class' })
   inset = input<boolean>(false)
 
   computedClasses = computed(() =>
     cn(
-      'focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-[inset]:pl-8',
+      'focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex w-full cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-[inset]:pl-8',
       this.className(),
     ),
   )
 }
+
 @Component({
   selector: 'app-dropdown-menu-radio-group',
   standalone: true,
@@ -254,52 +261,20 @@ export class DropdownMenuShortcut {
   selector: 'app-dropdown-menu-sub-content',
   standalone: true,
   imports: [CdkMenuModule],
-  template: `
-    <div [class]="computedClasses()" cdkMenu cdkMenuGroup>
-      <ng-content />
-    </div>
-  `,
+  hostDirectives: [CdkMenu],
   host: {
     '[attr.data-slot]': '"dropdown-menu-sub-content"',
+    '[class]': 'computedClasses()',
+    class: 'block',
   },
+  template: `<ng-content />`,
 })
 export class DropdownMenuSubContent {
   className = input<string>('', { alias: 'class' })
-
   computedClasses = computed(() =>
     cn(
-      'bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg',
+      'bg-popover text-popover-foreground z-50 min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-lg animate-in fade-in-0 zoom-in-95',
       this.className(),
     ),
   )
 }
-
-// usage
-// <ng-template #mainMenu>
-//   <app-dropdown-menu-content class="w-56">
-//     <button appDropdownMenuCheckboxItem [checked]="showStatusBar()">
-//       Show Status Bar
-//     </button>
-
-//     <app-dropdown-menu-separator />
-
-//     <button appDropdownMenuSubTrigger [cdkMenuTriggerFor]="sub">
-//       More Tools
-//     </button>
-
-//     <ng-template #sub>
-//       <app-dropdown-menu-content>
-//         <button appDropdownMenuItem>Save Page As...</button>
-//         <button appDropdownMenuItem>Create Shortcut...</button>
-//       </app-dropdown-menu-content>
-//     </ng-template>
-
-//     <app-dropdown-menu-separator />
-
-//     <div cdkMenuGroup>
-//       <app-dropdown-menu-label>Theme</app-dropdown-menu-label>
-//       <button appDropdownMenuRadioItem [checked]="theme() === 'light'">Light</button>
-//       <button appDropdownMenuRadioItem [checked]="theme() === 'dark'">Dark</button>
-//     </div>
-//   </app-dropdown-menu-content>
-// </ng-template>
