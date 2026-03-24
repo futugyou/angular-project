@@ -1,0 +1,65 @@
+<div class="flex flex-col gap-4 p-4 bg-surface shadow-sm rounded-xl border border-gray-100">
+  <button
+    [appDropdownMenu]="mainMenu"
+    class="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium bg-white hover:bg-gray-100"
+  >
+    Open settings
+  </button>
+
+  <ng-template #mainMenu>
+    <app-dropdown-menu-content class="w-56">
+      <app-dropdown-menu-label>My Account</app-dropdown-menu-label>
+
+      <button appDropdownMenuItem (triggered)="onProfile()">
+        <ng-icon name="lucideUser" class="mr-2" />
+        <span>Personal information</span>
+        <span appDropdownMenuShortcut>⇧⌘P</span>
+      </button>
+
+      <button appDropdownMenuItem>
+        <ng-icon name="lucideSettings" class="mr-2" />
+        <span>Settings</span>
+        <span appDropdownMenuShortcut>⌘S</span>
+      </button>
+
+      <app-dropdown-menu-separator />
+
+      <button appDropdownMenuCheckboxItem [checked]="showStatusBar" (triggered)="toggleStatusBar()">
+        Show status bar
+      </button>
+
+      <app-dropdown-menu-separator />
+
+      <button [cdkMenuTriggerFor]="subThemeMenu" appDropdownMenuSubTrigger>Theme Color</button>
+
+      <ng-template #subThemeMenu>
+        <app-dropdown-menu-sub-content>
+          <app-dropdown-menu-radio-group>
+            <button
+              appDropdownMenuRadioItem
+              [checked]="theme === 'light'"
+              (triggered)="setTheme('light')"
+            >
+              bright mode
+            </button>
+            <button
+              appDropdownMenuRadioItem
+              [checked]="theme === 'dark'"
+              (triggered)="setTheme('dark')"
+            >
+              dark mode
+            </button>
+          </app-dropdown-menu-radio-group>
+        </app-dropdown-menu-sub-content>
+      </ng-template>
+
+      <app-dropdown-menu-separator />
+
+      <button appDropdownMenuItem variant="destructive" (triggered)="onLogout()">
+        <ng-icon name="lucideLogOut" class="mr-2" />
+        <span>Log out</span>
+        <span appDropdownMenuShortcut>⇧⌘Q</span>
+      </button>
+    </app-dropdown-menu-content>
+  </ng-template>
+</div>

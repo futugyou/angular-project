@@ -23,11 +23,13 @@ import { ThemeService } from '../services/theme.service'
       </button>
     </div>
 
-    <app-dropdown-menu-content #menu class="min-w-32">
-      <button appDropdownMenuItem (triggered)="setTheme('light')">Light</button>
-      <button appDropdownMenuItem (triggered)="setTheme('dark')">Dark</button>
-      <button appDropdownMenuItem (triggered)="setTheme('system')">System</button>
-    </app-dropdown-menu-content>
+    <ng-template #menu>
+      <app-dropdown-menu-content class="min-w-32">
+        <button appDropdownMenuItem (triggered)="setTheme('light')">Light</button>
+        <button appDropdownMenuItem (triggered)="setTheme('dark')">Dark</button>
+        <button appDropdownMenuItem (triggered)="setTheme('system')">System</button>
+      </app-dropdown-menu-content>
+    </ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

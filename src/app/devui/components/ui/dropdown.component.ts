@@ -5,6 +5,7 @@ import {
   computed,
   ViewEncapsulation,
   ChangeDetectionStrategy,
+  TemplateRef,
 } from '@angular/core'
 import {
   CdkMenuModule,
@@ -26,8 +27,13 @@ import { cn } from '../../lib/utils'
       inputs: ['cdkMenuTriggerFor: appDropdownMenu'],
     },
   ],
+  host: {
+    type: 'button',
+  },
 })
-export class DropdownMenu {}
+export class DropdownMenu {
+  appDropdownMenu = input.required<TemplateRef<any>>()
+}
 
 @Component({
   selector: 'app-dropdown-menu-content',
