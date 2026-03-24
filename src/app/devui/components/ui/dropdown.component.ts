@@ -34,11 +34,9 @@ export class DropdownMenu {}
   standalone: true,
   imports: [CdkMenuModule],
   template: `
-    <ng-template cdkMenu>
-      <div [class]="computedClasses()" cdkMenuGroup>
-        <ng-content />
-      </div>
-    </ng-template>
+    <div [class]="computedClasses()" cdkMenu cdkMenuGroup>
+      <ng-content />
+    </div>
   `,
   host: {
     '[attr.data-slot]': '"dropdown-menu-content"',
@@ -251,11 +249,9 @@ export class DropdownMenuShortcut {
   standalone: true,
   imports: [CdkMenuModule],
   template: `
-    <ng-template cdkMenu>
-      <div [class]="computedClasses()" cdkMenuGroup>
-        <ng-content />
-      </div>
-    </ng-template>
+    <div [class]="computedClasses()" cdkMenu cdkMenuGroup>
+      <ng-content />
+    </div>
   `,
   host: {
     '[attr.data-slot]': '"dropdown-menu-sub-content"',
