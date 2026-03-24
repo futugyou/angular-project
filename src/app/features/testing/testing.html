@@ -7,7 +7,7 @@
   </button>
 
   <ng-template #mainMenu>
-    <app-dropdown-menu-content class="w-56">
+    <app-dropdown-menu-content class="w-96">
       <app-dropdown-menu-label>My Account</app-dropdown-menu-label>
 
       <button appDropdownMenuItem (triggered)="onProfile()">
@@ -30,7 +30,7 @@
 
       <app-dropdown-menu-separator />
 
-      <button [cdkMenuTriggerFor]="subThemeMenu" appDropdownMenuSubTrigger>Theme Color</button>
+      <button [appDropdownMenuSubTrigger]="subThemeMenu">Theme Color</button>
 
       <ng-template #subThemeMenu>
         <app-dropdown-menu-sub-content>

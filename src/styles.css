@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '@angular/cdk/overlay-prebuilt.css';
 
 :root {
   --color-primary: #e11d48;

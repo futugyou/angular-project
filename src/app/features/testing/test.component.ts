@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnInit, output, inject, signal } from '@angula
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { NgIconsModule, provideIcons } from '@ng-icons/core'
 import { lucideLogOut } from '@ng-icons/lucide'
-import { ButtonDirective } from '../../devui/directives/button.directive'
+// import { ButtonDirective } from '../../devui/directives/button.directive'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuCheckboxItem,
   DropdownMenuRadioItem,
+  DropdownMenuSubTrigger,
 } from '../../devui/components/ui/dropdown.component'
 
 @Component({
@@ -22,7 +23,7 @@ import {
   providers: [provideIcons({ lucideLogOut })],
   imports: [
     CdkMenuModule,
-    ButtonDirective,
+    // ButtonDirective,
     NgIconsModule,
     DropdownMenu,
     DropdownMenuContent,
@@ -33,6 +34,7 @@ import {
     DropdownMenuRadioGroup,
     DropdownMenuCheckboxItem,
     DropdownMenuRadioItem,
+    DropdownMenuSubTrigger,
   ],
 })
 export class TestingComponent implements OnInit {
