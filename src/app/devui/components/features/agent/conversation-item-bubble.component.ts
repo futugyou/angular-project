@@ -39,7 +39,10 @@ import { ConversationMessage } from '../../../types/openai'
             <div class="rounded px-3 py-2 text-sm" [class]="bubbleClass()">
               @if (isError()) {
                 <div class="flex items-start gap-2 mb-2">
-                  <ng-icon name="lucAlertCircle" class="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                  <ng-icon
+                    name="lucideAlertCircle"
+                    class="h-4 w-4 text-orange-500 mt-0.5 shrink-0"
+                  />
                   <span class="font-medium text-sm">Unable to process request</span>
                 </div>
               }
@@ -60,7 +63,7 @@ import { ConversationMessage } from '../../../types/openai'
                 [title]="copied() ? 'Copied!' : 'Copy message'"
               >
                 <ng-icon
-                  [name]="copied() ? 'lucCheckCheck' : 'lucCopy'"
+                  [name]="copied() ? 'lucideCheckCheck' : 'lucideCopy'"
                   [class.text-green-600]="copied()"
                   class="h-3.5 w-3.5"
                 />
@@ -87,7 +90,7 @@ import { ConversationMessage } from '../../../types/openai'
                 (click)="showToolDetails.set(!showToolDetails())"
                 class="flex items-center gap-1 hover:text-foreground transition-colors"
               >
-                <ng-icon name="lucWrench" class="h-3 w-3" />
+                <ng-icon name="lucideWrench" class="h-3 w-3" />
                 <span>{{ toolCalls().length }}</span>
               </button>
             }

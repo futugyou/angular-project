@@ -128,4 +128,16 @@
     <app-badge variant="secondary" class="text-xs"> secondary </app-badge>
     <app-badge variant="default" class="text-xs font-mono"> default </app-badge>
   </div>
+
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Button Component Test</h1>
+    <button
+      [appButton]
+      (click)="handleCopy()"
+      class="absolute top-1 right-1 p-1.5 rounded-md border shadow-sm bg-background hover:bg-accent text-muted-foreground hover:text-foreground transition-all duration-200 opacity-100"
+      title="Copied!"
+    >
+      <ng-icon name="lucideCheckCheck" class="h-3.5 w-3.5" />
+    </button>
+  </div>
 </div>

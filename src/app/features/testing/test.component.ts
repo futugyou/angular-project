@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, output, inject, signal } from '@angular/core'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { NgIconsModule, provideIcons } from '@ng-icons/core'
-import { lucideLogOut } from '@ng-icons/lucide'
+import { lucideLogOut, lucideCheckCheck } from '@ng-icons/lucide'
 import { Alert, AlertTitle, AlertDescription } from '../../devui/components/ui/alert.component'
 import {
   DropdownMenu,
@@ -19,12 +19,13 @@ import { AttachmentGalleryComponent } from '../../devui/components/ui/attachment
 import { AttachmentItem } from '../../devui/components/ui/types'
 import { MOCK_ATTACHMENTS } from './mock-data'
 import { BadgeComponent } from '../../devui/components/ui/badge.component'
+import { ButtonComponent } from '../../devui/components/ui/button.component'
 
 @Component({
   selector: 'app-testing-main',
   standalone: true,
   templateUrl: './testing.html',
-  providers: [provideIcons({ lucideLogOut })],
+  providers: [provideIcons({ lucideLogOut, lucideCheckCheck })],
   imports: [
     CdkMenuModule,
     // ButtonDirective,
@@ -44,6 +45,7 @@ import { BadgeComponent } from '../../devui/components/ui/badge.component'
     AlertDescription,
     AttachmentGalleryComponent,
     BadgeComponent,
+    ButtonComponent,
   ],
 })
 export class TestingComponent implements OnInit {
@@ -76,5 +78,9 @@ export class TestingComponent implements OnInit {
 
   resetAttachment() {
     this.attachments.set([...MOCK_ATTACHMENTS])
+  }
+
+  handleCopy() {
+    console.log('copy')
   }
 }
