@@ -131,13 +131,13 @@
 
   <div class="p-4">
     <h1 class="text-2xl font-bold mb-6 text-gray-800">Button Component Test</h1>
-    <button
-      [appButton]
-      (click)="handleCopy()"
-      class="absolute top-1 right-1 p-1.5 rounded-md border shadow-sm bg-background hover:bg-accent text-muted-foreground hover:text-foreground transition-all duration-200 opacity-100"
-      title="Copied!"
-    >
+    <button [appButton] title="default" variant="default" size="icon">
       <ng-icon name="lucideCheckCheck" class="h-3.5 w-3.5" />
     </button>
+    <button [appButton] title="destructive" variant="destructive" size="sm">destructive</button>
+    <button [appButton] title="outline" variant="outline" size="lg">outline</button>
+    <button [appButton] title="secondary" variant="secondary" size="lg">secondary</button>
+    <button [appButton] title="ghost" variant="ghost">ghost</button>
+    <button [appButton] title="link" variant="link">link</button>
   </div>
 </div>

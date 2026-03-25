@@ -79,8 +79,4 @@ export class TestingComponent implements OnInit {
   resetAttachment() {
     this.attachments.set([...MOCK_ATTACHMENTS])
   }
-
-  handleCopy() {
-    console.log('copy')
-  }
 }
