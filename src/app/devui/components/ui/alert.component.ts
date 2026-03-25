@@ -25,6 +25,7 @@ import { cn } from '../../lib/utils'
   template: `<ng-content></ng-content>`,
   host: {
     role: 'alert',
+    '[class]': 'classes()',
   },
 })
 export class Alert {
@@ -32,7 +33,9 @@ export class Alert {
 
   readonly classes = computed(() =>
     cn(
-      'relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground',
+      'relative block w-full rounded-lg border p-4',
+      '[&>svg~*]:pl-7',
+      '[&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground',
       this.userClass(),
     ),
   )
@@ -47,7 +50,7 @@ export class Alert {
 export class AlertTitle {
   readonly userClass = input<string>('', { alias: 'class' })
   readonly classes = computed(() =>
-    cn('mb-1 font-medium leading-none tracking-tight', this.userClass()),
+    cn('block mb-1 font-medium leading-none tracking-tight', this.userClass()),
   )
 }
 
@@ -62,5 +65,7 @@ export class AlertTitle {
 export class AlertDescription {
   readonly userClass = input<string>('', { alias: 'class' })
 
-  readonly computedClass = computed(() => cn('text-sm [&_p]:leading-relaxed', this.userClass()))
+  readonly computedClass = computed(() =>
+    cn('block text-sm [&_p]:leading-relaxed', this.userClass()),
+  )
 }

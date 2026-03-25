@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnInit, output, inject, signal } from '@angula
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { NgIconsModule, provideIcons } from '@ng-icons/core'
 import { lucideLogOut } from '@ng-icons/lucide'
-// import { ButtonDirective } from '../../devui/directives/button.directive'
+import { Alert, AlertTitle, AlertDescription } from '../../devui/components/ui/alert.component'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,6 +35,9 @@ import {
     DropdownMenuCheckboxItem,
     DropdownMenuRadioItem,
     DropdownMenuSubTrigger,
+    Alert,
+    AlertTitle,
+    AlertDescription,
   ],
 })
 export class TestingComponent implements OnInit {
