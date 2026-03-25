@@ -18,6 +18,7 @@ import {
 import { AttachmentGalleryComponent } from '../../devui/components/ui/attachment-gallery.component'
 import { AttachmentItem } from '../../devui/components/ui/types'
 import { MOCK_ATTACHMENTS } from './mock-data'
+import { BadgeComponent } from '../../devui/components/ui/badge.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -42,6 +43,7 @@ import { MOCK_ATTACHMENTS } from './mock-data'
     AlertTitle,
     AlertDescription,
     AttachmentGalleryComponent,
+    BadgeComponent,
   ],
 })
 export class TestingComponent implements OnInit {

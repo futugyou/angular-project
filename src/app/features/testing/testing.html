@@ -1,92 +1,102 @@
 <div class="flex flex-col gap-4 p-4 bg-surface shadow-sm rounded-xl border border-gray-100">
-  <button
-    [appDropdownMenu]="mainMenu"
-    class="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium bg-white hover:bg-gray-100"
-  >
-    Open settings
-  </button>
-
-  <ng-template #mainMenu>
-    <app-dropdown-menu-content class="w-96">
-      <app-dropdown-menu-label>My Account</app-dropdown-menu-label>
-
-      <button appDropdownMenuItem (triggered)="onProfile()">
-        <ng-icon name="lucideUser" class="mr-2" />
-        <span>Personal information</span>
-        <span appDropdownMenuShortcut>⇧⌘P</span>
-      </button>
-
-      <button appDropdownMenuItem>
-        <ng-icon name="lucideSettings" class="mr-2" />
-        <span>Settings</span>
-        <span appDropdownMenuShortcut>⌘S</span>
-      </button>
-
-      <app-dropdown-menu-separator />
-
-      <button appDropdownMenuCheckboxItem [checked]="showStatusBar" (triggered)="toggleStatusBar()">
-        Show status bar
-      </button>
-
-      <app-dropdown-menu-separator />
-
-      <button [appDropdownMenuSubTrigger]="subThemeMenu">Theme Color</button>
-
-      <ng-template #subThemeMenu>
-        <app-dropdown-menu-sub-content>
-          <app-dropdown-menu-radio-group>
-            <button
-              appDropdownMenuRadioItem
-              [checked]="theme === 'light'"
-              (triggered)="setTheme('light')"
-            >
-              bright mode
-            </button>
-            <button
-              appDropdownMenuRadioItem
-              [checked]="theme === 'dark'"
-              (triggered)="setTheme('dark')"
-            >
-              dark mode
-            </button>
-          </app-dropdown-menu-radio-group>
-        </app-dropdown-menu-sub-content>
-      </ng-template>
-
-      <app-dropdown-menu-separator />
-
-      <button appDropdownMenuItem variant="destructive" (triggered)="onLogout()">
-        <ng-icon name="lucideLogOut" class="mr-2" />
-        <span>Log out</span>
-        <span appDropdownMenuShortcut>⇧⌘Q</span>
-      </button>
-    </app-dropdown-menu-content>
-  </ng-template>
-
-  <app-alert class="bg-blue-50 text-blue-900 border-blue-200">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Dropdown Component Test</h1>
+    <button
+      [appDropdownMenu]="mainMenu"
+      class="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium bg-white hover:bg-gray-100"
     >
-      <circle cx="12" cy="12" r="10" />
-      <line x1="12" y1="16" x2="12" y2="12" />
-      <line x1="12" y1="8" x2="12.01" y2="8" />
-    </svg>
+      Open settings
+    </button>
 
-    <app-alert-title>Update Available</app-alert-title>
-    <app-alert-description>
-      A new software version is ready; please update it as soon as possible.
-    </app-alert-description>
-  </app-alert>
+    <ng-template #mainMenu>
+      <app-dropdown-menu-content class="w-96">
+        <app-dropdown-menu-label>My Account</app-dropdown-menu-label>
 
-  <div class="p-8 max-w-2xl mx-auto">
+        <button appDropdownMenuItem (triggered)="onProfile()">
+          <ng-icon name="lucideUser" class="mr-2" />
+          <span>Personal information</span>
+          <span appDropdownMenuShortcut>⇧⌘P</span>
+        </button>
+
+        <button appDropdownMenuItem>
+          <ng-icon name="lucideSettings" class="mr-2" />
+          <span>Settings</span>
+          <span appDropdownMenuShortcut>⌘S</span>
+        </button>
+
+        <app-dropdown-menu-separator />
+
+        <button
+          appDropdownMenuCheckboxItem
+          [checked]="showStatusBar"
+          (triggered)="toggleStatusBar()"
+        >
+          Show status bar
+        </button>
+
+        <app-dropdown-menu-separator />
+
+        <button [appDropdownMenuSubTrigger]="subThemeMenu">Theme Color</button>
+
+        <ng-template #subThemeMenu>
+          <app-dropdown-menu-sub-content>
+            <app-dropdown-menu-radio-group>
+              <button
+                appDropdownMenuRadioItem
+                [checked]="theme === 'light'"
+                (triggered)="setTheme('light')"
+              >
+                bright mode
+              </button>
+              <button
+                appDropdownMenuRadioItem
+                [checked]="theme === 'dark'"
+                (triggered)="setTheme('dark')"
+              >
+                dark mode
+              </button>
+            </app-dropdown-menu-radio-group>
+          </app-dropdown-menu-sub-content>
+        </ng-template>
+
+        <app-dropdown-menu-separator />
+
+        <button appDropdownMenuItem variant="destructive" (triggered)="onLogout()">
+          <ng-icon name="lucideLogOut" class="mr-2" />
+          <span>Log out</span>
+          <span appDropdownMenuShortcut>⇧⌘Q</span>
+        </button>
+      </app-dropdown-menu-content>
+    </ng-template>
+  </div>
+
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Alert Component Test</h1>
+    <app-alert class="bg-blue-50 text-blue-900 border-blue-200">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="16" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
+      </svg>
+
+      <app-alert-title>Update Available</app-alert-title>
+      <app-alert-description>
+        A new software version is ready; please update it as soon as possible.
+      </app-alert-description>
+    </app-alert>
+  </div>
+
+  <div class="p-4">
     <h1 class="text-2xl font-bold mb-6 text-gray-800">Attachment Preview Component Test</h1>
 
     <div class="mb-4">
@@ -109,5 +119,13 @@
     >
       Reset Data
     </button>
+  </div>
+
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Badge Component Test</h1>
+    <app-badge variant="outline" class="text-xs"> outline </app-badge>
+    <app-badge variant="destructive" class="text-xs"> destructive </app-badge>
+    <app-badge variant="secondary" class="text-xs"> secondary </app-badge>
+    <app-badge variant="default" class="text-xs font-mono"> default </app-badge>
   </div>
 </div>
