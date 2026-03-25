@@ -15,6 +15,9 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSubTrigger,
 } from '../../devui/components/ui/dropdown.component'
+import { AttachmentGalleryComponent } from '../../devui/components/ui/attachment-gallery.component'
+import { AttachmentItem } from '../../devui/components/ui/types'
+import { MOCK_ATTACHMENTS } from './mock-data'
 
 @Component({
   selector: 'app-testing-main',
@@ -38,6 +41,7 @@ import {
     Alert,
     AlertTitle,
     AlertDescription,
+    AttachmentGalleryComponent,
   ],
 })
 export class TestingComponent implements OnInit {
@@ -59,5 +63,16 @@ export class TestingComponent implements OnInit {
   }
   onLogout() {
     console.log('Logout clicked')
+  }
+
+  attachments = signal<AttachmentItem[]>([...MOCK_ATTACHMENTS])
+
+  handleAttachmentRemove(id: string) {
+    console.log('remove attachment ID:', id)
+    this.attachments.update((items) => items.filter((item) => item.id !== id))
+  }
+
+  resetAttachment() {
+    this.attachments.set([...MOCK_ATTACHMENTS])
   }
 }
