@@ -11,9 +11,11 @@ import { ButtonVariantProps, buttonVariants } from '../lib/button.variants'
   },
 })
 export class ButtonDirective {
+  // The reason I didn't use `alias` was to observe the results across all four syntax variations.
+  // This approach applies only to the Button Component and Directive; for all other components, `alias` should be used.
   readonly appButton = input<any>(null)
-
   readonly variant = input<ButtonVariantProps['variant']>('default')
+
   readonly size = input<ButtonVariantProps['size']>('default')
   readonly userClass = input<string>('', { alias: 'class' })
   readonly loading = input<boolean>(false)

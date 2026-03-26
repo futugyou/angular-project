@@ -127,6 +127,11 @@
     <app-badge variant="destructive" class="text-xs"> destructive </app-badge>
     <app-badge variant="secondary" class="text-xs"> secondary </app-badge>
     <app-badge variant="default" class="text-xs font-mono"> default </app-badge>
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Badge Directive Test</h1>
+    <div appBadge variant="outline" class="text-xs">outline</div>
+    <div appBadge variant="destructive" class="text-xs">destructive</div>
+    <div appBadge variant="secondary" class="text-xs">secondary</div>
+    <div appBadge variant="default" class="text-xs font-mono">default</div>
   </div>
 
   <div class="p-4">
@@ -135,6 +140,9 @@
       <ng-icon name="lucideCheckCheck" class="h-3.5 w-3.5" />
     </button>
     <button [appButton] title="destructive" variant="destructive" size="sm">destructive</button>
+    <button appButton variant="destructive" size="sm">destructive2</button>
+    <button appButton="destructive" size="sm">destructive3</button>
+    <button [appButton]="'destructive'" size="sm">destructive4</button>
     <button [appButton] title="outline" variant="outline" size="lg">outline</button>
     <button [appButton] title="secondary" variant="secondary" size="lg">secondary</button>
     <button [appButton] title="ghost" variant="ghost">ghost</button>

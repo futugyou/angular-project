@@ -20,6 +20,8 @@ import { AttachmentItem } from '../../devui/components/ui/types'
 import { MOCK_ATTACHMENTS } from './mock-data'
 import { BadgeComponent } from '../../devui/components/ui/badge.component'
 import { ButtonComponent } from '../../devui/components/ui/button.component'
+import { BadgeDirective } from '../../devui/directives/badge.directive'
+import { ButtonDirective } from '../../devui/directives/button.directive'
 
 @Component({
   selector: 'app-testing-main',
@@ -28,7 +30,6 @@ import { ButtonComponent } from '../../devui/components/ui/button.component'
   providers: [provideIcons({ lucideLogOut, lucideCheckCheck })],
   imports: [
     CdkMenuModule,
-    // ButtonDirective,
     NgIconsModule,
     DropdownMenu,
     DropdownMenuContent,
@@ -45,7 +46,9 @@ import { ButtonComponent } from '../../devui/components/ui/button.component'
     AlertDescription,
     AttachmentGalleryComponent,
     BadgeComponent,
+    BadgeDirective,
     ButtonComponent,
+    // ButtonDirective,
   ],
 })
 export class TestingComponent implements OnInit {
