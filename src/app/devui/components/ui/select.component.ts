@@ -114,6 +114,8 @@ export class Select implements ControlValueAccessor {
     <ng-template
       cdkConnectedOverlay
       [cdkConnectedOverlayOrigin]="trigger"
+      [cdkConnectedOverlayPush]="true"
+      [cdkConnectedOverlayMinWidth]="root.triggerWidth()"
       [cdkConnectedOverlayOpen]="root.isOpen()"
       [cdkConnectedOverlayHasBackdrop]="true"
       backdropClass="cdk-overlay-transparent-backdrop"
@@ -121,12 +123,10 @@ export class Select implements ControlValueAccessor {
       (detach)="root.close()"
       [cdkConnectedOverlayOffsetY]="4"
     >
-      <div [style.width.px]="root.triggerWidth()" class="select-content-portal">
+      <div [style.min-width.px]="root.triggerWidth()" class="select-content-portal">
         @if (root.contentComponent(); as contentInstance) {
-          <div [style.width.px]="root.triggerWidth()" class="select-content-portal">
-            <div [class]="contentInstance.contentClass()">
-              <ng-container [ngTemplateOutlet]="contentInstance.templateRef"></ng-container>
-            </div>
+          <div [class]="contentInstance.contentClass()">
+            <ng-container [ngTemplateOutlet]="contentInstance.templateRef"></ng-container>
           </div>
         }
       </div>
@@ -163,7 +163,7 @@ export class SelectTrigger {
   selector: 'app-select-value',
   standalone: true,
   template: `
-    <span class="line-clamp-1 flex items-center gap-2">
+    <span class="line-clamp-1 flex items-center gap-2  whitespace-nowrap text-ellipsis">
       {{ root.value() || placeholder() }}
     </span>
   `,
@@ -280,7 +280,7 @@ export class SelectItem {
   selector: 'app-select-separator',
   standalone: true,
   host: {
-    '[class]': 'cn("bg-border pointer-events-none -mx-1 my-1 h-px", className())',
+    '[class]': 'cn("bg-border pointer-events-none -mx-1 my-1 h-px block", className())',
     '[attr.data-slot]': '"select-separator"',
   },
 })
@@ -293,7 +293,7 @@ export class SelectSeparator {
   selector: 'app-select-label',
   standalone: true,
   host: {
-    '[class]': 'cn("text-muted-foreground px-2 py-1.5 text-xs", className())',
+    '[class]': 'cn("text-muted-foreground px-2 py-1.5 text-xs font-semibold", className())',
     '[attr.data-slot]': '"select-label"',
   },
 })

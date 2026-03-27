@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, output, inject, signal } from '@angular/core'
+import { Component, EventEmitter, OnInit, output, inject, signal, effect } from '@angular/core'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { NgIconsModule, provideIcons } from '@ng-icons/core'
 import { lucideLogOut, lucideCheckCheck } from '@ng-icons/lucide'
@@ -22,6 +22,7 @@ import { BadgeComponent } from '../../devui/components/ui/badge.component'
 import { ButtonComponent } from '../../devui/components/ui/button.component'
 import { BadgeDirective } from '../../devui/directives/badge.directive'
 import { ButtonDirective } from '../../devui/directives/button.directive'
+import { SELECT_COMPONENTS } from '../../devui/components/ui/select.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -47,8 +48,9 @@ import { ButtonDirective } from '../../devui/directives/button.directive'
     AttachmentGalleryComponent,
     BadgeComponent,
     BadgeDirective,
-    ButtonComponent,
-    // ButtonDirective,
+    // ButtonComponent,
+    ButtonDirective,
+    ...SELECT_COMPONENTS,
   ],
 })
 export class TestingComponent implements OnInit {
@@ -81,5 +83,13 @@ export class TestingComponent implements OnInit {
 
   resetAttachment() {
     this.attachments.set([...MOCK_ATTACHMENTS])
+  }
+
+  currentTech = signal<string>('Angular')
+
+  constructor() {
+    effect(() => {
+      console.log('🚀 [Select Change]:', this.currentTech())
+    })
   }
 }
