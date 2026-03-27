@@ -209,7 +209,7 @@ import { DevUIStore } from './stores'
                 [hasExistingEntities]="agents.length > 0 || workflows.length > 0"
               ></app-gallery-view>
             </div>
-          } @else if (agents.length === 0 && workflows.length === 0) {
+          } @else if (agents().length === 0 && workflows().length === 0) {
             <app-gallery-view variant="inline"></app-gallery-view>
           } @else {
             <div class="flex-1 min-w-0">

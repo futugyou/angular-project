@@ -70,7 +70,6 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
     <ng-template #menu>
       <app-dropdown-menu-content
         class="w-80 font-mono shadow-md border bg-popover text-popover-foreground rounded-md p-1"
-        cdkMenu
       >
         @if (allItems().length > 0) {
           @if (firstItemType() === 'workflow') {

@@ -1,6 +1,8 @@
 import { Injectable, OnDestroy, signal } from '@angular/core'
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class CancellableRequestService implements OnDestroy {
   public isCancelling = signal(false)
   private abortController: AbortController | null = null
