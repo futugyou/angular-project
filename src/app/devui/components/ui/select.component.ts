@@ -12,7 +12,8 @@ import {
   computed,
   TemplateRef,
   ViewChild,
-  ContentChild,
+  InjectionToken,
+  contentChild,
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { OverlayModule } from '@angular/cdk/overlay'
@@ -21,62 +22,14 @@ import { NgIconComponent } from '@ng-icons/core'
 import { cn } from '../../lib/utils'
 import { NgTemplateOutlet } from '@angular/common'
 
-/**
- * SELECT CONTENT
- */
-@Component({
-  selector: 'app-select-content',
-  standalone: true,
-  imports: [CdkListboxModule, NgIconComponent],
-  hostDirectives: [
-    {
-      directive: CdkListbox,
-      inputs: ['cdkListboxValue: value'],
-    },
-  ],
-  host: {
-    '[attr.data-slot]': '"select-content"',
-    '[class]': 'contentClass()',
-  },
-  template: `
-    <ng-template #contentTemplate>
-      <div class="flex cursor-default items-center justify-center py-1">
-        <ng-icon name="lucideChevronUp" class="size-4"></ng-icon>
-      </div>
-      <div class="p-1">
-        <ng-content></ng-content>
-      </div>
-      <div class="flex cursor-default items-center justify-center py-1">
-        <ng-icon name="lucideChevronDown" class="size-4"></ng-icon>
-      </div>
-    </ng-template>
-  `,
-})
-export class SelectContent {
-  @ViewChild('contentTemplate', { static: true }) templateRef!: TemplateRef<any>
-
-  root = inject(Select)
-  listbox = inject(CdkListbox)
-  className = input<string>('')
-
-  constructor() {
-    effect(() => {
-      const val = this.root.value()
-      this.listbox.value = val ? [val] : []
-    })
-
-    this.listbox.valueChange.subscribe((event) => {
-      this.root.value.set(event.value[0])
-      this.root.close()
-    })
-  }
-
-  contentClass = () =>
-    cn(
-      'bg-popover text-popover-foreground relative z-50 max-h-96 min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-md border shadow-md animate-in fade-in-0 zoom-in-95',
-      this.className(),
-    )
+export interface SelectContentProvider {
+  templateRef: TemplateRef<any>
+  contentClass: () => string
 }
+
+export const SELECT_CONTENT_TOKEN = new InjectionToken<SelectContentProvider>(
+  'SELECT_CONTENT_TOKEN',
+)
 
 /**
  * SELECT ROOT
@@ -95,7 +48,7 @@ export class SelectContent {
   template: `<ng-content></ng-content>`,
 })
 export class Select implements ControlValueAccessor {
-  @ContentChild(SelectContent) contentComponent?: SelectContent
+  contentComponent = contentChild(SELECT_CONTENT_TOKEN)
 
   value = model<any>()
   disabledInput = input<boolean>(false, { alias: 'disabled' })
@@ -169,9 +122,11 @@ export class Select implements ControlValueAccessor {
       [cdkConnectedOverlayOffsetY]="4"
     >
       <div [style.width.px]="root.triggerWidth()" class="select-content-portal">
-        @if (root.contentComponent?.templateRef) {
-          <div [class]="root.contentComponent?.contentClass()">
-            <ng-container [ngTemplateOutlet]="root.contentComponent!.templateRef"></ng-container>
+        @if (root.contentComponent(); as contentInstance) {
+          <div [style.width.px]="root.triggerWidth()" class="select-content-portal">
+            <div [class]="contentInstance.contentClass()">
+              <ng-container [ngTemplateOutlet]="contentInstance.templateRef"></ng-container>
+            </div>
           </div>
         }
       </div>
@@ -216,6 +171,69 @@ export class SelectTrigger {
 export class SelectValue {
   root = inject(Select)
   placeholder = input<string>('')
+}
+
+/**
+ * SELECT CONTENT
+ */
+@Component({
+  selector: 'app-select-content',
+  standalone: true,
+  imports: [CdkListboxModule, NgIconComponent],
+  providers: [
+    {
+      provide: SELECT_CONTENT_TOKEN,
+      useExisting: SelectContent,
+    },
+  ],
+  hostDirectives: [
+    {
+      directive: CdkListbox,
+      inputs: ['cdkListboxValue: value'],
+    },
+  ],
+  host: {
+    '[attr.data-slot]': '"select-content"',
+    '[class]': 'contentClass()',
+  },
+  template: `
+    <ng-template #contentTemplate>
+      <div class="flex cursor-default items-center justify-center py-1">
+        <ng-icon name="lucideChevronUp" class="size-4"></ng-icon>
+      </div>
+      <div class="p-1">
+        <ng-content></ng-content>
+      </div>
+      <div class="flex cursor-default items-center justify-center py-1">
+        <ng-icon name="lucideChevronDown" class="size-4"></ng-icon>
+      </div>
+    </ng-template>
+  `,
+})
+export class SelectContent {
+  @ViewChild('contentTemplate', { static: true }) templateRef!: TemplateRef<any>
+
+  root = inject(Select)
+  listbox = inject(CdkListbox)
+  className = input<string>('')
+
+  constructor() {
+    effect(() => {
+      const val = this.root.value()
+      this.listbox.value = val ? [val] : []
+    })
+
+    this.listbox.valueChange.subscribe((event) => {
+      this.root.value.set(event.value[0])
+      this.root.close()
+    })
+  }
+
+  contentClass = () =>
+    cn(
+      'bg-popover text-popover-foreground relative z-50 max-h-96 min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-md border shadow-md animate-in fade-in-0 zoom-in-95',
+      this.className(),
+    )
 }
 
 /**
