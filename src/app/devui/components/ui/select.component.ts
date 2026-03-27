@@ -125,9 +125,7 @@ export class Select implements ControlValueAccessor {
     >
       <div [style.min-width.px]="root.triggerWidth()" class="select-content-portal">
         @if (root.contentComponent(); as contentInstance) {
-          <div [class]="contentInstance.contentClass()">
-            <ng-container [ngTemplateOutlet]="contentInstance.templateRef"></ng-container>
-          </div>
+          <ng-container [ngTemplateOutlet]="contentInstance.templateRef"></ng-container>
         }
       </div>
     </ng-template>
@@ -194,18 +192,20 @@ export class SelectValue {
   ],
   host: {
     '[attr.data-slot]': '"select-content"',
-    '[class]': 'contentClass()',
+    '[style.display]': '"contents"',
   },
   template: `
     <ng-template #contentTemplate>
-      <div class="flex cursor-default items-center justify-center py-1">
-        <ng-icon name="lucideChevronUp" class="size-4"></ng-icon>
-      </div>
-      <div class="p-1">
-        <ng-content></ng-content>
-      </div>
-      <div class="flex cursor-default items-center justify-center py-1">
-        <ng-icon name="lucideChevronDown" class="size-4"></ng-icon>
+      <div [class]="contentClass()">
+        <div class="flex cursor-default items-center justify-center py-1">
+          <ng-icon name="lucideChevronUp" class="size-4"></ng-icon>
+        </div>
+        <div class="p-1">
+          <ng-content></ng-content>
+        </div>
+        <div class="flex cursor-default items-center justify-center py-1">
+          <ng-icon name="lucideChevronDown" class="size-4"></ng-icon>
+        </div>
       </div>
     </ng-template>
   `,
