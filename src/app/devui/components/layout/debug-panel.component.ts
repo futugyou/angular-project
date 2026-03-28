@@ -1885,6 +1885,9 @@ export class ToolsTabComponent {
 @Component({
   selector: 'app-debug-panel',
   standalone: true,
+  host: {
+    class: 'flex-1 border-l flex flex-col min-h-0',
+  },
   imports: [
     NgIconComponent,
     TabsComponent,
@@ -1897,74 +1900,72 @@ export class ToolsTabComponent {
     ToolsTabComponent,
   ],
   template: `
-    <div class="flex-1 border-l flex flex-col min-h-0">
-      <app-tabs
-        [value]="activeTab()"
-        (valueChange)="setActiveTab($any($event))"
-        class="flex-1 flex flex-col min-h-0"
-      >
-        <div class="px-3 pt-3 flex items-center gap-2 shrink-0">
-          <app-tabs-list class="flex-1">
-            <button tabsTrigger value="events" class="flex-1 gap-1.5">
-              Events
-              @if (counts().eventsCount > 0) {
-                <span
-                  class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-5 text-center"
-                >
-                  {{ counts().eventsCount }}
-                </span>
-              }
-            </button>
+    <app-tabs
+      [value]="activeTab()"
+      (valueChange)="setActiveTab($any($event))"
+      class="flex-1 flex flex-col min-h-0"
+    >
+      <div class="px-3 pt-3 flex items-center gap-2 shrink-0">
+        <app-tabs-list class="flex-1">
+          <button tabsTrigger value="events" class="flex-1 gap-1.5">
+            Events
+            @if (counts().eventsCount > 0) {
+              <span
+                class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-5 text-center"
+              >
+                {{ counts().eventsCount }}
+              </span>
+            }
+          </button>
 
-            <button tabsTrigger value="traces" class="flex-1 gap-1.5">
-              Traces
-              @if (counts().tracesCount > 0) {
-                <span
-                  class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-5 text-center"
-                >
-                  {{ counts().tracesCount }}
-                </span>
-              }
-            </button>
+          <button tabsTrigger value="traces" class="flex-1 gap-1.5">
+            Traces
+            @if (counts().tracesCount > 0) {
+              <span
+                class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-5 text-center"
+              >
+                {{ counts().tracesCount }}
+              </span>
+            }
+          </button>
 
-            <button tabsTrigger value="tools" class="flex-1 gap-1.5">
-              Tools
-              @if (counts().toolsCount > 0) {
-                <span
-                  class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-5 text-center"
-                >
-                  {{ counts().toolsCount }}
-                </span>
-              }
-            </button>
-          </app-tabs-list>
+          <button tabsTrigger value="tools" class="flex-1 gap-1.5">
+            Tools
+            @if (counts().toolsCount > 0) {
+              <span
+                class="text-[10px] bg-muted-foreground/20 text-muted-foreground px-1.5 py-0.5 rounded-full min-w-5 text-center"
+              >
+                {{ counts().toolsCount }}
+              </span>
+            }
+          </button>
+        </app-tabs-list>
 
-          @if (canMinimize()) {
-            <button
-              appButton="ghost"
-              size="sm"
-              (click)="onMinimize.emit()"
-              class="h-8 w-8 p-0 shrink-0"
-              title="Minimize debug panel"
-            >
-              <ng-icon name="lucideChevronRight" class="h-4 w-4" />
-            </button>
-          }
-        </div>
+        @if (canMinimize()) {
+          <button
+            appButton="ghost"
+            size="sm"
+            (click)="onMinimize.emit()"
+            class="h-8 w-8 p-0 shrink-0"
+            title="Minimize debug panel"
+          >
+            <ng-icon name="lucideChevronRight" class="h-4 w-4" />
+          </button>
+        }
+      </div>
 
-        <app-tabs-content value="events" class="flex-1 mt-0 overflow-hidden">
-          <app-events-tab [events]="events()" [isStreaming]="isStreaming()" />
-        </app-tabs-content>
+      <app-tabs-content value="events" class="flex-1 mt-0 overflow-hidden">
+        <app-events-tab [events]="events()" [isStreaming]="isStreaming()" />
+      </app-tabs-content>
 
-        <app-tabs-content value="traces" class="flex-1 mt-0 overflow-hidden">
-          <app-traces-tab [events]="events()" />
-        </app-tabs-content>
+      <app-tabs-content value="traces" class="flex-1 mt-0 overflow-hidden">
+        <app-traces-tab [events]="events()" />
+      </app-tabs-content>
 
-        <app-tabs-content value="tools" class="flex-1 mt-0 overflow-hidden">
-          <app-tools-tab [events]="events()" />
-        </app-tabs-content>
-      </app-tabs>
-    </div>
+      <app-tabs-content value="tools" class="flex-1 mt-0 overflow-hidden">
+        <app-tools-tab [events]="events()" />
+      </app-tabs-content>
+    </app-tabs>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
