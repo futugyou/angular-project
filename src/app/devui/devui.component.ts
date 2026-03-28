@@ -55,7 +55,12 @@ import { DevUIStore } from './stores'
       </div>
     } @else if (entityError()) {
       <div class="h-screen flex flex-col bg-background">
-        <app-header [agents]="[]" [workflows]="[]" />
+        <app-header
+          [agents]="[]"
+          [workflows]="[]"
+          (onBrowseGallery)="this.store.setShowGallery(true)"
+          (onSettingsClick)="this.store.setShowAboutModal(true)"
+        />
 
         <div class="flex-1 flex items-center justify-center p-8">
           <div class="text-center space-y-6 max-w-2xl">
