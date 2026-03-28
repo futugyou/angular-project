@@ -378,17 +378,16 @@ export class DeploymentModalComponent {
         })
       }
     })
-    effect(
-      () => {
-        const entity = this.entity()
-        if (!entity) return
-        const newDefaultName = this.generateDefaultAppName(entity.id)
-        this.appName.set(newDefaultName)
-        const error = this.validateAppName(newDefaultName)
-        this.appNameError.set(error)
-      },
-      { allowSignalWrites: true },
-    )
+    effect(() => {
+      const entity = this.entity()
+      if (!entity) return
+
+      const newDefaultName = this.generateDefaultAppName(entity.id)
+      this.appName.set(newDefaultName)
+
+      const error = this.validateAppName(newDefaultName)
+      this.appNameError.set(error)
+    })
   }
 
   generateDefaultAppName = (entityName: string) => {

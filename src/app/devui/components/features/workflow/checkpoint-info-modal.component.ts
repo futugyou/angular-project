@@ -377,28 +377,25 @@ export class CheckpointInfoModal {
       }
     })
 
-    effect(
-      async () => {
-        const id = this.selectedCheckpointId()
-        const sess = this.session()
-        if (!id || !sess) return
+    effect(async () => {
+      const id = this.selectedCheckpointId()
+      const sess = this.session()
+      if (!id || !sess) return
 
-        this.loading.set(true)
-        try {
-          const item = await this.apiClient.getConversationItem(
-            sess.conversation_id,
-            `checkpoint_${id}`,
-          )
-          this.fullCheckpoint.set((item as CheckpointItem).metadata?.full_checkpoint ?? null)
-        } catch (error) {
-          console.error('Failed to load checkpoint:', error)
-          this.fullCheckpoint.set(null)
-        } finally {
-          this.loading.set(false)
-        }
-      },
-      { allowSignalWrites: true },
-    )
+      this.loading.set(true)
+      try {
+        const item = await this.apiClient.getConversationItem(
+          sess.conversation_id,
+          `checkpoint_${id}`,
+        )
+        this.fullCheckpoint.set((item as CheckpointItem).metadata?.full_checkpoint ?? null)
+      } catch (error) {
+        console.error('Failed to load checkpoint:', error)
+        this.fullCheckpoint.set(null)
+      } finally {
+        this.loading.set(false)
+      }
+    })
   }
 
   // Utils

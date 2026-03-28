@@ -466,12 +466,9 @@ export class SchemaFormRendererComponent implements ControlValueAccessor {
   )
 
   constructor() {
-    effect(
-      () => {
-        this.showAdvancedFields.set(this.showCollapsedByDefault())
-      },
-      { allowSignalWrites: true },
-    )
+    effect(() => {
+      this.showAdvancedFields.set(this.showCollapsedByDefault())
+    })
   }
 
   onChange: (val: any) => void = () => {}
