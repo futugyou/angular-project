@@ -64,7 +64,7 @@ import { EntitySelector } from './entity-selector.component'
           [workflows]="workflows()"
           [entities]="entities()"
           [isLoading]="isLoading()"
-          (select)="(onSelect)"
+          (onSelect)="onSelect.emit($event)"
           (browseGallery)="onBrowseGallery.emit()"
           [selectedValue]="selectedItem()"
         />

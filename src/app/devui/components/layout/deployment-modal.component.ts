@@ -468,6 +468,7 @@ export class DeploymentModalComponent {
 
       for await (const event of this.apiClient.streamDeployment({
         entity_id: entity.id,
+        agent_id: entity.id,
         resource_group: trimmedResourceGroup,
         app_name: trimmedAppName,
         region: this.region(),

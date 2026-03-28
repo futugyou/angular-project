@@ -762,7 +762,7 @@ export class ApiClient {
     resumeResponseId?: string,
   ): AsyncGenerator<ExtendedResponseStreamEvent, void, unknown> {
     const openAIRequest: AgentFrameworkRequest = {
-      metadata: { entity_id: agentId }, // Entity ID in metadata for routing
+      metadata: { entity_id: agentId, agent_id: agentId }, // Entity ID in metadata for routing
       input: request.input, // Direct OpenAI ResponseInputParam
       stream: true,
       conversation: request.conversation_id, // OpenAI standard conversation param
@@ -798,12 +798,12 @@ export class ApiClient {
     // Convert to OpenAI format - use metadata.entity_id for routing
     // input_data is serialized as JSON string - backend will parse and detect format
     const openAIRequest: AgentFrameworkRequest = {
-      metadata: { entity_id: workflowId }, // Entity ID in metadata for routing
+      metadata: { entity_id: workflowId, agent_id: workflowId }, // Entity ID in metadata for routing
       input: JSON.stringify(request.input_data || {}), // Serialize workflow input as JSON string
       stream: true,
       conversation: request.conversation_id, // Include conversation if present
       extra_body: request.checkpoint_id
-        ? { entity_id: workflowId, checkpoint_id: request.checkpoint_id }
+        ? { entity_id: workflowId, checkpoint_id: request.checkpoint_id, agent_id: workflowId }
         : undefined, // Pass checkpoint_id if provided
     }
 
@@ -819,7 +819,7 @@ export class ApiClient {
     const oaiMode = this.devUIStore.oaiMode
 
     const openAIRequest: AgentFrameworkRequest = {
-      metadata: { entity_id: agentId },
+      metadata: { entity_id: agentId, agent_id: agentId },
       input: request.input,
       stream: false,
       conversation: request.conversation_id,
@@ -851,12 +851,12 @@ export class ApiClient {
   // Non-streaming workflow execution using /v1/responses with stream=false
   async runWorkflowSync(workflowId: string, request: RunWorkflowRequest): Promise<OpenAIResponse> {
     const openAIRequest: AgentFrameworkRequest = {
-      metadata: { entity_id: workflowId },
+      metadata: { entity_id: workflowId, agent_id: workflowId },
       input: JSON.stringify(request.input_data || {}),
       stream: false,
       conversation: request.conversation_id,
       extra_body: request.checkpoint_id
-        ? { entity_id: workflowId, checkpoint_id: request.checkpoint_id }
+        ? { entity_id: workflowId, agent_id: workflowId, checkpoint_id: request.checkpoint_id }
         : undefined,
     }
 
@@ -874,6 +874,7 @@ export class ApiClient {
   // Deployment methods
   async *streamDeployment(config: {
     entity_id: string
+    agent_id: string
     resource_group: string
     app_name: string
     region?: string
@@ -944,8 +945,9 @@ export class ApiClient {
   // ============================================================================
 
   async listWorkflowSessions(entityId: string): Promise<{ data: WorkflowSession[] }> {
+    entityId = encodeURIComponent(entityId)
     // Workflow sessions are conversations with entity_id and type metadata
-    const url = `/v1/conversations?entity_id=${encodeURIComponent(entityId)}&type=workflow_session`
+    const url = `/v1/conversations?entity_id=${entityId}&type=workflow_session&agent_id=${entityId}`
     const response = await this.request<{
       object: 'list'
       data: ConversationApiResponse[]
@@ -956,6 +958,7 @@ export class ApiClient {
     const sessions = response.data.map((conv) => ({
       conversation_id: conv.id,
       entity_id: (conv.metadata?.['entity_id'] as string) || entityId,
+      agent_id: (conv.metadata?.['entity_id'] as string) || entityId,
       created_at: conv.created_at,
       metadata: {
         name:
@@ -984,6 +987,7 @@ export class ApiClient {
     // Create conversation with workflow session metadata
     const metadata = {
       entity_id: entityId,
+      agent_id: entityId,
       type: 'workflow_session' as const,
       name: params?.name || `Session ${new Date().toLocaleString()}`,
       ...(params?.description && { description: params.description }),
@@ -994,6 +998,7 @@ export class ApiClient {
     return {
       conversation_id: conversation.id,
       entity_id: entityId,
+      agent_id: entityId,
       created_at: conversation.created_at,
       metadata: {
         name: metadata.name,

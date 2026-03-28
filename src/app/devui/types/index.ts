@@ -259,6 +259,7 @@ export interface Deployment {
 export interface WorkflowSession {
   conversation_id: string
   entity_id: string
+  agent_id: string
   created_at: number
   metadata: {
     name?: string
