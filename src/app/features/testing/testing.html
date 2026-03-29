@@ -74,7 +74,7 @@
     <h1 class="text-2xl font-bold mb-6 text-gray-800">Alert Component Test</h1>
     <app-alert class="bg-blue-50 text-blue-900 border-blue-200">
       <svg
-        xmlns="http://www.w3.org/2000/svg"
+        xmlns="http:www.w3.org/2000/svg"
         width="16"
         height="16"
         viewBox="0 0 24 24"
@@ -368,5 +368,36 @@
     <p class="text-xs text-muted-foreground mt-10 italic">
       Tip: Hovering the mouse over the code block will display the copy button.
     </p>
+  </div>
+
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Dialog Component Test</h1>
+    <button (click)="showDialogModal.set(true)">open</button>
+
+    <app-dialog [(open)]="showDialogModal">
+      <app-dialog-content>
+        <app-dialog-header>
+          <app-dialog-title>title</app-dialog-title>
+          <app-dialog-description>description</app-dialog-description>
+          <app-dialog-close (close)="showDialogModal.set(false)" />
+        </app-dialog-header>
+
+        <div class="p-6 text-sm text-muted-foreground">
+          <div class="container">
+            <h1>Title</h1>
+            <p>
+              This is a test scenario for automatic line wrapping of long text, ensuring that even
+              if the code is very long, it will not break the layout, but will gracefully wrap
+              within the container.
+            </p>
+          </div>
+        </div>
+
+        <app-dialog-footer>
+          <button appButton variant="outline" (click)="showDialogModal.set(false)">cancel</button>
+          <button appButton (click)="showDialogModal.set(false)">save</button>
+        </app-dialog-footer>
+      </app-dialog-content>
+    </app-dialog>
   </div>
 </div>

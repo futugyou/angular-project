@@ -76,20 +76,49 @@ export class DialogCloseComponent {
   standalone: true,
   template: `
     <div [class]="containerClasses()">
-      <ng-content />
+      <div class="dialog-layout-wrapper">
+        <ng-content />
+      </div>
     </div>
   `,
+  styles: [
+    `
+      .dialog-layout-wrapper {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: inherit;
+      }
+
+      :host ::ng-deep app-dialog-header + * {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        min-height: 0;
+        padding: 1.5rem;
+      }
+
+      :host ::ng-deep app-dialog-footer {
+        flex-shrink: 0;
+        margin-top: auto;
+      }
+    `,
+  ],
 })
 export class DialogContentComponent {
   class = input<string>('')
 
   containerClasses = computed(() => {
     const customClass = this.class()
-    const hasWidth = /w-\[|w-full|max-w-/.test(customClass)
-    const defaultWidth = hasWidth ? '' : 'max-w-lg w-full'
-    return `relative bg-background border rounded-lg shadow-lg max-h-[90vh] overflow-hidden ${defaultWidth} ${customClass}`
+    const hasWidth = /w-|max-w-/.test(customClass)
+    const hasHeight = /h-|min-h-/.test(customClass)
+
+    const widthClasses = hasWidth ? '' : 'w-[95vw] sm:max-w-lg md:max-w-3xl lg:max-w-5xl'
+    const heightClasses = hasHeight ? '' : 'min-h-[40vh] md:min-h-[60vh] max-h-[90vh]'
+
+    return `relative bg-background border rounded-lg shadow-lg overflow-hidden flex flex-col ${widthClasses} ${heightClasses} ${customClass}`
   })
 }
+
 // usage
 // <button (click)="showModal.set(true)">open</button>
 
@@ -155,3 +184,13 @@ export class DialogComponent {
     this.overlayRef = undefined
   }
 }
+
+export const DIALOG_COMPONENTS = [
+  DialogComponent,
+  DialogContentComponent,
+  DialogHeaderComponent,
+  DialogTitleComponent,
+  DialogCloseComponent,
+  DialogFooterComponent,
+  DialogDescriptionComponent,
+] as const

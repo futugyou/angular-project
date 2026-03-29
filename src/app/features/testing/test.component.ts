@@ -30,6 +30,7 @@ import { JsonPipe } from '@angular/common'
 import { CheckboxComponent } from '../../devui/components/ui/checkbox.component'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { CodeBlock } from '../../devui/components/ui/code-block.component'
+import { DIALOG_COMPONENTS } from '../../devui/components/ui/dialog.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -65,6 +66,7 @@ import { CodeBlock } from '../../devui/components/ui/code-block.component'
     ReactiveFormsModule,
     FormsModule,
     CodeBlock,
+    ...DIALOG_COMPONENTS,
   ],
 })
 export class TestingComponent implements OnInit {
@@ -160,4 +162,7 @@ export class TestingComponent implements OnInit {
   <h1>Title</h1>
   <p>This is a test scenario for automatic line wrapping of long text, ensuring that even if the code is very long, it will not break the layout, but will gracefully wrap within the container.</p>
 </div>`.trim()
+
+  // dialog
+  showDialogModal = signal(false)
 }
