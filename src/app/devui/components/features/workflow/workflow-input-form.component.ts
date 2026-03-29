@@ -86,14 +86,14 @@ import type { JSONSchemaProperty } from '../../../types'
     }
 
     <app-dialog [open]="isModalOpen()" (openChange)="isModalOpen.set($event)">
+      <app-dialog-header>
+        <app-dialog-title>Run Workflow</app-dialog-title>
+        <app-dialog-close (click)="isModalOpen.set(false)" />
+      </app-dialog-header>
+
       <app-dialog-content
         class="w-full max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col"
       >
-        <app-dialog-header>
-          <app-dialog-title>Run Workflow</app-dialog-title>
-          <app-dialog-close (click)="isModalOpen.set(false)" />
-        </app-dialog-header>
-
         <div class="px-8 py-4 border-b shrink-0">
           <div class="text-sm text-muted-foreground">
             <div class="flex items-center gap-3">
@@ -113,27 +113,27 @@ import type { JSONSchemaProperty } from '../../../types'
             <ng-container [ngTemplateOutlet]="formFields" />
           </form>
         </div>
-
-        <app-dialog-footer class="px-8 py-4 border-t shrink-0">
-          <button
-            [appButton]
-            variant="outline"
-            (click)="isModalOpen.set(false)"
-            [disabled]="loading()"
-          >
-            Cancel
-          </button>
-          <button
-            [appButton]
-            type="submit"
-            form="workflow-modal-form"
-            [disabled]="loading() || !canSubmit()"
-          >
-            <ng-icon name="lucideSendHorizontal" class="h-4 w-4 mr-2" />
-            {{ loading() ? 'Running...' : 'Run Workflow' }}
-          </button>
-        </app-dialog-footer>
       </app-dialog-content>
+
+      <app-dialog-footer class="px-8 py-4 border-t shrink-0">
+        <button
+          [appButton]
+          variant="outline"
+          (click)="isModalOpen.set(false)"
+          [disabled]="loading()"
+        >
+          Cancel
+        </button>
+        <button
+          [appButton]
+          type="submit"
+          form="workflow-modal-form"
+          [disabled]="loading() || !canSubmit()"
+        >
+          <ng-icon name="lucideSendHorizontal" class="h-4 w-4 mr-2" />
+          {{ loading() ? 'Running...' : 'Run Workflow' }}
+        </button>
+      </app-dialog-footer>
     </app-dialog>
 
     <ng-template #formFields>

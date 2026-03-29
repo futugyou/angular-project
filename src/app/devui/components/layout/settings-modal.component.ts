@@ -37,13 +37,12 @@ const PRESET_MODELS = ['gpt-4.1', 'gpt-4.1-mini', 'o1', 'o1-mini', 'o3-mini'] as
   ],
   template: `
     <app-dialog [(open)]="showModal">
-      <app-dialog-content class="w-150 max-w-[90vw] flex flex-col max-h-[85vh]">
-        <app-dialog-header class="p-6 pb-2 shrink-0">
-          <app-dialog-title>Settings</app-dialog-title>
-        </app-dialog-header>
-
+      <app-dialog-header class="p-6 pb-2 shrink-0">
+        <app-dialog-title>Settings</app-dialog-title>
         <app-dialog-close (close)="showModal.set(false)" />
+      </app-dialog-header>
 
+      <app-dialog-content>
         <div class="flex border-b px-6 shrink-0">
           @for (tab of tabs; track tab.id) {
             @if (tab.id !== 'proxy' || store.serverCapabilities.openai_proxy) {

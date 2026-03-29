@@ -375,14 +375,14 @@
     <button (click)="showDialogModal.set(true)">open</button>
 
     <app-dialog [(open)]="showDialogModal">
-      <app-dialog-content>
-        <app-dialog-header>
-          <app-dialog-title>title</app-dialog-title>
-          <app-dialog-description>description</app-dialog-description>
-          <app-dialog-close (close)="showDialogModal.set(false)" />
-        </app-dialog-header>
+      <app-dialog-header>
+        <app-dialog-title>title</app-dialog-title>
+        <app-dialog-description>description</app-dialog-description>
+        <app-dialog-close (close)="showDialogModal.set(false)" />
+      </app-dialog-header>
 
-        <div class="p-6 text-sm text-muted-foreground">
+      <app-dialog-content>
+        <div class="text-sm text-muted-foreground">
           <div class="container">
             <h1>Title</h1>
             <p>
@@ -392,12 +392,12 @@
             </p>
           </div>
         </div>
-
-        <app-dialog-footer>
-          <button appButton variant="outline" (click)="showDialogModal.set(false)">cancel</button>
-          <button appButton (click)="showDialogModal.set(false)">save</button>
-        </app-dialog-footer>
       </app-dialog-content>
+
+      <app-dialog-footer>
+        <button appButton variant="outline" (click)="showDialogModal.set(false)">cancel</button>
+        <button appButton (click)="showDialogModal.set(false)">save</button>
+      </app-dialog-footer>
     </app-dialog>
   </div>
 </div>

@@ -22,6 +22,7 @@ import {
   DialogHeaderComponent,
   DialogTitleComponent,
   DialogCloseComponent,
+  DialogDescriptionComponent,
 } from '../ui/dialog.component'
 import { ButtonComponent } from '../ui/button.component'
 import { ScrollAreaComponent } from '../ui/scroll-area.component'
@@ -44,21 +45,22 @@ type Tab = 'docker' | 'azure'
     DialogHeaderComponent,
     DialogTitleComponent,
     DialogCloseComponent,
+    DialogDescriptionComponent,
   ],
   template: ` <app-dialog [open]="open()" (openChange)="onOpenChange.emit($event)">
-    <app-dialog-content class="w-200 max-w-[90vw]">
+    <app-dialog-header class="p-6 pb-2">
+      <app-dialog-title class="flex items-center gap-2">
+        <ng-icon name="lucideRocket" class="h-3 w-3" />
+        Deploy {{ agentName() }}
+      </app-dialog-title>
+      <app-dialog-description class="pt-1">
+        Get started with containerizing your agent for deployment.
+      </app-dialog-description>
+
       <app-dialog-close (onClose)="onOpenChange.emit(false)"></app-dialog-close>
+    </app-dialog-header>
 
-      <app-dialog-header class="p-6 pb-2">
-        <app-dialog-title class="flex items-center gap-2">
-          <ng-icon name="lucideRocket" class="h-3 w-3" />
-          Deploy {{ agentName() }}
-        </app-dialog-title>
-        <p class="text-sm text-muted-foreground pt-1">
-          Get started with containerizing your agent for deployment.
-        </p>
-      </app-dialog-header>
-
+    <app-dialog-content class="w-200 max-w-[90vw]">
       <div class="flex border-b px-6">
         <button
           (click)="activeTab.set('docker')"

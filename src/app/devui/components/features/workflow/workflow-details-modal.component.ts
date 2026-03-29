@@ -55,12 +55,12 @@ export class DetailCardComponent {
   ],
   template: `
     <app-dialog [open]="open()" (openChange)="onOpenChange.emit($event)">
-      <app-dialog-content class="max-w-4xl max-h-[90vh] flex flex-col">
-        <app-dialog-header class="px-6 pt-6 shrink-0">
-          <app-dialog-title>Workflow Details</app-dialog-title>
-          <app-dialog-close (click)="onOpenChange.emit(false)" />
-        </app-dialog-header>
+      <app-dialog-header class="px-6 pt-6 shrink-0">
+        <app-dialog-title>Workflow Details</app-dialog-title>
+        <app-dialog-close (click)="onOpenChange.emit(false)" />
+      </app-dialog-header>
 
+      <app-dialog-content class="max-w-4xl max-h-[90vh] flex flex-col">
         <div class="px-6 pb-6 overflow-y-auto flex-1">
           <div class="mb-6">
             <div class="flex items-center gap-3 mb-2">

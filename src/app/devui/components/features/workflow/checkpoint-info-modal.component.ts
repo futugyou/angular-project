@@ -36,23 +36,23 @@ import type {
   ],
   template: `
     <app-dialog [open]="open()" (openChange)="onOpenChange.emit($event)">
-      <app-dialog-content class="w-[90vw] max-w-6xl min-w-200 h-[85vh] flex flex-col p-0">
-        <app-dialog-header class="px-6 pt-6 pb-4 border-b shrink-0">
-          <div class="flex items-center justify-between">
-            <div class="flex-1">
-              <app-dialog-title>{{ session()?.metadata?.name }}</app-dialog-title>
-              <div class="text-sm text-muted-foreground mt-1">
-                {{ checkpoints().length }} checkpoint{{ checkpoints().length !== 1 ? 's' : '' }}
-              </div>
-              <div class="text-xs text-muted-foreground mt-2 max-w-2xl">
-                This is a read only view of the current checkpoint ids in the checkpoint storage for
-                this workflow run.
-              </div>
+      <app-dialog-header class="px-6 pt-6 pb-4 border-b shrink-0">
+        <div class="flex items-center justify-between">
+          <div class="flex-1">
+            <app-dialog-title>{{ session()?.metadata?.name }}</app-dialog-title>
+            <div class="text-sm text-muted-foreground mt-1">
+              {{ checkpoints().length }} checkpoint{{ checkpoints().length !== 1 ? 's' : '' }}
             </div>
-            <app-dialog-close />
+            <div class="text-xs text-muted-foreground mt-2 max-w-2xl">
+              This is a read only view of the current checkpoint ids in the checkpoint storage for
+              this workflow run.
+            </div>
           </div>
-        </app-dialog-header>
+          <app-dialog-close />
+        </div>
+      </app-dialog-header>
 
+      <app-dialog-content class="w-[90vw] max-w-6xl min-w-200 h-[85vh] flex flex-col p-0">
         <div class="flex-1 flex overflow-hidden min-h-0">
           <div class="w-80 border-r flex flex-col">
             <app-scroll-area class="flex-1">

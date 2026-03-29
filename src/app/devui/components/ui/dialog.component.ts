@@ -19,6 +19,14 @@ import { ButtonDirective } from '../../directives/button.directive'
   selector: 'app-dialog-header',
   standalone: true,
   template: `<div [class]="'space-y-2 p-6 ' + class()"><ng-content /></div>`,
+  styles: [
+    `
+      :host {
+        display: block;
+        flex-shrink: 0;
+      }
+    `,
+  ],
 })
 export class DialogHeaderComponent {
   class = input<string>('')
@@ -45,9 +53,19 @@ export class DialogDescriptionComponent {
 @Component({
   selector: 'app-dialog-footer',
   standalone: true,
-  template: `<div class="flex justify-end gap-2 p-4 border-t bg-muted/50">
-    <ng-content></ng-content>
-  </div>`,
+  template: `
+    <div class="flex justify-end gap-2 p-4 border-t bg-muted/50">
+      <ng-content></ng-content>
+    </div>
+  `,
+  styles: [
+    `
+      :host {
+        display: block;
+        flex-shrink: 0;
+      }
+    `,
+  ],
 })
 export class DialogFooterComponent {}
 
@@ -75,37 +93,44 @@ export class DialogCloseComponent {
   selector: 'app-dialog-content',
   standalone: true,
   template: `
-    <div [class]="containerClasses()">
-      <div class="dialog-layout-wrapper">
-        <ng-content />
-      </div>
+    <div [class]="'h-full overflow-y-auto p-6 ' + class()">
+      <ng-content />
     </div>
   `,
   styles: [
     `
-      .dialog-layout-wrapper {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        min-height: inherit;
-      }
-
-      :host ::ng-deep app-dialog-header + * {
+      :host {
         flex: 1 1 auto;
-        overflow-y: auto;
         min-height: 0;
-        padding: 1.5rem;
-      }
-
-      :host ::ng-deep app-dialog-footer {
-        flex-shrink: 0;
-        margin-top: auto;
+        display: block;
       }
     `,
   ],
 })
 export class DialogContentComponent {
   class = input<string>('')
+}
+
+@Component({
+  selector: 'app-dialog',
+  standalone: true,
+  imports: [OverlayModule],
+  template: `
+    <ng-template #contentTemplate>
+      <div [class]="containerClasses()">
+        <ng-content />
+      </div>
+    </ng-template>
+  `,
+})
+export class DialogComponent {
+  open = model<boolean>(false)
+  class = input<string>('')
+
+  private overlay = inject(Overlay)
+  private viewContainerRef = inject(ViewContainerRef)
+  private contentTemplate = viewChild.required<TemplateRef<any>>('contentTemplate')
+  private overlayRef?: OverlayRef
 
   containerClasses = computed(() => {
     const customClass = this.class()
@@ -117,45 +142,6 @@ export class DialogContentComponent {
 
     return `relative bg-background border rounded-lg shadow-lg overflow-hidden flex flex-col ${widthClasses} ${heightClasses} ${customClass}`
   })
-}
-
-// usage
-// <button (click)="showModal.set(true)">open</button>
-
-// <app-dialog [(open)]="showModal">
-//   <app-dialog-content>
-//     <app-dialog-header>
-//       <app-dialog-title>title</app-dialog-title>
-//       <app-dialog-close (close)="showModal.set(false)" />
-//     </app-dialog-header>
-
-//     <div class="p-6 text-sm text-muted-foreground">
-//       content
-//     </div>
-
-//     <app-dialog-footer>
-//       <button appButton variant="outline" (click)="showModal.set(false)">cancel</button>
-//       <button appButton (click)="handleSave()">save</button>
-//     </app-dialog-footer>
-//   </app-dialog-content>
-// </app-dialog>
-@Component({
-  selector: 'app-dialog',
-  standalone: true,
-  imports: [OverlayModule],
-  template: `
-    <ng-template #contentTemplate>
-      <ng-content />
-    </ng-template>
-  `,
-})
-export class DialogComponent {
-  open = model<boolean>(false)
-
-  private overlay = inject(Overlay)
-  private viewContainerRef = inject(ViewContainerRef)
-  private contentTemplate = viewChild.required<TemplateRef<any>>('contentTemplate')
-  private overlayRef?: OverlayRef
 
   constructor() {
     effect(() => {
@@ -165,7 +151,6 @@ export class DialogComponent {
 
   private attachOverlay() {
     if (this.overlayRef) return
-
     this.overlayRef = this.overlay.create({
       hasBackdrop: true,
       backdropClass: 'bg-black/50',
@@ -174,7 +159,6 @@ export class DialogComponent {
     })
 
     this.overlayRef.backdropClick().subscribe(() => this.open.set(false))
-
     const portal = new TemplatePortal(this.contentTemplate(), this.viewContainerRef)
     this.overlayRef.attach(portal)
   }

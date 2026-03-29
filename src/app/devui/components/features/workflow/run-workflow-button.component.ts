@@ -151,14 +151,14 @@ import { WorkflowInputFormComponent } from './workflow-input-form.component'
 
     @if (schema) {
       <app-dialog [open]="showModal()" (openChange)="showModal.set($event)">
+        <app-dialog-header class="px-8 pt-6">
+          <app-dialog-title>Configure Workflow Inputs</app-dialog-title>
+          <app-dialog-close (onClose)="showModal.set(false)" />
+        </app-dialog-header>
+
         <app-dialog-content
           class="w-full min-w-100 max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col"
         >
-          <app-dialog-header class="px-8 pt-6">
-            <app-dialog-title>Configure Workflow Inputs</app-dialog-title>
-            <app-dialog-close (onClose)="showModal.set(false)" />
-          </app-dialog-header>
-
           <div class="px-8 py-4 border-b shrink-0">
             <div class="text-sm text-muted-foreground">
               <div class="flex items-center gap-3">

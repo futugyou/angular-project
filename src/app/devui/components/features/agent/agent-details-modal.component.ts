@@ -45,14 +45,14 @@ export class DetailCardComponent {
   ],
   template: `
     <app-dialog [open]="open()" (openChange)="onOpenChange.emit($event)">
+      @let info = agent();
+
+      <app-dialog-header class="px-6 pt-6 shrink-0">
+        <app-dialog-title>Agent Details</app-dialog-title>
+        <app-dialog-close (close)="onOpenChange.emit(false)" />
+      </app-dialog-header>
+
       <app-dialog-content class="max-w-4xl max-h-[90vh] flex flex-col">
-        @let info = agent();
-
-        <app-dialog-header class="px-6 pt-6 shrink-0">
-          <app-dialog-title>Agent Details</app-dialog-title>
-          <app-dialog-close (close)="onOpenChange.emit(false)" />
-        </app-dialog-header>
-
         <div class="px-6 pb-6 overflow-y-auto flex-1">
           <div class="mb-6">
             <div class="flex items-center gap-3 mb-2">

@@ -104,15 +104,15 @@ export class SetupStepComponent {
   ],
   template: `
     <app-dialog [(open)]="open">
-      <app-dialog-content class="max-w-3xl">
-        <app-dialog-header class="px-6 pt-6 pb-2">
-          <app-dialog-title>Setup: {{ sample().name }}</app-dialog-title>
-          <app-dialog-close (close)="open.set(false)" />
-          <p class="text-sm text-muted-foreground">
-            Follow these steps to run this sample {{ sample().type }} locally
-          </p>
-        </app-dialog-header>
+      <app-dialog-header class="px-6 pt-6 pb-2">
+        <app-dialog-title>Setup: {{ sample().name }}</app-dialog-title>
+        <app-dialog-close (close)="open.set(false)" />
+        <p class="text-sm text-muted-foreground">
+          Follow these steps to run this sample {{ sample().type }} locally
+        </p>
+      </app-dialog-header>
 
+      <app-dialog-content class="max-w-3xl">
         <div class="px-6 pb-6">
           <app-scroll-area class="h-125">
             <div class="space-y-6 pr-4 pt-4">
