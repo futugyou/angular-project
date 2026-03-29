@@ -3,9 +3,6 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { cn } from '../../lib/utils'
 import { NgIconsModule } from '@ng-icons/core'
 
-// usage
-// <app-checkbox [(ngModel)]="isAdmin" />
-// <app-checkbox [formControl]="myControl" />
 @Component({
   selector: 'app-checkbox',
   standalone: true,

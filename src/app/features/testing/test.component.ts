@@ -27,6 +27,8 @@ import { CARD_COMPONENTS } from '../../devui/components/ui/card.component'
 import { ChatMessageInputComponent } from '../../devui/components/ui/chat-message-input.component'
 import { ResponseInputContent } from '../../devui/types'
 import { JsonPipe } from '@angular/common'
+import { CheckboxComponent } from '../../devui/components/ui/checkbox.component'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 
 @Component({
   selector: 'app-testing-main',
@@ -58,6 +60,9 @@ import { JsonPipe } from '@angular/common'
     ...CARD_COMPONENTS,
     ChatMessageInputComponent,
     JsonPipe,
+    CheckboxComponent,
+    ReactiveFormsModule,
+    FormsModule,
   ],
 })
 export class TestingComponent implements OnInit {
@@ -137,4 +142,13 @@ export class TestingComponent implements OnInit {
     console.log('External files processed, clearing state.')
     this.droppedCardFiles.set(undefined)
   }
+
+  // checkbox
+  testCheckboxForm = new FormGroup({
+    acceptTerms: new FormControl(false),
+  })
+
+  standaloneCheckboxChecked = signal(false)
+  parentCheckboxChecked = signal(false)
+  isCheckboxIndeterminate = signal(true)
 }
