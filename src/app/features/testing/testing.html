@@ -210,4 +210,72 @@
       </div>
     </div>
   </div>
+
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Chat Component Test</h1>
+    <div class="p-8 max-w-4xl mx-auto space-y-8">
+      <h1 class="text-2xl font-bold mb-4">Chat Input Test Bench</h1>
+
+      <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg flex flex-wrap gap-4">
+        <label class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            [checked]="isCardSubmitting()"
+            (change)="isCardSubmitting.set(!isCardSubmitting())"
+          />
+          Submitting
+        </label>
+        <label class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            [checked]="isCardStreaming()"
+            (change)="isCardStreaming.set(!isCardStreaming())"
+          />
+          Streaming
+        </label>
+        <label class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            [checked]="isCardCancelling()"
+            (change)="isCardCancelling.set(!isCardCancelling())"
+          />
+          Cancelling
+        </label>
+        <button
+          (click)="simulateCardExternalDrop()"
+          class="px-3 py-1 bg-blue-600 text-white rounded text-sm"
+        >
+          Simulate External File Drop
+        </button>
+      </div>
+
+      <div class="border rounded-lg p-4 min-h-50 bg-white dark:bg-black overflow-y-auto">
+        <h3 class="text-sm font-semibold text-gray-500 mb-2">Output Log:</h3>
+        @for (log of messageCardLogs(); track $index) {
+        <div class="mb-4 p-2 border-b border-gray-100 dark:border-gray-900 last:border-0">
+          <pre class="text-xs overflow-x-auto">{{ log | json }}</pre>
+        </div>
+        } @empty {
+        <p class="text-gray-400 italic">No messages sent yet...</p>
+        }
+      </div>
+
+      <div class="border-t pt-6">
+        <app-chat-message-input
+          [isSubmitting]="isCardSubmitting()"
+          [isStreaming]="isCardStreaming()"
+          [isCancelling]="isCardCancelling()"
+          [placeholder]="'Message ' + (selectedCardAgent().name || selectedCardAgent().id) + '...'"
+          [showFileUpload]="true"
+          [entityName]="selectedCardAgent().name || selectedCardAgent().id"
+          [disabled]="!selectedCardAgent() || isCardSubmitting()"
+          [externalFiles]="droppedCardFiles()"
+          [canCancel]="true"
+          (onSubmit)="handleChatInputSubmit($event)"
+          (onCancel)="handleCardCancel()"
+          (onExternalFilesProcessed)="clearCardDroppedFiles()"
+        />
+      </div>
+    </div>
+  </div>
 </div>

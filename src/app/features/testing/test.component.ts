@@ -24,6 +24,9 @@ import { BadgeDirective } from '../../devui/directives/badge.directive'
 import { ButtonDirective } from '../../devui/directives/button.directive'
 import { SELECT_COMPONENTS } from '../../devui/components/ui/select.component'
 import { CARD_COMPONENTS } from '../../devui/components/ui/card.component'
+import { ChatMessageInputComponent } from '../../devui/components/ui/chat-message-input.component'
+import { ResponseInputContent } from '../../devui/types'
+import { JsonPipe } from '@angular/common'
 
 @Component({
   selector: 'app-testing-main',
@@ -53,6 +56,8 @@ import { CARD_COMPONENTS } from '../../devui/components/ui/card.component'
     ButtonDirective,
     ...SELECT_COMPONENTS,
     ...CARD_COMPONENTS,
+    ChatMessageInputComponent,
+    JsonPipe,
   ],
 })
 export class TestingComponent implements OnInit {
@@ -93,5 +98,43 @@ export class TestingComponent implements OnInit {
     effect(() => {
       console.log('🚀 [Select Change]:', this.currentTech())
     })
+  }
+
+  // card
+  isCardSubmitting = signal(false)
+  isCardStreaming = signal(false)
+  isCardCancelling = signal(false)
+  selectedCardAgent = signal({ id: 'agent-123', name: 'Gemini-Assistant' })
+  droppedCardFiles = signal<File[] | undefined>(undefined)
+  messageCardLogs = signal<ResponseInputContent[][]>([])
+
+  handleChatInputSubmit(content: ResponseInputContent[]) {
+    console.log('Submitted Content:', content)
+    this.messageCardLogs.update((prev) => [content, ...prev])
+    this.isCardSubmitting.set(true)
+    setTimeout(() => {
+      this.isCardSubmitting.set(false)
+      this.isCardStreaming.set(true)
+      setTimeout(() => this.isCardStreaming.set(false), 5000)
+    }, 1000)
+  }
+
+  handleCardCancel() {
+    console.log('Cancel requested')
+    this.isCardCancelling.set(true)
+    setTimeout(() => {
+      this.isCardCancelling.set(false)
+      this.isCardStreaming.set(false)
+    }, 800)
+  }
+
+  simulateCardExternalDrop() {
+    const mockFile = new File(['hello world'], 'external-test.txt', { type: 'text/plain' })
+    this.droppedCardFiles.set([mockFile])
+  }
+
+  clearCardDroppedFiles() {
+    console.log('External files processed, clearing state.')
+    this.droppedCardFiles.set(undefined)
   }
 }
