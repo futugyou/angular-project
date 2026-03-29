@@ -29,6 +29,7 @@ import { ResponseInputContent } from '../../devui/types'
 import { JsonPipe } from '@angular/common'
 import { CheckboxComponent } from '../../devui/components/ui/checkbox.component'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { CodeBlock } from '../../devui/components/ui/code-block.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -63,6 +64,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
     CheckboxComponent,
     ReactiveFormsModule,
     FormsModule,
+    CodeBlock,
   ],
 })
 export class TestingComponent implements OnInit {
@@ -151,4 +153,11 @@ export class TestingComponent implements OnInit {
   standaloneCheckboxChecked = signal(false)
   parentCheckboxChecked = signal(false)
   isCheckboxIndeterminate = signal(true)
+
+  // code
+  htmlSnippet = `
+<div class="container">
+  <h1>Title</h1>
+  <p>This is a test scenario for automatic line wrapping of long text, ensuring that even if the code is very long, it will not break the layout, but will gracefully wrap within the container.</p>
+</div>`.trim()
 }

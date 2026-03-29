@@ -1,4 +1,4 @@
-import { Component, input, signal } from '@angular/core'
+import { Component, computed, input, signal } from '@angular/core'
 
 import { NgIconComponent } from '@ng-icons/core'
 
@@ -10,14 +10,14 @@ import { NgIconComponent } from '@ng-icons/core'
     <div class="relative group">
       <pre
         class="my-3 p-3 bg-foreground/5 dark:bg-foreground/10 rounded overflow-x-auto border border-foreground/10"
-      >
-        <code class="text-xs font-mono block whitespace-pre-wrap wrap-break-word">
-          @if (language()) {
-            <span class="opacity-60 text-[10px] mb-1 block uppercase">{{ language() }}</span>
-          }
-          {{ codeText() }}
-        </code>
-      </pre>
+        [class.pt-7]="language()"
+      ><code class="text-xs font-mono block whitespace-pre-wrap wrap-break-word">{{ formattedCode() }}</code></pre>
+
+      @if (language()) {
+        <span class="absolute top-2 left-2 opacity-60 text-[10px] mb-1 block uppercase">{{
+          language()
+        }}</span>
+      }
       <button
         (click)="handleCopy()"
         class="absolute top-2 right-2 p-1.5 rounded-md border shadow-sm
@@ -39,10 +39,11 @@ export class CodeBlock {
   language = input<string>('')
   copied = signal(false)
   private _timer: any
+  formattedCode = computed(() => this.codeText().trim())
 
   async handleCopy() {
     try {
-      await navigator.clipboard.writeText(this.codeText())
+      await navigator.clipboard.writeText(this.formattedCode())
       this.copied.set(true)
       clearTimeout(this._timer)
       this._timer = setTimeout(() => this.copied.set(false), 2000)
