@@ -189,6 +189,7 @@ import { DevUIStore } from './stores'
 
         <app-settings-modal
           [showModal]="showAboutModal()"
+          (showModalChange)="this.store.setShowAboutModal($event)"
           (onBackendUrlChange)="this.store.setShowAboutModal(false)"
         />
       </div>
@@ -327,7 +328,8 @@ import { DevUIStore } from './stores'
 
         <app-settings-modal
           [showModal]="showAboutModal()"
-          (onBackendUrlChange)="(this.store.setShowAboutModal)"
+          (showModalChange)="this.store.setShowAboutModal($event)"
+          (onBackendUrlChange)="this.store.setShowAboutModal(false)"
         ></app-settings-modal>
 
         @if (showDeployModal()) {
