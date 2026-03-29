@@ -23,6 +23,7 @@ import { ButtonComponent } from '../../devui/components/ui/button.component'
 import { BadgeDirective } from '../../devui/directives/badge.directive'
 import { ButtonDirective } from '../../devui/directives/button.directive'
 import { SELECT_COMPONENTS } from '../../devui/components/ui/select.component'
+import { CARD_COMPONENTS } from '../../devui/components/ui/card.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -51,6 +52,7 @@ import { SELECT_COMPONENTS } from '../../devui/components/ui/select.component'
     // ButtonComponent,
     ButtonDirective,
     ...SELECT_COMPONENTS,
+    ...CARD_COMPONENTS,
   ],
 })
 export class TestingComponent implements OnInit {

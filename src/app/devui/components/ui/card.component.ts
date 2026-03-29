@@ -119,3 +119,13 @@ export class CardFooterComponent {
     cn('flex items-center px-6 [.border-t]:pt-6', this.className()),
   )
 }
+
+export const CARD_COMPONENTS = [
+  CardComponent,
+  CardContentComponent,
+  CardDescriptionComponent,
+  CardFooterComponent,
+  CardHeaderComponent,
+  CardTitleComponent,
+  CardActionComponent,
+] as const
