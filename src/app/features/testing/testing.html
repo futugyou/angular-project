@@ -655,4 +655,19 @@
 
     <p class="mt-4 text-xs text-gray-400">Currently selected tab: {{ currentTab }}</p>
   </div>
+
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Tooltip Component Test</h1>
+    <button [appTooltip]="tooltipInfo">
+      <ng-icon name="lucideInfo" />
+      Hover Me
+    </button>
+
+    <app-tooltip-content #tooltipInfo>
+      <div style="display: flex; align-items: center; gap: 8px">
+        <span>Tooltip</span>
+        <ng-icon name="lucideCheckCircle" />
+      </div>
+    </app-tooltip-content>
+  </div>
 </div>

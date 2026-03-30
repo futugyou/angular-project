@@ -47,6 +47,7 @@ import { MarkdownRendererComponent } from '../../devui/components/ui/markdown-re
 import { ScrollAreaComponent } from '../../devui/components/ui/scroll-area.component'
 import { SwitchComponent } from '../../devui/components/ui/switch.component'
 import { TAB_COMPONENTS } from '../../devui/components/ui/tab.component'
+import { TooltipContent, TooltipDirective } from '../../devui/components/ui/tooltip.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -90,6 +91,8 @@ import { TAB_COMPONENTS } from '../../devui/components/ui/tab.component'
     ScrollAreaComponent,
     SwitchComponent,
     ...TAB_COMPONENTS,
+    TooltipDirective,
+    TooltipContent,
   ],
 })
 export class TestingComponent implements OnInit {
