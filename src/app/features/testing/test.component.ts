@@ -44,6 +44,7 @@ import { FileUploadComponent } from '../../devui/components/ui/file-upload.compo
 import { LoadingStateComponent } from '../../devui/components/ui/loading-state.component'
 import { LoadingSpinnerComponent } from '../../devui/components/ui/loading-spinner.component'
 import { MarkdownRendererComponent } from '../../devui/components/ui/markdown-renderer.component'
+import { ScrollAreaComponent } from '../../devui/components/ui/scroll-area.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -84,6 +85,7 @@ import { MarkdownRendererComponent } from '../../devui/components/ui/markdown-re
     LoadingStateComponent,
     LoadingSpinnerComponent,
     MarkdownRendererComponent,
+    ScrollAreaComponent,
   ],
 })
 export class TestingComponent implements OnInit {
@@ -205,6 +207,9 @@ export class TestingComponent implements OnInit {
   loadMarkdownExample(type: 'basic' | 'technical') {
     this.rawMarkdownText.set(EXAMPLES[type])
   }
+
+  // scroll area
+  itemsScrollArea = Array.from({ length: 100 }, (_, i) => i + 1)
 }
 
 const EXAMPLES = {
