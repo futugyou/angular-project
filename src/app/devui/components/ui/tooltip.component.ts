@@ -11,9 +11,8 @@ import {
   ViewEncapsulation,
   type OnDestroy,
 } from '@angular/core'
-import { Overlay, OverlayRef } from '@angular/cdk/overlay'
+import { ConnectedPosition, Overlay, OverlayRef } from '@angular/cdk/overlay'
 import { TemplatePortal } from '@angular/cdk/portal'
-import { NgIconComponent } from '@ng-icons/core'
 
 @Component({
   selector: 'app-tooltip-content',
@@ -71,6 +70,7 @@ export class TooltipContent {
   },
 })
 export class TooltipDirective implements OnDestroy {
+  position = input<'top' | 'bottom' | 'left' | 'right'>('top')
   private overlay = inject(Overlay)
   private elementRef = inject(ElementRef)
   private viewContainerRef = inject(ViewContainerRef)
@@ -94,28 +94,50 @@ export class TooltipDirective implements OnDestroy {
     }, 100)
   }
 
+  private getPositions(): ConnectedPosition[] {
+    const offset = this.sideOffset()
+    const positions: Record<string, ConnectedPosition> = {
+      top: {
+        originX: 'center',
+        originY: 'top',
+        overlayX: 'center',
+        overlayY: 'bottom',
+        offsetY: -offset,
+      },
+      bottom: {
+        originX: 'center',
+        originY: 'bottom',
+        overlayX: 'center',
+        overlayY: 'top',
+        offsetY: offset,
+      },
+      left: {
+        originX: 'start',
+        originY: 'center',
+        overlayX: 'end',
+        overlayY: 'center',
+        offsetX: -offset,
+      },
+      right: {
+        originX: 'end',
+        originY: 'center',
+        overlayX: 'start',
+        overlayY: 'center',
+        offsetX: offset,
+      },
+    }
+
+    const preferred = positions[this.position()]
+    return [preferred, ...Object.values(positions).filter((p) => p !== preferred)]
+  }
+
   private open() {
     if (this.overlayRef?.hasAttached()) return
 
     const positionStrategy = this.overlay
       .position()
       .flexibleConnectedTo(this.elementRef)
-      .withPositions([
-        {
-          originX: 'center',
-          originY: 'top',
-          overlayX: 'center',
-          overlayY: 'bottom',
-          offsetY: -this.sideOffset(),
-        },
-        {
-          originX: 'center',
-          originY: 'bottom',
-          overlayX: 'center',
-          overlayY: 'top',
-          offsetY: this.sideOffset(),
-        },
-      ])
+      .withPositions(this.getPositions())
 
     this.overlayRef = this.overlay.create({
       positionStrategy,
