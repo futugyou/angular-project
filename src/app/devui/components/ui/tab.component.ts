@@ -144,12 +144,10 @@ export class TabsContentComponent {
     ),
   )
 }
-// usage
-// <app-tabs [(value)]="currentTab">
-//   <app-tabs-list>
-//     <button tabsTrigger value="account">Account</button>
-//     <button tabsTrigger value="password">Password</button>
-//   </app-tabs-list>
-//   <app-tabs-content value="account">Make changes to your account here.</app-tabs-content>
-//   <app-tabs-content value="password">Change your password here.</app-tabs-content>
-// </app-tabs>
+
+export const TAB_COMPONENTS = [
+  TabsComponent,
+  TabsListComponent,
+  TabsTriggerComponent,
+  TabsContentComponent,
+] as const

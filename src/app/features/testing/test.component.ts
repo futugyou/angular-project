@@ -46,6 +46,7 @@ import { LoadingSpinnerComponent } from '../../devui/components/ui/loading-spinn
 import { MarkdownRendererComponent } from '../../devui/components/ui/markdown-renderer.component'
 import { ScrollAreaComponent } from '../../devui/components/ui/scroll-area.component'
 import { SwitchComponent } from '../../devui/components/ui/switch.component'
+import { TAB_COMPONENTS } from '../../devui/components/ui/tab.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -88,6 +89,7 @@ import { SwitchComponent } from '../../devui/components/ui/switch.component'
     MarkdownRendererComponent,
     ScrollAreaComponent,
     SwitchComponent,
+    ...TAB_COMPONENTS,
   ],
 })
 export class TestingComponent implements OnInit {
@@ -219,6 +221,9 @@ export class TestingComponent implements OnInit {
     notifications: new FormControl(true),
     privacy: new FormControl(true),
   })
+
+  // tabs
+  currentTab = 'account'
 }
 
 const EXAMPLES = {
