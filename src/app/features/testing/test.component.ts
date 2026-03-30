@@ -41,6 +41,8 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { CodeBlock } from '../../devui/components/ui/code-block.component'
 import { DIALOG_COMPONENTS } from '../../devui/components/ui/dialog.component'
 import { FileUploadComponent } from '../../devui/components/ui/file-upload.component'
+import { LoadingStateComponent } from '../../devui/components/ui/loading-state.component'
+import { LoadingSpinnerComponent } from '../../devui/components/ui/loading-spinner.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -78,6 +80,8 @@ import { FileUploadComponent } from '../../devui/components/ui/file-upload.compo
     CodeBlock,
     ...DIALOG_COMPONENTS,
     FileUploadComponent,
+    LoadingStateComponent,
+    LoadingSpinnerComponent,
   ],
 })
 export class TestingComponent implements OnInit {

@@ -12,7 +12,7 @@ import { DatePipe } from '@angular/common'
 import { NgIconComponent } from '@ng-icons/core'
 import { ButtonComponent } from '../../ui/button.component'
 import { BadgeComponent } from '../../ui/badge.component'
-import { LoadingState } from '../../ui/loading-state.component'
+import { LoadingStateComponent } from '../../ui/loading-state.component'
 
 import { Select, SelectContent, SelectItem, SelectTrigger } from '../../ui/select.component'
 
@@ -82,7 +82,7 @@ const WORKFLOW_EVENT_TYPES = [
     ExecutionTimelineComponent,
     CheckpointInfoModal,
     DatePipe,
-    LoadingState,
+    LoadingStateComponent,
     BadgeComponent,
     RunWorkflowButtonComponent,
     WorkflowDetailsModalComponent,

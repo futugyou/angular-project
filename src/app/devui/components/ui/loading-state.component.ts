@@ -37,7 +37,7 @@ import { LoadingSpinnerComponent } from './loading-spinner.component'
     </div>
   `,
 })
-export class LoadingState {
+export class LoadingStateComponent {
   message = input<string>('Loading...')
   description = input<string | undefined>()
   size = input<'sm' | 'md' | 'lg'>('md')
