@@ -594,7 +594,7 @@
 
         <div class="flex items-center justify-between p-2 bg-slate-50 rounded">
           <span>Privacy mode (disabled)</span>
-          <app-switch formControlName="privacy" [disabled]="true" />
+          <app-switch formControlName="privacy" />
         </div>
 
         <div class="bg-gray-100 p-3 rounded text-xs font-mono">
@@ -658,10 +658,24 @@
 
   <div class="p-4">
     <h1 class="text-2xl font-bold mb-6 text-gray-800">Tooltip Component Test</h1>
-    <button [appTooltip]="tooltipInfo">
-      <ng-icon name="lucideInfo" />
-      Hover Me
-    </button>
+    <div class="grid grid-cols-4 gap-4">
+      <button [appTooltip]="tooltipInfo" position="top">
+        <ng-icon name="lucideInfo" />
+        top
+      </button>
+      <button [appTooltip]="tooltipInfo" position="bottom">
+        <ng-icon name="lucideInfo" />
+        bottom
+      </button>
+      <button [appTooltip]="tooltipInfo" position="left">
+        <ng-icon name="lucideInfo" />
+        left
+      </button>
+      <button [appTooltip]="tooltipInfo" position="right">
+        <ng-icon name="lucideInfo" />
+        right
+      </button>
+    </div>
 
     <app-tooltip-content #tooltipInfo>
       <div style="display: flex; align-items: center; gap: 8px">
@@ -669,5 +683,47 @@
         <ng-icon name="lucideCheckCircle" />
       </div>
     </app-tooltip-content>
+  </div>
+
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Toast Component Test</h1>
+    <div class="grid grid-cols-2 gap-4">
+      <button
+        (click)="toast.success('Operation successful! Data has been synchronized.')"
+        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+      >
+        Success Notification
+      </button>
+
+      <button
+        (click)="toast.error('Login failed. Please check your network connection.')"
+        class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+      >
+        Error Notification
+      </button>
+
+      <button
+        (click)="toast.show('Please note: The system will undergo maintenance tonight.', 'warning')"
+        class="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
+      >
+        Warning Notification
+      </button>
+
+      <button
+        (click)="toast.show('This is a standard message notification.', 'info')"
+        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+      >
+        Info Notification
+      </button>
+
+      <button
+        (click)="toast.show('This message will display for 10 seconds', 'info', 10000)"
+        class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800 transition col-span-2"
+      >
+        Custom Duration (10s)
+      </button>
+    </div>
+
+    <app-toast-container [toasts]="toast.toasts()" (onRemove)="toast.remove($event)" />
   </div>
 </div>

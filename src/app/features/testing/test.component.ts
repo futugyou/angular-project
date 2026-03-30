@@ -48,6 +48,7 @@ import { ScrollAreaComponent } from '../../devui/components/ui/scroll-area.compo
 import { SwitchComponent } from '../../devui/components/ui/switch.component'
 import { TAB_COMPONENTS } from '../../devui/components/ui/tab.component'
 import { TooltipContent, TooltipDirective } from '../../devui/components/ui/tooltip.component'
+import { ToastContainer, ToastService } from '../../devui/components/ui/toast.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -93,6 +94,7 @@ import { TooltipContent, TooltipDirective } from '../../devui/components/ui/tool
     ...TAB_COMPONENTS,
     TooltipDirective,
     TooltipContent,
+    ToastContainer,
   ],
 })
 export class TestingComponent implements OnInit {
@@ -222,11 +224,14 @@ export class TestingComponent implements OnInit {
   isSwitchChecked = signal(false)
   testSwitchForm = new FormGroup({
     notifications: new FormControl(true),
-    privacy: new FormControl(true),
+    privacy: new FormControl({ value: false, disabled: true }),
   })
 
   // tabs
   currentTab = 'account'
+
+  // toast
+  readonly toast = inject(ToastService)
 }
 
 const EXAMPLES = {
