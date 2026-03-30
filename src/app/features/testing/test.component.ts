@@ -1,4 +1,13 @@
-import { Component, EventEmitter, OnInit, output, inject, signal, effect } from '@angular/core'
+import {
+  Component,
+  EventEmitter,
+  OnInit,
+  output,
+  inject,
+  signal,
+  effect,
+  computed,
+} from '@angular/core'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { NgIconsModule, provideIcons } from '@ng-icons/core'
 import { lucideLogOut, lucideCheckCheck } from '@ng-icons/lucide'
@@ -31,6 +40,7 @@ import { CheckboxComponent } from '../../devui/components/ui/checkbox.component'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { CodeBlock } from '../../devui/components/ui/code-block.component'
 import { DIALOG_COMPONENTS } from '../../devui/components/ui/dialog.component'
+import { FileUploadComponent } from '../../devui/components/ui/file-upload.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -67,6 +77,7 @@ import { DIALOG_COMPONENTS } from '../../devui/components/ui/dialog.component'
     FormsModule,
     CodeBlock,
     ...DIALOG_COMPONENTS,
+    FileUploadComponent,
   ],
 })
 export class TestingComponent implements OnInit {
@@ -165,4 +176,20 @@ export class TestingComponent implements OnInit {
 
   // dialog
   showDialogModal = signal(false)
+  fileList = signal<File[]>([])
+  fileCount = computed(() => this.fileList().length)
+  totalSizeText = computed(() => {
+    const totalBytes = this.fileList().reduce((acc, file) => acc + file.size, 0)
+    if (totalBytes === 0) return '0 B'
+    const mb = totalBytes / (1024 * 1024)
+    return `${mb.toFixed(2)} MB`
+  })
+
+  onUpload(newFiles: File[]) {
+    this.fileList.update((current) => [...current, ...newFiles])
+  }
+
+  removeFile(fileToRemove: File) {
+    this.fileList.update((current) => current.filter((f) => f !== fileToRemove))
+  }
 }
