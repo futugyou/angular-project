@@ -212,33 +212,53 @@ export class MarkdownRendererComponent implements ControlValueAccessor {
   })
 
   private parseInline(text: string): SafeHtml {
+    // 1. Basic HTML Escaping
     let h = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-    // Inline Code
-    h = h.replace(
-      /`([^`]+)`/g,
-      '<code class="px-1.5 py-0.5 bg-foreground/10 rounded text-xs font-mono border border-foreground/20">$1</code>',
+    // Store protected HTML fragments
+    const protectedChunks: string[] = []
+
+    // Helper function: Store content in the array and return a token that won't be matched by regex
+    const protect = (html: string) => {
+      const index = protectedChunks.length
+      protectedChunks.push(html)
+      return `§${index}§` // Use the special symbol §; it won't trigger Markdown's underscore or asterisk logic
+    }
+
+    // 2. Extract and Protect: Inline Code
+    h = h.replace(/`([^`]+)`/g, (_, code) =>
+      protect(
+        `<code class="px-1.5 py-0.5 bg-foreground/10 rounded text-xs font-mono border border-foreground/20">${code}</code>`,
+      ),
     )
-    // Bold/Italic Links
-    h = h.replace(
-      /\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/g,
-      '<strong class="font-semibold"><a href="$2" target="_blank" rel="noopener" class="text-primary hover:underline">$1</a></strong>',
+
+    // 3. Extract and Protect: Images
+    h = h.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) =>
+      protect(
+        `<img src="${src}" alt="${alt}" class="max-w-full h-auto rounded-lg my-2 border border-border inline-block" />`,
+      ),
     )
-    h = h.replace(
-      /\*\[([^\]]+)\]\(([^)]+)\)\*/g,
-      '<em class="italic"><a href="$2" target="_blank" rel="noopener" class="text-primary hover:underline">$1</a></em>',
+
+    // 4. Extract and Protect: Links
+    h = h.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, href) =>
+      protect(
+        `<a href="${href}" target="_blank" rel="noopener" class="text-primary hover:underline">${text}</a>`,
+      ),
     )
-    // Links
-    h = h.replace(
-      /\[([^\]]+)\]\(([^)]+)\)/g,
-      '<a href="$2" target="_blank" rel="noopener" class="text-primary hover:underline">$1</a>',
-    )
-    // Bold
+
+    // --- At this point, `h` consists entirely of safe placeholders like §0§, §1§; underscores can no longer interfere with the URLs contained within them ---
+
+    // 5. Process Bold Text (Note: This must be applied to the *remaining* text)
     h = h.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold">$1</strong>')
     h = h.replace(/__(.+?)__/g, '<strong class="font-semibold">$1</strong>')
-    // Italic
-    h = h.replace(/\*(.+?)\*/g, '<em class="italic">$1</em>')
-    h = h.replace(/_(.+?)_/g, '<em class="italic">$1</em>')
+
+    // 6. Process italics
+    h = h.replace(/\*([^\s*][^*]*)\*/g, '<em class="italic">$1</em>')
+    h = h.replace(/_([^\s_][^_]*)\_/g, '<em class="italic">$1</em>')
+
+    // 7. Final step: Restore all protected HTML content
+    // Replace in reverse order or use a regex loop to ensure all placeholders are reverted
+    h = h.replace(/§(\d+)§/g, (_, index) => protectedChunks[+index])
 
     return this.sanitizer.bypassSecurityTrustHtml(h)
   }
