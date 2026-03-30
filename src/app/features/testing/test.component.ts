@@ -43,6 +43,7 @@ import { DIALOG_COMPONENTS } from '../../devui/components/ui/dialog.component'
 import { FileUploadComponent } from '../../devui/components/ui/file-upload.component'
 import { LoadingStateComponent } from '../../devui/components/ui/loading-state.component'
 import { LoadingSpinnerComponent } from '../../devui/components/ui/loading-spinner.component'
+import { MarkdownRendererComponent } from '../../devui/components/ui/markdown-renderer.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -82,6 +83,7 @@ import { LoadingSpinnerComponent } from '../../devui/components/ui/loading-spinn
     FileUploadComponent,
     LoadingStateComponent,
     LoadingSpinnerComponent,
+    MarkdownRendererComponent,
   ],
 })
 export class TestingComponent implements OnInit {
@@ -196,4 +198,70 @@ export class TestingComponent implements OnInit {
   removeFile(fileToRemove: File) {
     this.fileList.update((current) => current.filter((f) => f !== fileToRemove))
   }
+
+  // markdown
+  rawMarkdownText = signal<string>(EXAMPLES.basic)
+
+  loadMarkdownExample(type: 'basic' | 'technical') {
+    this.rawMarkdownText.set(EXAMPLES[type])
+  }
+}
+
+const EXAMPLES = {
+  basic: `
+## System Architecture Design
+
+The backend of this project is built using **Go (Gin)**, while the frontend utilizes **Angular**.
+
+### Core Code Snippets
+\`\`\`typescript
+@Component({
+selector: 'app-root',
+template: '<h1>{{ title() }}</h1>'
+})
+export class AppComponent {
+title = signal('Hello Angular 18');
+}
+\`\`\`
+
+### To-Do List
+1. Optimize GORM association query logic
+2. Implement agent orchestration based on **ADK**
+3. Migrate \`AppData\` cache from drive C to drive D to save space
+
+### Important Notes
+* This project is incompatible with the legacy **ViewEngine**.
+* All styling is built using **Tailwind CSS**.
+`,
+  technical: `
+# Welcome to the Markdown Renderer
+
+This is a custom renderer built upon **Angular Signals**.
+
+## Basic Feature Showcase
+* **Bold** and *Italic* text
+* Hyperlinks: [Visit Google](https://google.com)
+* Inline code: \`const version = '17.0';\`
+
+> This is a blockquote, often used to emphasize a specific passage.
+> It can span across multiple lines.
+
+---
+
+### Image Showcase
+
+This is a standard inline image:
+![Angular Logo](https://angular.dev/assets/images/press-kit/angular_wordmark_gradient.png)
+
+Even when an image appears within paragraph text ![Small Icon](https://avatars.githubusercontent.com/u/17871902?v=4&size=64), it displays correctly.
+
+---
+
+### Simple Table
+| Property | Description | Status |
+| :--- | :--- | :--- |
+| Signal | Reactive Core | Live |
+| SSR | Server-Side Rendering | Supported |
+| Control Flow | @if / @for | Migrated |
+`,
 }
