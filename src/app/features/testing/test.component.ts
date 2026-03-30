@@ -45,6 +45,7 @@ import { LoadingStateComponent } from '../../devui/components/ui/loading-state.c
 import { LoadingSpinnerComponent } from '../../devui/components/ui/loading-spinner.component'
 import { MarkdownRendererComponent } from '../../devui/components/ui/markdown-renderer.component'
 import { ScrollAreaComponent } from '../../devui/components/ui/scroll-area.component'
+import { SwitchComponent } from '../../devui/components/ui/switch.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -86,6 +87,7 @@ import { ScrollAreaComponent } from '../../devui/components/ui/scroll-area.compo
     LoadingSpinnerComponent,
     MarkdownRendererComponent,
     ScrollAreaComponent,
+    SwitchComponent,
   ],
 })
 export class TestingComponent implements OnInit {
@@ -210,6 +212,13 @@ export class TestingComponent implements OnInit {
 
   // scroll area
   itemsScrollArea = Array.from({ length: 100 }, (_, i) => i + 1)
+
+  // switch
+  isSwitchChecked = signal(false)
+  testSwitchForm = new FormGroup({
+    notifications: new FormControl(true),
+    privacy: new FormControl(true),
+  })
 }
 
 const EXAMPLES = {
