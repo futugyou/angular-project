@@ -1,12 +1,11 @@
 import {
   Component,
-  ElementRef,
   booleanAttribute,
   computed,
   forwardRef,
   input,
   model,
-  viewChild,
+  signal,
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NgIcon } from '@ng-icons/core'
@@ -53,8 +52,10 @@ import { cn } from '../../lib/utils'
 })
 export class SwitchComponent implements ControlValueAccessor {
   // --- Signal Inputs ---
+  private _formDisabled = signal(false)
   className = input<string>('')
-  disabled = input(false, { transform: booleanAttribute })
+  disabledInput = input(false, { alias: 'disabled', transform: booleanAttribute })
+  protected disabled = computed(() => this.disabledInput() || this._formDisabled())
   showIcons = input(false, { transform: booleanAttribute })
 
   checked = model<boolean>(false)
@@ -87,6 +88,9 @@ export class SwitchComponent implements ControlValueAccessor {
   private onChange: (v: boolean) => void = () => {}
   private onTouched: () => void = () => {}
 
+  setDisabledState(isDisabled: boolean): void {
+    this._formDisabled.set(isDisabled)
+  }
   writeValue(v: boolean): void {
     this.checked.set(!!v)
   }
@@ -101,9 +105,3 @@ export class SwitchComponent implements ControlValueAccessor {
     this.onTouched()
   }
 }
-// usage
-// <app-switch [(checked)]="notifications" />
-
-// <form [formGroup]="settings">
-//   <app-switch formControlName="darkMode" className="mt-4" />
-// </form>
