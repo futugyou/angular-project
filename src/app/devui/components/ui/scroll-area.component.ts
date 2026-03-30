@@ -16,20 +16,48 @@ import { cn } from '../../lib/utils'
   selector: 'app-scroll-bar',
   standalone: true,
   template: `
-    <div
-      #thumb
-      [class]="thumbClasses()"
-      [style.height.%]="thumbSize()"
-      [style.transform]="thumbTransform()"
-      (pointerdown)="onPointerDown($event)"
-    ></div>
+    <div class="track-bg">
+      <div
+        #thumb
+        class="thumb-el"
+        [style.height.%]="thumbSize()"
+        [style.transform]="thumbTransform()"
+        (pointerdown)="onPointerDown($event)"
+      ></div>
+    </div>
   `,
-  host: {
-    '[class]': 'hostClasses()',
-  },
+  styles: [
+    `
+      :host {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 10px;
+        z-index: 1000;
+      }
+      .track-bg {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.05);
+      }
+      .thumb-el {
+        position: absolute;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 10px;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        will-change: transform;
+      }
+    `,
+  ],
 })
 export class ScrollBarComponent {
   private renderer = inject(Renderer2)
+  private el = inject(ElementRef)
 
   orientation = input<'vertical' | 'horizontal'>('vertical')
   scrollProgress = input<number>(0)
@@ -40,7 +68,7 @@ export class ScrollBarComponent {
 
   hostClasses = computed(() =>
     cn(
-      'absolute flex touch-none select-none transition-colors bg-black/5',
+      'absolute flex touch-none select-none transition-colors bg-black/5 z-50',
       this.orientation() === 'vertical'
         ? 'h-full w-2.5 right-0 top-0'
         : 'h-2.5 w-full bottom-0 left-0',
@@ -48,36 +76,42 @@ export class ScrollBarComponent {
   )
 
   thumbClasses = computed(
-    () => 'relative flex-1 rounded-full bg-gray-400/50 hover:bg-gray-400/80 cursor-default',
+    () =>
+      'relative w-full rounded-full bg-gray-400/50 hover:bg-gray-400/80 cursor-default transition-colors',
   )
 
   thumbTransform = computed(() => {
-    const moveRange = 100 - this.thumbSize()
+    const moveRange = (100 / this.thumbSize()) * (100 - this.thumbSize())
     const translate = (this.scrollProgress() * moveRange) / 100
-    return this.orientation() === 'vertical'
-      ? `translateY(${translate}%)`
-      : `translateX(${translate}%)`
+    return `translateY(${translate}%)`
   })
 
   onPointerDown(event: PointerEvent) {
+    event.stopPropagation()
     const viewport = this.viewportElement()
-    if (!viewport) return
+    const thumbEl = this.thumb()?.nativeElement
+    const trackRect = this.el.nativeElement.getBoundingClientRect()
 
-    const startY = event.clientY
-    const startScrollTop = viewport.scrollTop
-    const scrollHeight = viewport.scrollHeight
-    const clientHeight = viewport.clientHeight
+    if (!viewport || !thumbEl) return
 
-    const ratio =
-      (scrollHeight - clientHeight) / (clientHeight - (this.thumbSize() * clientHeight) / 100)
+    const thumbRect = thumbEl.getBoundingClientRect()
+    const clickOffsetY = event.clientY - thumbRect.top
 
     const onPointerMove = (e: PointerEvent) => {
-      const deltaY = e.clientY - startY
-      viewport.scrollTop = startScrollTop + deltaY * ratio
+      const maxScrollTop = viewport.scrollHeight - viewport.clientHeight
+      const currentTrackHeight = this.el.nativeElement.offsetHeight
+      const currentThumbHeight = thumbEl.offsetHeight
+      const maxThumbTravel = currentTrackHeight - currentThumbHeight
+
+      let targetThumbTop = e.clientY - trackRect.top - clickOffsetY
+      targetThumbTop = Math.max(0, Math.min(targetThumbTop, maxThumbTravel))
+
+      const scrollPercent = targetThumbTop / maxThumbTravel
+      viewport.scrollTop = scrollPercent * maxScrollTop
     }
 
     const onPointerUp = () => {
-      this.renderer.setStyle(document.body, 'user-select', 'auto')
+      this.renderer.removeStyle(document.body, 'user-select')
       window.removeEventListener('pointermove', onPointerMove)
       window.removeEventListener('pointerup', onPointerUp)
     }
@@ -94,23 +128,34 @@ export class ScrollBarComponent {
   imports: [ScrollingModule, ScrollBarComponent],
   template: `
     <div
-      cdkScrollable
       #viewport
-      class="h-full w-full rounded-[inherit] overflow-auto scrollbar-hide"
+      class="viewport-container"
       (scroll)="updateMetrics()"
+      style="width: 100%; height: 100%; overflow: auto; scrollbar-width: none; -ms-overflow-style: none;"
     >
-      <ng-content></ng-content>
+      <div style="display: flow-root;">
+        <ng-content></ng-content>
+      </div>
     </div>
 
     @if (showVBar()) {
       <app-scroll-bar
-        [viewportElement]="viewportRef()?.nativeElement || null"
+        [viewportElement]="viewport"
         [thumbSize]="vThumbSize()"
         [scrollProgress]="vProgress()"
       />
     }
   `,
-  host: { '[class]': 'rootClasses()' },
+  host: {
+    style: 'display: block; position: relative; width: 100%; height: 100%; overflow: hidden;',
+  },
+  styles: [
+    `
+      .viewport-container::-webkit-scrollbar {
+        display: none;
+      }
+    `,
+  ],
 })
 export class ScrollAreaComponent {
   className = input<string>('')
@@ -123,7 +168,15 @@ export class ScrollAreaComponent {
   rootClasses = computed(() => cn('relative overflow-hidden group', this.className()))
 
   constructor() {
-    afterNextRender(() => this.updateMetrics())
+    afterNextRender(() => {
+      this.updateMetrics()
+
+      const el = this.viewportRef()?.nativeElement
+      if (el) {
+        const ro = new ResizeObserver(() => this.updateMetrics())
+        ro.observe(el)
+      }
+    })
   }
 
   updateMetrics() {
@@ -131,20 +184,10 @@ export class ScrollAreaComponent {
     if (!el) return
 
     const { scrollTop, scrollHeight, clientHeight } = el
-    this.showVBar.set(scrollHeight > clientHeight)
-    this.vThumbSize.set(Math.max((clientHeight / scrollHeight) * 100, 10))
-    this.vProgress.set((scrollTop / (scrollHeight - clientHeight)) * 100 || 0)
+    this.showVBar.set(scrollHeight > clientHeight + 1)
+    const size = Math.max((clientHeight / scrollHeight) * 100, 10)
+    this.vThumbSize.set(size)
+    const progress = (scrollTop / (scrollHeight - clientHeight)) * 100
+    this.vProgress.set(progress || 0)
   }
 }
-// usage
-// <app-scroll-area class="h-[200px] w-[350px] border rounded-md">
-//   <div class="p-4">
-//     <h4 class="mb-4 text-sm font-medium leading-none">Tags</h4>
-//     @for (tag of tags; track tag) {
-//       <div class="text-sm">
-//         {{ tag }}
-//         <hr class="my-2" />
-//       </div>
-//     }
-//   </div>
-// </app-scroll-area>
