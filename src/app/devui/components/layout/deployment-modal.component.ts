@@ -97,243 +97,241 @@ type Tab = 'docker' | 'azure'
         }
       </div>
 
-      <div class="px-6 pb-6 min-h-100">
-        <app-scroll-area class="h-125">
-          <div class="pr-4">
-            @if (activeTab() === 'docker') {
-              <div class="space-y-4 pt-4">
-                <div>
-                  <h3 class="font-semibold mb-2">Containerize with Docker</h3>
-                  <p class="text-sm text-muted-foreground">
-                    Package your agent as a Docker container for consistent deployment anywhere.
-                  </p>
-                </div>
-                <div>
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium">Dockerfile</span>
-                    <button
-                      [appButton]
-                      size="sm"
-                      variant="ghost"
-                      (click)="handleCopy(dockerfileTemplate, 'dockerfile')"
-                    >
-                      @if (copiedTemplate() === 'dockerfile') {
-                        <ng-icon name="lucideCheckCircle2" class="h-4 w-4 mr-1 text-green-500" />
-                        Copied!
-                      } @else {
-                        <ng-icon name="lucideCopy" class="h-4 w-4 mr-1" />
-                        Copy
-                      }
-                    </button>
-                  </div>
-                  <pre class="bg-muted p-3 rounded-md text-xs overflow-x-auto border">{{
-                    dockerfileTemplate
-                  }}</pre>
-                </div>
-                <div>
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium">docker-compose.yml</span>
-                    <button
-                      [appButton]
-                      size="sm"
-                      variant="ghost"
-                      (click)="handleCopy(dockerComposeTemplate, 'compose')"
-                    >
-                      @if (copiedTemplate() === 'compose') {
-                        <ng-icon name="lucideCheckCircle2" class="h-4 w-4 mr-1 text-green-500" />
-                        Copied!
-                      } @else {
-                        <ng-icon name="lucideCopy" class="h-4 w-4 mr-1" />
-                        Copy
-                      }
-                    </button>
-                  </div>
-                  <pre class="bg-muted p-3 rounded-md text-xs overflow-x-auto border">{{
-                    dockerComposeTemplate
-                  }}</pre>
-                </div>
-                <div
-                  class="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-md p-3"
-                >
-                  <h4 class="text-sm font-semibold mb-2">Quick Start</h4>
-                  <ol class="text-xs space-y-1 list-decimal list-inside text-muted-foreground">
-                    <li>Save the files above to your project directory</li>
-                    <li>
-                      Build:
-                      <code class="bg-muted px-1 rounded"
-                        >docker build -t {{ agentName().toLowerCase() }}-agent .</code
-                      >
-                    </li>
-                    <li>Run: <code class="bg-muted px-1 rounded">docker-compose up</code></li>
-                    <li>Your agent is now running in a container!</li>
-                  </ol>
-                </div>
-                <div
-                  class="bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 rounded-md p-3"
-                >
-                  <h4 class="text-sm font-semibold mb-2 text-amber-900 dark:text-amber-100">
-                    ⚠️ Production Considerations
-                  </h4>
-                  <ul
-                    class="text-xs space-y-1 list-disc list-inside text-amber-800 dark:text-amber-200"
-                  >
-                    <li><strong>In-memory state:</strong> Conversations lost on restart</li>
-                    <li><strong>No authentication:</strong> Add reverse proxy (nginx)</li>
-                    <li><strong>Security:</strong> Use Azure Key Vault for secrets</li>
-                    <li><strong>Scaling:</strong> Single instance only (in-memory store)</li>
-                  </ul>
-                </div>
+      <app-scroll-area class="px-6 pb-6 h-125">
+        <div class="pr-4">
+          @if (activeTab() === 'docker') {
+            <div class="space-y-4 pt-4">
+              <div>
+                <h3 class="font-semibold mb-2">Containerize with Docker</h3>
+                <p class="text-sm text-muted-foreground">
+                  Package your agent as a Docker container for consistent deployment anywhere.
+                </p>
               </div>
-            }
-
-            @if (activeTab() === 'azure') {
-              <div class="space-y-4 pt-4">
-                <div>
-                  <h3 class="font-semibold mb-2">Deploy to Azure Container Apps</h3>
-                  <p class="text-sm text-muted-foreground">
-                    {{
-                      deploymentSupported
-                        ? 'One-click deployment to Azure with automatic containerization.'
-                        : 'Azure Container Apps provides serverless containers.'
-                    }}
-                  </p>
-                </div>
-                <div
-                  class="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-md p-3"
-                >
-                  <h4 class="text-sm font-semibold mb-2 text-blue-900 dark:text-blue-100">
-                    Prerequisites
-                  </h4>
-                  <ul
-                    class="text-xs space-y-1 list-disc list-inside text-blue-800 dark:text-blue-200"
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium">Dockerfile</span>
+                  <button
+                    [appButton]
+                    size="sm"
+                    variant="ghost"
+                    (click)="handleCopy(dockerfileTemplate, 'dockerfile')"
                   >
-                    <li>
-                      Azure CLI installed (<code class="bg-blue-100 dark:bg-blue-900 px-1 rounded"
-                        >az login</code
-                      >)
-                    </li>
-                    <li>Docker installed and running</li>
-                  </ul>
-                </div>
-                @if (deploymentSupported && entity() && !lastDeployment) {
-                  <div class="border rounded-lg p-4 space-y-4">
-                    @if (!isDeploying()) {
-                      <div class="space-y-3">
-                        <div>
-                          <label class="text-sm font-medium">Resource Group</label>
-                          <input
-                            type="text"
-                            [(ngModel)]="resourceGroup"
-                            class="w-full mt-1 px-3 py-2 border rounded-md text-sm"
-                            placeholder="my-test-rg"
-                          />
-                        </div>
-                        <div>
-                          <label class="text-sm font-medium">App Name</label>
-                          <input
-                            type="text"
-                            [(ngModel)]="appName"
-                            class="w-full mt-1 px-3 py-2 border rounded-md text-sm"
-                            [ngClass]="{ 'border-red-500': appNameError }"
-                            placeholder="my-agent-app"
-                          />
-                          @if (appNameError()) {
-                            <p class="mt-1 text-xs text-red-600">
-                              {{ appNameError() }}
-                            </p>
-                          }
-                        </div>
-                        <div>
-                          <label class="text-sm font-medium">Region</label>
-                          <select
-                            [(ngModel)]="region"
-                            class="w-full mt-1 px-3 py-2 border rounded-md text-sm"
-                          >
-                            <option value="eastus">East US</option>
-                            <option value="westus">West US</option>
-                          </select>
-                        </div>
-                      </div>
-                      <button
-                        [appButton]
-                        (click)="handleDeploy()"
-                        [disabled]="!resourceGroup || !appName || !!appNameError"
-                        class="w-full"
-                      >
-                        <ng-icon name="lucideRocket" class="h-4 w-4 mr-2" />
-                        Deploy to Azure
-                      </button>
+                    @if (copiedTemplate() === 'dockerfile') {
+                      <ng-icon name="lucideCheckCircle2" class="h-4 w-4 mr-1 text-green-500" />
+                      Copied!
                     } @else {
-                      <div class="space-y-2">
-                        <div class="flex items-center gap-2 text-sm font-medium">
-                          <ng-icon name="lucideLoader2" class="h-4 w-4 animate-spin" />
-                          Deploying...
-                        </div>
-                        <div
-                          #logsContainer
-                          class="bg-muted p-3 rounded-md text-xs font-mono max-h-60 overflow-y-auto space-y-1"
-                        >
-                          @for (log of deploymentLogs(); track log) {
-                            <div
-                              [ngClass]="{
-                                'text-red-600': log.includes('failed') || log.includes('Error'),
-                              }"
-                            >
-                              {{ log }}
-                            </div>
-                          }
-                        </div>
-                      </div>
+                      <ng-icon name="lucideCopy" class="h-4 w-4 mr-1" />
+                      Copy
                     }
-                  </div>
-                }
-                @let lastDep = lastDeployment();
-                @if (lastDep) {
-                  <div
-                    class="border-2 border-green-200 bg-green-50 dark:bg-green-950/50 rounded-lg p-4 space-y-3"
+                  </button>
+                </div>
+                <pre class="bg-muted p-3 rounded-md text-xs overflow-x-auto border">{{
+                  dockerfileTemplate
+                }}</pre>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium">docker-compose.yml</span>
+                  <button
+                    [appButton]
+                    size="sm"
+                    variant="ghost"
+                    (click)="handleCopy(dockerComposeTemplate, 'compose')"
                   >
-                    <div class="flex items-center gap-2">
-                      <ng-icon name="lucideCheckCircle2" class="h-5 w-5 text-green-600"></ng-icon>
-                      <h4 class="font-semibold text-green-900 dark:text-green-100">
-                        Deployment Successful!
-                      </h4>
-                    </div>
-                    <div class="space-y-2">
+                    @if (copiedTemplate() === 'compose') {
+                      <ng-icon name="lucideCheckCircle2" class="h-4 w-4 mr-1 text-green-500" />
+                      Copied!
+                    } @else {
+                      <ng-icon name="lucideCopy" class="h-4 w-4 mr-1" />
+                      Copy
+                    }
+                  </button>
+                </div>
+                <pre class="bg-muted p-3 rounded-md text-xs overflow-x-auto border">{{
+                  dockerComposeTemplate
+                }}</pre>
+              </div>
+              <div
+                class="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-md p-3"
+              >
+                <h4 class="text-sm font-semibold mb-2">Quick Start</h4>
+                <ol class="text-xs space-y-1 list-decimal list-inside text-muted-foreground">
+                  <li>Save the files above to your project directory</li>
+                  <li>
+                    Build:
+                    <code class="bg-muted px-1 rounded"
+                      >docker build -t {{ agentName().toLowerCase() }}-agent .</code
+                    >
+                  </li>
+                  <li>Run: <code class="bg-muted px-1 rounded">docker-compose up</code></li>
+                  <li>Your agent is now running in a container!</li>
+                </ol>
+              </div>
+              <div
+                class="bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 rounded-md p-3"
+              >
+                <h4 class="text-sm font-semibold mb-2 text-amber-900 dark:text-amber-100">
+                  ⚠️ Production Considerations
+                </h4>
+                <ul
+                  class="text-xs space-y-1 list-disc list-inside text-amber-800 dark:text-amber-200"
+                >
+                  <li><strong>In-memory state:</strong> Conversations lost on restart</li>
+                  <li><strong>No authentication:</strong> Add reverse proxy (nginx)</li>
+                  <li><strong>Security:</strong> Use Azure Key Vault for secrets</li>
+                  <li><strong>Scaling:</strong> Single instance only (in-memory store)</li>
+                </ul>
+              </div>
+            </div>
+          }
+
+          @if (activeTab() === 'azure') {
+            <div class="space-y-4 pt-4">
+              <div>
+                <h3 class="font-semibold mb-2">Deploy to Azure Container Apps</h3>
+                <p class="text-sm text-muted-foreground">
+                  {{
+                    deploymentSupported
+                      ? 'One-click deployment to Azure with automatic containerization.'
+                      : 'Azure Container Apps provides serverless containers.'
+                  }}
+                </p>
+              </div>
+              <div
+                class="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-md p-3"
+              >
+                <h4 class="text-sm font-semibold mb-2 text-blue-900 dark:text-blue-100">
+                  Prerequisites
+                </h4>
+                <ul
+                  class="text-xs space-y-1 list-disc list-inside text-blue-800 dark:text-blue-200"
+                >
+                  <li>
+                    Azure CLI installed (<code class="bg-blue-100 dark:bg-blue-900 px-1 rounded"
+                      >az login</code
+                    >)
+                  </li>
+                  <li>Docker installed and running</li>
+                </ul>
+              </div>
+              @if (deploymentSupported && entity() && !lastDeployment) {
+                <div class="border rounded-lg p-4 space-y-4">
+                  @if (!isDeploying()) {
+                    <div class="space-y-3">
                       <div>
-                        <label class="text-xs font-medium text-green-800 dark:text-green-200"
-                          >Deployment URL</label
+                        <label class="text-sm font-medium">Resource Group</label>
+                        <input
+                          type="text"
+                          [(ngModel)]="resourceGroup"
+                          class="w-full mt-1 px-3 py-2 border rounded-md text-sm"
+                          placeholder="my-test-rg"
+                        />
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium">App Name</label>
+                        <input
+                          type="text"
+                          [(ngModel)]="appName"
+                          class="w-full mt-1 px-3 py-2 border rounded-md text-sm"
+                          [ngClass]="{ 'border-red-500': appNameError }"
+                          placeholder="my-agent-app"
+                        />
+                        @if (appNameError()) {
+                          <p class="mt-1 text-xs text-red-600">
+                            {{ appNameError() }}
+                          </p>
+                        }
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium">Region</label>
+                        <select
+                          [(ngModel)]="region"
+                          class="w-full mt-1 px-3 py-2 border rounded-md text-sm"
                         >
-                        <div class="flex gap-2 mt-1">
-                          <code
-                            class="flex-1 bg-white dark:bg-gray-900 px-3 py-2 rounded border text-sm"
-                            >{{ lastDep!.url }}</code
-                          >
-                          <button
-                            [appButton]
-                            size="sm"
-                            variant="outline"
-                            (click)="openUrl(lastDep.url)"
-                          >
-                            <ng-icon name="lucideExternalLink" class="h-4 w-4"></ng-icon>
-                          </button>
-                        </div>
+                          <option value="eastus">East US</option>
+                          <option value="westus">West US</option>
+                        </select>
                       </div>
                     </div>
                     <button
                       [appButton]
-                      (click)="clearDeploymentState()"
-                      variant="outline"
+                      (click)="handleDeploy()"
+                      [disabled]="!resourceGroup || !appName || !!appNameError"
                       class="w-full"
                     >
-                      Deploy Another
+                      <ng-icon name="lucideRocket" class="h-4 w-4 mr-2" />
+                      Deploy to Azure
                     </button>
+                  } @else {
+                    <div class="space-y-2">
+                      <div class="flex items-center gap-2 text-sm font-medium">
+                        <ng-icon name="lucideLoader2" class="h-4 w-4 animate-spin" />
+                        Deploying...
+                      </div>
+                      <div
+                        #logsContainer
+                        class="bg-muted p-3 rounded-md text-xs font-mono max-h-60 overflow-y-auto space-y-1"
+                      >
+                        @for (log of deploymentLogs(); track log) {
+                          <div
+                            [ngClass]="{
+                              'text-red-600': log.includes('failed') || log.includes('Error'),
+                            }"
+                          >
+                            {{ log }}
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+              @let lastDep = lastDeployment();
+              @if (lastDep) {
+                <div
+                  class="border-2 border-green-200 bg-green-50 dark:bg-green-950/50 rounded-lg p-4 space-y-3"
+                >
+                  <div class="flex items-center gap-2">
+                    <ng-icon name="lucideCheckCircle2" class="h-5 w-5 text-green-600"></ng-icon>
+                    <h4 class="font-semibold text-green-900 dark:text-green-100">
+                      Deployment Successful!
+                    </h4>
                   </div>
-                }
-              </div>
-            }
-          </div>
-        </app-scroll-area>
-      </div>
+                  <div class="space-y-2">
+                    <div>
+                      <label class="text-xs font-medium text-green-800 dark:text-green-200"
+                        >Deployment URL</label
+                      >
+                      <div class="flex gap-2 mt-1">
+                        <code
+                          class="flex-1 bg-white dark:bg-gray-900 px-3 py-2 rounded border text-sm"
+                          >{{ lastDep!.url }}</code
+                        >
+                        <button
+                          [appButton]
+                          size="sm"
+                          variant="outline"
+                          (click)="openUrl(lastDep.url)"
+                        >
+                          <ng-icon name="lucideExternalLink" class="h-4 w-4"></ng-icon>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    [appButton]
+                    (click)="clearDeploymentState()"
+                    variant="outline"
+                    class="w-full"
+                  >
+                    Deploy Another
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </app-scroll-area>
     </app-dialog-content>
   </app-dialog>`,
   host: {

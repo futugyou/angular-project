@@ -36,11 +36,13 @@ import { cn } from '../../lib/utils'
         width: 10px;
         z-index: 1000;
         opacity: 0;
-        transition: opacity 0.3s ease;
+        visibility: hidden;
+        transition: opacity 0.5s ease;
         pointer-events: none;
       }
       :host.show {
         opacity: 1;
+        visibility: visible;
         pointer-events: auto;
       }
       .track-bg {
@@ -100,13 +102,14 @@ export class ScrollBarComponent {
 
   onPointerDown(event: PointerEvent) {
     event.stopPropagation()
-    this.isDragging.set(true)
     const viewport = this.viewportElement()
     const thumbEl = this.thumb()?.nativeElement
     const trackRect = this.el.nativeElement.getBoundingClientRect()
 
     if (!viewport || !thumbEl) return
 
+    thumbEl.setPointerCapture(event.pointerId)
+    this.isDragging.set(true)
     const thumbRect = thumbEl.getBoundingClientRect()
     const clickOffsetY = event.clientY - thumbRect.top
 
@@ -123,7 +126,8 @@ export class ScrollBarComponent {
       viewport.scrollTop = scrollPercent * maxScrollTop
     }
 
-    const onPointerUp = () => {
+    const onPointerUp = (e: PointerEvent) => {
+      thumbEl.releasePointerCapture(e.pointerId)
       this.isDragging.set(false)
       this.renderer.removeStyle(document.body, 'user-select')
       window.removeEventListener('pointermove', onPointerMove)
@@ -156,6 +160,7 @@ export class ScrollBarComponent {
 
     @if (showVBar()) {
       <app-scroll-bar
+        (pointerdown)="$event.stopPropagation()"
         [isVisible]="shouldDisplayBar()"
         [viewportElement]="viewport"
         [thumbSize]="vThumbSize()"
@@ -164,7 +169,8 @@ export class ScrollBarComponent {
     }
   `,
   host: {
-    style: 'display: block; position: relative; width: 100%; height: 100%; overflow: hidden;',
+    class: 'relative block w-full overflow-hidden',
+    '[style.height]': 'height()',
   },
   styles: [
     `
@@ -175,6 +181,7 @@ export class ScrollBarComponent {
   ],
 })
 export class ScrollAreaComponent {
+  height = input<string>()
   className = input<string>('')
   viewportRef = viewChild<ElementRef<HTMLElement>>('viewport')
 
