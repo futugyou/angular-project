@@ -37,7 +37,7 @@ import { cn } from '../../lib/utils'
         z-index: 1000;
         opacity: 0;
         visibility: hidden;
-        transition: opacity 0.5s ease;
+        transition: opacity 1s ease;
         pointer-events: none;
       }
       :host.show {
@@ -149,18 +149,13 @@ export class ScrollBarComponent {
       #viewport
       class="viewport-container"
       (scroll)="updateMetrics()"
-      style="width: 100%; height: 100%; overflow: auto; scrollbar-width: none; -ms-overflow-style: none;"
-      (mouseenter)="isHovered.set(true)"
-      (mouseleave)="isHovered.set(false)"
+      style="width: 100%; height: 100%; overflow: auto; scrollbar-width: none;"
     >
-      <div style="display: flow-root;">
-        <ng-content></ng-content>
-      </div>
+      <ng-content></ng-content>
     </div>
 
     @if (showVBar()) {
       <app-scroll-bar
-        (pointerdown)="$event.stopPropagation()"
         [isVisible]="shouldDisplayBar()"
         [viewportElement]="viewport"
         [thumbSize]="vThumbSize()"
@@ -169,8 +164,10 @@ export class ScrollBarComponent {
     }
   `,
   host: {
-    class: 'relative block w-full overflow-hidden',
+    '(mouseenter)': 'isHovered.set(true)',
+    '(mouseleave)': 'isHovered.set(false)',
     '[style.height]': 'height()',
+    class: 'relative block w-full overflow-hidden',
   },
   styles: [
     `
