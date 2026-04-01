@@ -94,14 +94,6 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
     JsonPipe,
   ],
   template: `
-    <app-scroll-area class="h-125">
-      <div #areaViewport class="scroll-container">
-        @for (item of chatItems(); track item.id) {
-          <div class="message">{{ item.id }}</div>
-        }
-        <div #messagesEnd></div>
-      </div>
-    </app-scroll-area>
     <div
       class="flex h-[calc(100vh-3.5rem)] flex-col relative"
       appDragDrop
@@ -238,7 +230,7 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
               variant="outline"
               size="lg"
               (click)="handleNewConversation()"
-              [disabled]="!selectedAgent || isSubmitting"
+              [disabled]="!selectedAgent() || isSubmitting()"
               class="whitespace-nowrap"
             >
               <ng-icon name="lucidePlus" class="h-4 w-4 mr-2" />
@@ -284,7 +276,7 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
         </div>
       }
 
-      <app-scroll-area class="flex-1 p-4 h-0" #scrollArea>
+      <app-scroll-area class="flex-1 p-4 h-0" #areaViewport>
         <div class="space-y-4">
           @for (group of processedChatItems(); track group.id) {
             <app-conversation-item-bubble
@@ -301,7 +293,7 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
             </div>
           }
 
-          @if (wasCancelled() && !isStreaming) {
+          @if (wasCancelled() && !isStreaming()) {
             <div class="px-4 py-2">
               <div
                 class="border rounded-lg border-orange-500/40 bg-orange-500/5 dark:bg-orange-500/10"

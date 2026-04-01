@@ -33,7 +33,7 @@ import { cn } from '../../lib/utils'
         right: 0;
         top: 0;
         height: 100%;
-        width: 10px;
+        width: 12px;
         z-index: 1000;
         opacity: 0;
         visibility: hidden;
