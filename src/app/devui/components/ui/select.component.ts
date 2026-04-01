@@ -46,12 +46,16 @@ export const SELECT_CONTENT_TOKEN = new InjectionToken<SelectContentProvider>(
     },
   ],
   template: `<ng-content></ng-content>`,
+  host: {
+    '[class]': 'selectClass()',
+  },
 })
 export class Select implements ControlValueAccessor {
   contentComponent = contentChild(SELECT_CONTENT_TOKEN)
 
   value = model<any>()
   disabledInput = input<boolean>(false, { alias: 'disabled' })
+  className = input<string>('')
   private _formDisabled = signal(false)
   isDisabled = computed(() => this.disabledInput() || this._formDisabled())
   isOpen = signal(false)
@@ -59,6 +63,8 @@ export class Select implements ControlValueAccessor {
 
   onChange: any = () => {}
   onTouched: any = () => {}
+
+  selectClass = () => cn('block', this.className())
 
   constructor() {
     effect(() => {
@@ -148,7 +154,7 @@ export class SelectTrigger {
 
   triggerClass = () =>
     cn(
-      'border-input data-[placeholder]:text-muted-foreground flex w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50',
+      'w-full border-input data-[placeholder]:text-muted-foreground flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50',
       this.size() === 'default' ? 'h-9' : 'h-8',
       this.className(),
     )
