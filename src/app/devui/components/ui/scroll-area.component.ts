@@ -35,6 +35,13 @@ import { cn } from '../../lib/utils'
         height: 100%;
         width: 10px;
         z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
+      :host.show {
+        opacity: 1;
+        pointer-events: auto;
       }
       .track-bg {
         position: relative;
@@ -54,17 +61,22 @@ import { cn } from '../../lib/utils'
       }
     `,
   ],
+  host: {
+    '[class.show]': 'isVisible() || isDragging()',
+  },
 })
 export class ScrollBarComponent {
   private renderer = inject(Renderer2)
   private el = inject(ElementRef)
 
+  isVisible = input<boolean>(false)
   orientation = input<'vertical' | 'horizontal'>('vertical')
   scrollProgress = input<number>(0)
   thumbSize = input<number>(0)
   viewportElement = input<HTMLElement | null>(null)
 
   thumb = viewChild<ElementRef<HTMLDivElement>>('thumb')
+  isDragging = signal(false)
 
   hostClasses = computed(() =>
     cn(
@@ -88,6 +100,7 @@ export class ScrollBarComponent {
 
   onPointerDown(event: PointerEvent) {
     event.stopPropagation()
+    this.isDragging.set(true)
     const viewport = this.viewportElement()
     const thumbEl = this.thumb()?.nativeElement
     const trackRect = this.el.nativeElement.getBoundingClientRect()
@@ -111,6 +124,7 @@ export class ScrollBarComponent {
     }
 
     const onPointerUp = () => {
+      this.isDragging.set(false)
       this.renderer.removeStyle(document.body, 'user-select')
       window.removeEventListener('pointermove', onPointerMove)
       window.removeEventListener('pointerup', onPointerUp)
@@ -132,6 +146,8 @@ export class ScrollBarComponent {
       class="viewport-container"
       (scroll)="updateMetrics()"
       style="width: 100%; height: 100%; overflow: auto; scrollbar-width: none; -ms-overflow-style: none;"
+      (mouseenter)="isHovered.set(true)"
+      (mouseleave)="isHovered.set(false)"
     >
       <div style="display: flow-root;">
         <ng-content></ng-content>
@@ -140,6 +156,7 @@ export class ScrollBarComponent {
 
     @if (showVBar()) {
       <app-scroll-bar
+        [isVisible]="shouldDisplayBar()"
         [viewportElement]="viewport"
         [thumbSize]="vThumbSize()"
         [scrollProgress]="vProgress()"
@@ -164,8 +181,10 @@ export class ScrollAreaComponent {
   vProgress = signal(0)
   vThumbSize = signal(0)
   showVBar = signal(false)
+  isHovered = signal(false)
 
   rootClasses = computed(() => cn('relative overflow-hidden group', this.className()))
+  shouldDisplayBar = computed(() => this.showVBar() && this.isHovered())
 
   constructor() {
     afterNextRender(() => {
