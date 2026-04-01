@@ -57,7 +57,7 @@ type Tab = 'docker' | 'azure'
         Get started with containerizing your agent for deployment.
       </app-dialog-description>
 
-      <app-dialog-close (onClose)="onOpenChange.emit(false)"></app-dialog-close>
+      <app-dialog-close (close)="onOpenChange.emit(false)"></app-dialog-close>
     </app-dialog-header>
 
     <app-dialog-content>

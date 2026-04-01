@@ -48,7 +48,7 @@ import type {
               this workflow run.
             </div>
           </div>
-          <app-dialog-close />
+          <app-dialog-close (close)="onOpenChange.emit(false)" />
         </div>
       </app-dialog-header>
 

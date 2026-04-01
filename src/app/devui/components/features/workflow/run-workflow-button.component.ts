@@ -153,7 +153,7 @@ import { WorkflowInputFormComponent } from './workflow-input-form.component'
       <app-dialog [open]="showModal()" (openChange)="showModal.set($event)">
         <app-dialog-header class="px-8 pt-6">
           <app-dialog-title>Configure Workflow Inputs</app-dialog-title>
-          <app-dialog-close (onClose)="showModal.set(false)" />
+          <app-dialog-close (close)="showModal.set(false)" />
         </app-dialog-header>
 
         <app-dialog-content
