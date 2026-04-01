@@ -60,7 +60,7 @@ type Tab = 'docker' | 'azure'
       <app-dialog-close (onClose)="onOpenChange.emit(false)"></app-dialog-close>
     </app-dialog-header>
 
-    <app-dialog-content class="w-200 max-w-[90vw]">
+    <app-dialog-content>
       <div class="flex border-b px-6">
         <button
           (click)="activeTab.set('docker')"

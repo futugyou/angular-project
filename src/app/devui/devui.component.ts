@@ -292,10 +292,12 @@ import { DevUIStore } from './stores'
                       [events]="debugEvents()"
                       [isStreaming]="false"
                       (onMinimize)="this.store.setDebugPanelMinimized(true)"
+                      [canMinimize]="true"
                     ></app-debug-panel>
 
                     <div class="border-t bg-muted/30 px-3 py-2.5 shrink-0">
                       <button
+                        [appButton]
                         class="w-full btn-outline btn-sm"
                         (click)="this.store.setShowDeployModal(true)"
                       >
@@ -314,6 +316,7 @@ import { DevUIStore } from './stores'
               } @else {
                 <div class="shrink-0">
                   <button
+                    [appButton]
                     class="h-full w-10 rounded-none border-l btn-ghost btn-sm"
                     (click)="this.store.setShowDebugPanel(true)"
                     title="Show debug panel"
