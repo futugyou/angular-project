@@ -1,4 +1,12 @@
-import { input, Component, effect, signal, computed } from '@angular/core'
+import {
+  Component,
+  signal,
+  computed,
+  Input,
+  inject,
+  ChangeDetectorRef,
+  OnInit,
+} from '@angular/core'
 import type { Node } from '@antv/x6'
 import { NgIconComponent } from '@ng-icons/core'
 import { cn, truncateText } from '../../../lib/utils'
@@ -117,42 +125,41 @@ export interface ExecutorNodeData {
     '[class.contents]': 'true',
   },
 })
-export class ExecutorNode {
-  node = input.required<Node>()
+export class ExecutorNodeComponent implements OnInit {
+  @Input() node!: Node
+  @Input() value!: ExecutorNodeData
 
   isSelected = signal(false)
   isOutputExpanded = signal(false)
+  private nodeTrigger = signal(0)
+  private cdr = inject(ChangeDetectorRef)
 
-  constructor() {
-    effect((onCleanup) => {
-      const n = this.node()
-      if (!n) return
+  ngOnInit() {
+    if (!this.node) return
+    this.nodeTrigger.update((v) => v + 1)
 
-      const model = n.model
-      if (model) {
-        const graph = model.graph
-        if (graph) {
-          this.isSelected.set(graph.isSelected(n))
-        }
-      }
-
-      const onSelected = () => this.isSelected.set(true)
-      const onUnselected = () => this.isSelected.set(false)
-
-      n.on('selected', onSelected)
-      n.on('unselected', onUnselected)
-
-      onCleanup(() => {
-        n.off('selected', onSelected)
-        n.off('unselected', onUnselected)
-      })
+    this.node.on('change:data', () => {
+      this.nodeTrigger.update((v) => v + 1)
+      this.cdr.detectChanges()
     })
+
+    this.node.on('selected', () => this.isSelected.set(true))
+    this.node.on('unselected', () => this.isSelected.set(false))
+
+    const graph = this.node.model?.graph
+    if (graph) {
+      this.isSelected.set(graph.isSelected(this.node))
+    }
   }
 
-  nodeData = computed<ExecutorNodeData>(() => this.node().getData() || {})
+  nodeData = computed<ExecutorNodeData>(() => {
+    this.nodeTrigger()
+    return this.value || this.node?.getData()?.ngArguments?.value || {}
+  })
 
   config = computed(() => {
     const state = this.nodeData().state
+    console.log(this.value)
     const configs: Record<ExecutorState, any> = {
       running: {
         borderColor: 'border-[#643FB2] dark:border-[#8B5CF6]',
