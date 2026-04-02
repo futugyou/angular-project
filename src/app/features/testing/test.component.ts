@@ -7,6 +7,10 @@ import {
   signal,
   effect,
   computed,
+  AfterViewInit,
+  Injector,
+  ElementRef,
+  ViewChild,
 } from '@angular/core'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { NgIconsModule, provideIcons } from '@ng-icons/core'
@@ -49,6 +53,9 @@ import { SwitchComponent } from '../../devui/components/ui/switch.component'
 import { TAB_COMPONENTS } from '../../devui/components/ui/tab.component'
 import { TooltipContent, TooltipDirective } from '../../devui/components/ui/tooltip.component'
 import { ToastContainer, ToastService } from '../../devui/components/ui/toast.component'
+import { register } from '@antv/x6-angular-shape'
+import { Graph } from '@antv/x6'
+import { ExecutorNodeComponent } from '../../devui/components/features/workflow/executor-v6node.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -97,7 +104,7 @@ import { ToastContainer, ToastService } from '../../devui/components/ui/toast.co
     ToastContainer,
   ],
 })
-export class TestingComponent implements OnInit {
+export class TestingComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {}
 
   showStatusBar = true
@@ -131,9 +138,57 @@ export class TestingComponent implements OnInit {
 
   currentTech = signal<string>('Angular')
 
-  constructor() {
+  constructor(private injector: Injector) {
     effect(() => {
       console.log('🚀 [Select Change]:', this.currentTech())
+    })
+  }
+
+  private graph: Graph | undefined
+
+  @ViewChild('container') container: ElementRef | undefined
+  ngAfterViewInit(): void {
+    this.graph = new Graph({
+      container: this.container!.nativeElement,
+      width: 1000,
+      height: 600,
+      background: {
+        color: '#F2F7FA',
+      },
+    })
+    register({
+      shape: 'custom-angular-template-node',
+      width: 120,
+      height: 20,
+      content: ExecutorNodeComponent,
+      injector: this.injector,
+    })
+    this.graph.addNode({
+      shape: 'custom-angular-template-node',
+      x: 100,
+      y: 100,
+      data: {
+        ngArguments: {
+          value: {
+            executorId: 'exec-88294-v5',
+            executorType: 'llm-inference-node',
+            name: 'GPT-4 Summary Generator',
+            state: 'running',
+            inputData: {
+              text: 'The quick brown fox jumps over the lazy dog.',
+              maxLength: 100,
+              temperature: 0.7,
+            },
+            outputData: null,
+            error: null,
+            isSelected: true,
+            isStartNode: false,
+            isEndNode: false,
+            layoutDirection: 'LR',
+            isStreaming: true,
+          },
+        },
+      },
     })
   }
 

@@ -159,7 +159,6 @@ export class ExecutorNodeComponent implements OnInit {
 
   config = computed(() => {
     const state = this.nodeData().state
-    console.log(this.value)
     const configs: Record<ExecutorState, any> = {
       running: {
         borderColor: 'border-[#643FB2] dark:border-[#8B5CF6]',
