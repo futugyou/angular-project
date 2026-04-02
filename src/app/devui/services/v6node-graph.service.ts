@@ -1,14 +1,5 @@
 import { Injectable, signal, computed, OnDestroy } from '@angular/core'
-import {
-  EdgeMetadata,
-  Graph,
-  Node,
-  NodeMetadata,
-  NodeProperties,
-  Cell,
-  Edge,
-  Model,
-} from '@antv/x6'
+import { EdgeMetadata, Graph, Node, NodeMetadata, NodeProperties, Cell, Edge } from '@antv/x6'
 import { DagreLayout } from '@antv/layout'
 import { NodeUpdate, WorkflowDump } from '../lib/layout'
 
@@ -27,7 +18,7 @@ export class GraphService implements OnDestroy {
       panning: { enabled: true, eventTypes: ['leftMouseDown'] },
       mousewheel: { enabled: true, modifiers: 'ctrl' },
       connecting: {
-        router: 'manhattan',
+        router: 'orth',
         connector: { name: 'rounded' },
         anchor: 'center',
         connectionPoint: 'anchor',
@@ -101,20 +92,59 @@ export class GraphService implements OnDestroy {
     if (!graph) return
 
     const dagreLayout = new DagreLayout({
-      // type: 'dagre',
-      // rankdir: direction,
-      // nodesep: 60,
-      // ranksep: 80,
+      type: 'dagre',
+      rankdir: direction,
+      nodesep: 60,
+      ranksep: 80,
     })
+    const nodes = graph.getNodes()
+    const edges = graph.getEdges()
 
-    const model = {
-      nodes: graph.getNodes().map((n) => n.toJSON()),
-      edges: graph.getEdges().map((e) => e.toJSON()),
+    const data = {
+      nodes: [],
+      edges: [],
     }
 
-    const newModel = dagreLayout.execute(model as any)
-    graph.fromJSON(newModel as any)
-    graph.centerContent()
+    nodes.forEach((node) => {
+      data.nodes!.push({
+        id: node.id,
+        shape: node.shape,
+        width: 180,
+        height: 60,
+        label: node.data.name,
+        attrs: {
+          body: {
+            fill: '#5F95FF',
+            stroke: 'transparent',
+          },
+          label: {
+            fill: '#ffffff',
+            textWrap: {
+              text: node.data.name,
+              width: -10,
+              ellipsis: true,
+              breakWord: false,
+            },
+          },
+        },
+      } as never)
+    })
+
+    edges.forEach((edge: any) => {
+      data.edges!.push({
+        source: edge.store.data.source.cell,
+        target: edge.store.data.target.cell,
+        attrs: {
+          line: {
+            stroke: '#A2B1C3',
+            strokeWidth: 2,
+          },
+        },
+      } as never)
+    })
+
+    const newCells = dagreLayout.layout(data)
+    graph.fromJSON(newCells)
   }
 
   render(nodes: NodeMetadata[], edges: EdgeMetadata[]) {
@@ -192,6 +222,14 @@ export class GraphService implements OnDestroy {
     if (!graph) return
     const edgeInstances = edges.map((e) => graph.createEdge(e))
     graph.resetCells([...graph.getNodes(), ...edgeInstances])
+  }
+
+  async setNodesAndEdges(nodes: NodeMetadata[], edges: EdgeMetadata[]) {
+    const graph = this.graph()
+    if (!graph) return
+    const nodeInstances = nodes.map((n) => graph.createNode(n))
+    const edgeInstances = edges.map((e) => graph.createEdge(e))
+    graph.resetCells([...nodeInstances, ...edgeInstances])
   }
 
   resetEdgesToDefault(consolidate: boolean) {

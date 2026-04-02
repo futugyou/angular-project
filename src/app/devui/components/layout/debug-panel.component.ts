@@ -1123,7 +1123,7 @@ export class EventExpandedContentComponent {
   template: `
     <div class="border-l-2 border-muted pl-3 py-2 hover:bg-muted/50 transition-colors">
       <div class="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-        <ng-icon [name]="Icon()" class="h-3 w-3" [ngClass]="[colorClass]" />
+        <ng-icon [name]="Icon()" class="h-3 w-3" [ngClass]="colorClass()" />
         <span class="font-mono">{{ timestamp() }}</span>
         <app-badge variant="outline" class="text-xs py-0">
           {{ streamEvent().type ? streamEvent().type.replace('response.', '') : 'unknown' }}

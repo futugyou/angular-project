@@ -299,6 +299,8 @@ export function convertWorkflowDumpToNodes(
   const nodes = executors.map((executor) => ({
     id: executor.id,
     type: 'executor',
+    width: 180,
+    height: 60,
     position: { x: 0, y: 0 }, // Will be set by layout algorithm
     data: {
       executorId: executor.id,
@@ -307,6 +309,8 @@ export function convertWorkflowDumpToNodes(
       state: 'pending' as ExecutorState,
       isStartNode: executor.id === startExecutorId,
       layoutDirection: layoutDirection || 'LR',
+      width: 180,
+      height: 60,
       onNodeClick,
     },
   }))

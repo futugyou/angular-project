@@ -16,7 +16,6 @@ import {
   computed,
 } from '@angular/core'
 import { Graph, Node } from '@antv/x6'
-import '@antv/x6-angular-shape'
 
 import { NgIconComponent } from '@ng-icons/core'
 import { ButtonDirective } from '../../../directives/button.directive'
@@ -408,7 +407,7 @@ export class TimelineResizeHandlerComponent {
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WorkflowFlowComponent implements OnInit, OnDestroy {
+export class WorkflowFlowComponent implements OnDestroy {
   protected readonly graphService = inject(GraphService)
 
   workflowDump = input.required<any>()
@@ -460,8 +459,9 @@ export class WorkflowFlowComponent implements OnInit, OnDestroy {
       const edges = this.initialEdges()
       if (nodes.length > 0 && this.graphService.isInitialized()) {
         untracked(() => {
-          this.graphService.setNodes(nodes)
-          this.graphService.setEdges(edges)
+          this.graphService.setNodesAndEdges(nodes, edges)
+          this.graphService.applyDagreLayout(this.layoutDirection())
+          this.graphService.fitView({ padding: 0.2, duration: 500 })
         })
       }
     })
@@ -503,13 +503,13 @@ export class WorkflowFlowComponent implements OnInit, OnDestroy {
         untracked(() => this.graphService.setNodesDraggable(!streaming))
       }
     })
-  }
 
-  ngOnInit() {
-    const el = this.container()
-    if (el) {
-      this.graphService.initGraph(el.nativeElement)
-    }
+    effect(() => {
+      const el = this.container()
+      if (el) {
+        this.graphService.initGraph(el.nativeElement)
+      }
+    })
   }
 
   ngOnDestroy() {
