@@ -2,12 +2,11 @@ import {
   Component,
   signal,
   computed,
-  Input,
   inject,
   ChangeDetectorRef,
   OnInit,
+  input,
 } from '@angular/core'
-import type { Node } from '@antv/x6'
 import { NgIconComponent } from '@ng-icons/core'
 import { cn, truncateText } from '../../../lib/utils'
 
@@ -45,7 +44,7 @@ export interface ExecutorNodeData {
             <div
               class="w-10 h-10 rounded-lg bg-gray-900/90 dark:bg-gray-800/90 flex items-center justify-center"
             >
-              @if (nodeData().isStartNode) {
+              @if (value().isStartNode) {
                 <ng-icon
                   name="lucideHome"
                   class="w-5 h-5 text-[#643FB2] dark:text-[#8B5CF6]"
@@ -62,7 +61,7 @@ export interface ExecutorNodeData {
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-1.5">
               <h3 class="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">
-                {{ nodeData().name || nodeData().executorId }}
+                {{ value().name || value().executorId }}
               </h3>
               @if (isRunning()) {
                 <ng-icon
@@ -72,9 +71,9 @@ export interface ExecutorNodeData {
                 ></ng-icon>
               }
             </div>
-            @if (nodeData().executorType) {
+            @if (value().executorType) {
               <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
-                {{ nodeData().executorType }}
+                {{ value().executorType }}
               </p>
             }
           </div>
@@ -90,18 +89,18 @@ export interface ExecutorNodeData {
                 [name]="isOutputExpanded() ? 'lucideChevronDown' : 'lucideChevronRight'"
                 class="w-3 h-3"
               ></ng-icon>
-              <span>{{ nodeData().error ? 'Show error' : 'Show output' }}</span>
+              <span>{{ value().error ? 'Show error' : 'Show output' }}</span>
             </button>
 
             @if (isOutputExpanded()) {
               <div class="mt-2">
-                @if (nodeData().error) {
+                @if (value().error) {
                   <div
                     class="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 p-2 rounded border border-red-200 dark:border-red-800 wrap-break-word max-h-32 overflow-auto"
                   >
                     {{ truncatedError() }}
                   </div>
-                } @else if (nodeData().outputData) {
+                } @else if (value().outputData) {
                   <div
                     class="text-xs text-gray-700 dark:text-gray-300 bg-muted/50 p-2 rounded border max-h-32 overflow-auto"
                   >
@@ -126,39 +125,30 @@ export interface ExecutorNodeData {
   },
 })
 export class ExecutorNodeComponent implements OnInit {
-  @Input() node!: Node
-  @Input() value!: ExecutorNodeData
-
+  // @Input() value!: ExecutorNodeData
+  value = input.required<ExecutorNodeData>()
   isSelected = signal(false)
   isOutputExpanded = signal(false)
   private nodeTrigger = signal(0)
   private cdr = inject(ChangeDetectorRef)
 
   ngOnInit() {
-    if (!this.node) return
-    this.nodeTrigger.update((v) => v + 1)
-
-    this.node.on('change:data', () => {
-      this.nodeTrigger.update((v) => v + 1)
-      this.cdr.detectChanges()
-    })
-
-    this.node.on('selected', () => this.isSelected.set(true))
-    this.node.on('unselected', () => this.isSelected.set(false))
-
-    const graph = this.node.model?.graph
-    if (graph) {
-      this.isSelected.set(graph.isSelected(this.node))
-    }
+    // if (!this.node) return
+    // this.nodeTrigger.update((v) => v + 1)
+    // this.node.on('change:data', () => {
+    //   this.nodeTrigger.update((v) => v + 1)
+    //   this.cdr.detectChanges()
+    // })
+    // this.node.on('selected', () => this.isSelected.set(true))
+    // this.node.on('unselected', () => this.isSelected.set(false))
+    // const graph = this.node.model?.graph
+    // if (graph) {
+    //   this.isSelected.set(graph.isSelected(this.node))
+    // }
   }
 
-  nodeData = computed<ExecutorNodeData>(() => {
-    this.nodeTrigger()
-    return this.value || this.node?.getData()?.ngArguments?.value || {}
-  })
-
   config = computed(() => {
-    const state = this.nodeData().state
+    const state = this.value().state
     const configs: Record<ExecutorState, any> = {
       running: {
         borderColor: 'border-[#643FB2] dark:border-[#8B5CF6]',
@@ -184,9 +174,9 @@ export class ExecutorNodeComponent implements OnInit {
     return configs[state] || configs.pending
   })
 
-  isRunning = computed(() => this.nodeData().state === 'running')
-  shouldAnimate = computed(() => this.isRunning() && (this.nodeData().isStreaming ?? true))
-  hasOutput = computed(() => !!(this.nodeData().outputData || this.nodeData().error))
+  isRunning = computed(() => this.value().state === 'running')
+  shouldAnimate = computed(() => this.isRunning() && (this.value().isStreaming ?? true))
+  hasOutput = computed(() => !!(this.value().outputData || this.value().error))
 
   containerClasses = computed(() =>
     cn(
@@ -197,12 +187,12 @@ export class ExecutorNodeComponent implements OnInit {
   )
 
   truncatedError = computed(() => {
-    const err = this.nodeData().error
+    const err = this.value().error
     return typeof err === 'string' ? truncateText(err, 200) : ''
   })
 
   formattedOutput = computed(() => {
-    const data = this.nodeData().outputData
+    const data = this.value().outputData
     if (!data) return ''
     try {
       return typeof data === 'string' ? data : JSON.stringify(data, null, 2)

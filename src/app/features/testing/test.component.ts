@@ -54,8 +54,11 @@ import { TAB_COMPONENTS } from '../../devui/components/ui/tab.component'
 import { TooltipContent, TooltipDirective } from '../../devui/components/ui/tooltip.component'
 import { ToastContainer, ToastService } from '../../devui/components/ui/toast.component'
 import { register } from '@antv/x6-angular-shape'
-import { Graph } from '@antv/x6'
-import { ExecutorNodeComponent } from '../../devui/components/features/workflow/executor-v6node.component'
+import { Graph, Node } from '@antv/x6'
+import {
+  ExecutorNodeComponent,
+  ExecutorState,
+} from '../../devui/components/features/workflow/executor-v6node.component'
 
 @Component({
   selector: 'app-testing-main',
@@ -144,7 +147,9 @@ export class TestingComponent implements OnInit, AfterViewInit {
     })
   }
 
+  // workflow node
   private graph: Graph | undefined
+  private testNode?: Node
 
   @ViewChild('container') container: ElementRef | undefined
   ngAfterViewInit(): void {
@@ -152,18 +157,22 @@ export class TestingComponent implements OnInit, AfterViewInit {
       container: this.container!.nativeElement,
       width: 1000,
       height: 600,
+      grid: true,
+      mousewheel: true,
       background: {
         color: '#F2F7FA',
       },
     })
+
     register({
       shape: 'custom-angular-template-node',
-      width: 120,
-      height: 20,
+      width: 260,
+      height: 160,
       content: ExecutorNodeComponent,
       injector: this.injector,
     })
-    this.graph.addNode({
+
+    this.testNode = this.graph.addNode({
       shape: 'custom-angular-template-node',
       x: 100,
       y: 100,
@@ -190,6 +199,42 @@ export class TestingComponent implements OnInit, AfterViewInit {
         },
       },
     })
+    this.graph.on('node:change:data', ({ node, current }) => {
+      console.log('🌐 Graph Level Event:', node.id, current)
+    })
+  }
+
+  updateWorkflowState(state: ExecutorState) {
+    if (!this.testNode || !this.graph) return
+
+    const currentData = this.testNode.getData()
+    this.testNode.setData({
+      ngArguments: {
+        value: {
+          ...currentData.ngArguments.value,
+          state: state,
+        },
+      },
+    })
+  }
+
+  toggleWorkflowOutput() {
+    if (!this.testNode) return
+
+    const currentData = this.testNode.getData()
+    const isFailed = Math.random() > 0.5
+
+    this.testNode.setData({
+      ngArguments: {
+        value: {
+          ...currentData.ngArguments.value,
+          state: isFailed ? 'failed' : 'completed',
+          outputData: isFailed ? null : { result: 'Success!', tokens: 1024, model: 'gpt-4' },
+          error: isFailed ? 'Error: Connection timeout to inference server at 10.0.4.1' : null,
+        },
+      },
+    })
+    this.testNode.resize(260, 220)
   }
 
   // card
