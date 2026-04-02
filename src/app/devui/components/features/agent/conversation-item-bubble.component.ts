@@ -104,7 +104,7 @@ import { ConversationMessage } from '../../../types/openai'
                   <div class="text-xs">
                     <div class="flex items-start gap-2">
                       <ng-icon
-                        name="lucWrench"
+                        name="lucideWrench"
                         class="h-3 w-3 text-muted-foreground mt-0.5 shrink-0"
                       />
                       <div class="flex-1 min-w-0">
@@ -121,7 +121,7 @@ import { ConversationMessage } from '../../../types/openai'
                           <div class="mt-1 pl-5 border-l-2 border-green-600/20">
                             <div class="flex items-start gap-1">
                               <ng-icon
-                                name="lucCheck"
+                                name="lucideCheck"
                                 class="h-3 w-3 text-green-600 mt-0.5 shrink-0"
                               />
                               <pre
@@ -136,7 +136,7 @@ import { ConversationMessage } from '../../../types/openai'
                           <div class="mt-1 pl-5 border-l-2 border-orange-600/20">
                             <div class="flex items-start gap-1">
                               <ng-icon
-                                name="lucX"
+                                name="lucideX"
                                 class="h-3 w-3 text-orange-600 mt-0.5 shrink-0"
                               />
                               <span class="font-mono text-orange-600">Failed</span>
@@ -177,8 +177,8 @@ export class ConversationItemBubble {
   isError = computed(() => this.asMessage()?.status === 'incomplete')
 
   iconName = computed(() => {
-    if (this.isUser()) return 'lucUser'
-    return this.isError() ? 'lucAlertCircle' : 'lucBot'
+    if (this.isUser()) return 'lucideUser'
+    return this.isError() ? 'lucideAlertCircle' : 'lucideBot'
   })
 
   avatarClass = computed(() => {
