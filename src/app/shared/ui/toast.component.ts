@@ -11,6 +11,8 @@ import {
   inject,
 } from '@angular/core'
 import { NgIconComponent } from '@ng-icons/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { timer, from, concatMap, tap, Subject, takeUntil, race, take } from 'rxjs'
 
 export interface ToastData {
   id: string
@@ -33,7 +35,7 @@ export interface ToastData {
     >
       <p [class]="'text-sm flex-1 ' + textColorClass()">{{ message() }}</p>
       <button
-        (click)="close()"
+        (click)="manualClose$.next()"
         [class]="'shrink-0 hover:opacity-70 transition-opacity ' + textColorClass()"
       >
         <ng-icon name="lucideX" class="h-4 w-4" />
@@ -50,46 +52,37 @@ export class Toast implements OnInit {
   private el = viewChild.required<ElementRef<HTMLElement>>('toastElement')
   private destroyRef = inject(DestroyRef)
 
-  private isClosing = false
-  private destroyed = false
-
-  constructor() {
-    this.destroyRef.onDestroy(() => {
-      this.destroyed = true
-    })
-  }
+  protected manualClose$ = new Subject<void>()
 
   ngOnInit() {
-    this.playAnimation([
-      { opacity: 0, transform: 'translateX(20px)' },
-      { opacity: 1, transform: 'translateX(0)' },
-    ])
+    this.playAnimation('in')
 
-    const timer = setTimeout(() => {
-      if (!this.destroyed) this.close()
-    }, this.duration())
-
-    this.destroyRef.onDestroy(() => clearTimeout(timer))
+    race([timer(this.duration()), this.manualClose$])
+      .pipe(
+        take(1),
+        takeUntilDestroyed(this.destroyRef),
+        concatMap(() => from(this.playAnimation('out').finished)),
+        tap(() => this.closeToast.emit()),
+      )
+      .subscribe()
   }
 
-  async close() {
-    if (this.isClosing || this.destroyed) return
-    this.isClosing = true
-
-    const animation = this.playAnimation([
-      { opacity: 1, transform: 'translateX(0)' },
-      { opacity: 0, transform: 'translateX(20px)' },
-    ])
-
-    try {
-      await animation.finished
-      if (!this.destroyed) {
-        this.closeToast.emit()
-      }
-    } catch (e) {}
+  close() {
+    this.manualClose$.next()
   }
 
-  private playAnimation(keyframes: Keyframe[]) {
+  private playAnimation(direction: 'in' | 'out') {
+    const keyframes =
+      direction === 'in'
+        ? [
+            { opacity: 0, transform: 'translateX(20px)' },
+            { opacity: 1, transform: 'translateX(0)' },
+          ]
+        : [
+            { opacity: 1, transform: 'translateX(0)' },
+            { opacity: 0, transform: 'translateX(20px)' },
+          ]
+
     return this.el().nativeElement.animate(keyframes, {
       duration: 300,
       easing: 'ease-in-out',
