@@ -7,6 +7,8 @@ import {
   signal,
   viewChild,
   type OnInit,
+  DestroyRef,
+  inject,
 } from '@angular/core'
 import { NgIconComponent } from '@ng-icons/core'
 
@@ -46,6 +48,16 @@ export class Toast implements OnInit {
   closeToast = output<void>()
 
   private el = viewChild.required<ElementRef<HTMLElement>>('toastElement')
+  private destroyRef = inject(DestroyRef)
+
+  private isClosing = false
+  private destroyed = false
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.destroyed = true
+    })
+  }
 
   ngOnInit() {
     this.playAnimation([
@@ -53,17 +65,28 @@ export class Toast implements OnInit {
       { opacity: 1, transform: 'translateX(0)' },
     ])
 
-    setTimeout(() => this.close(), this.duration())
+    const timer = setTimeout(() => {
+      if (!this.destroyed) this.close()
+    }, this.duration())
+
+    this.destroyRef.onDestroy(() => clearTimeout(timer))
   }
 
   async close() {
+    if (this.isClosing || this.destroyed) return
+    this.isClosing = true
+
     const animation = this.playAnimation([
       { opacity: 1, transform: 'translateX(0)' },
       { opacity: 0, transform: 'translateX(20px)' },
     ])
 
-    await animation.finished
-    this.closeToast.emit()
+    try {
+      await animation.finished
+      if (!this.destroyed) {
+        this.closeToast.emit()
+      }
+    } catch (e) {}
   }
 
   private playAnimation(keyframes: Keyframe[]) {
