@@ -60,6 +60,7 @@ import {
 } from '../devui/components/features/workflow/executor-v6node.component'
 import { ResponseInputContent } from '../devui/types/agent-framework'
 import { selfLoopConnector } from '../devui/components/features/workflow/self-loop-connector'
+import { selfLoopRouter } from '../devui/components/features/workflow/self-loop-router'
 
 @Component({
   selector: 'app-testing-main',
@@ -165,10 +166,33 @@ export class TestingComponent implements OnInit, AfterViewInit {
       },
     })
 
-    Graph.registerConnector('self-loop-connector', selfLoopConnector, true)
+    // Graph.registerConnector('self-loop-connector', selfLoopConnector, true)
+    // Graph.registerEdge('self-loop-edge', {
+    //   inherit: 'edge',
+    //   connector: { name: 'self-loop-connector' },
+    //   attrs: {
+    //     line: {
+    //       stroke: '#b1b1b7',
+    //       strokeWidth: 2,
+    //       targetMarker: {
+    //         name: 'block',
+    //         width: 10,
+    //         height: 8,
+    //       },
+    //     },
+    //   },
+    // })
+
+    Graph.registerRouter('self-loop-router', selfLoopRouter, true)
     Graph.registerEdge('self-loop-edge', {
       inherit: 'edge',
-      connector: { name: 'self-loop-connector' },
+      router: {
+        name: 'self-loop-router',
+      },
+      connector: {
+        name: 'smooth',
+        args: { radius: 20 },
+      },
       attrs: {
         line: {
           stroke: '#b1b1b7',
