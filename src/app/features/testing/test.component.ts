@@ -59,6 +59,7 @@ import {
   ExecutorState,
 } from '../devui/components/features/workflow/executor-v6node.component'
 import { ResponseInputContent } from '../devui/types/agent-framework'
+import { selfLoopConnector } from '../devui/components/features/workflow/self-loop-connector'
 
 @Component({
   selector: 'app-testing-main',
@@ -164,15 +165,33 @@ export class TestingComponent implements OnInit, AfterViewInit {
       },
     })
 
+    Graph.registerConnector('self-loop-connector', selfLoopConnector, true)
+    Graph.registerEdge('self-loop-edge', {
+      inherit: 'edge',
+      connector: { name: 'self-loop-connector' },
+      attrs: {
+        line: {
+          stroke: '#b1b1b7',
+          strokeWidth: 2,
+          targetMarker: {
+            name: 'block',
+            width: 10,
+            height: 8,
+          },
+        },
+      },
+    })
+
     register({
       shape: 'custom-angular-template-node',
-      width: 260,
-      height: 160,
       content: ExecutorNodeComponent,
       injector: this.injector,
+      width: 256,
+      height: 68,
     })
 
     this.testNode = this.graph.addNode({
+      id: 'node-a',
       shape: 'custom-angular-template-node',
       x: 100,
       y: 100,
@@ -199,6 +218,42 @@ export class TestingComponent implements OnInit, AfterViewInit {
         },
       },
     })
+
+    const nodeB = this.graph.addNode({
+      id: 'node-b',
+      shape: 'custom-angular-template-node',
+      x: 500,
+      y: 100,
+      data: {
+        ngArguments: {
+          value: {
+            executorId: 'exec-002',
+            executorType: 'llm-inference-node',
+            name: 'LLM Node B',
+            state: 'running',
+            layoutDirection: 'TB',
+          },
+        },
+      },
+    })
+    this.graph.addEdge({
+      shape: 'self-loop-edge',
+      source: 'node-a',
+      target: 'node-a',
+    })
+
+    this.graph.addEdge({
+      shape: 'self-loop-edge',
+      source: 'node-b',
+      target: 'node-b',
+    })
+
+    this.graph.addEdge({
+      shape: 'self-loop-edge',
+      source: 'node-a',
+      target: 'node-b',
+    })
+
     this.graph.on('node:change:data', ({ node, current }) => {
       console.log('🌐 Graph Level Event:', node.id, current)
     })
