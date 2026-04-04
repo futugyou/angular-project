@@ -19,7 +19,7 @@ export const routes: Routes = [
   {
     path: 'devui',
     // component: DevuiComponent,
-    loadComponent: () => import('./devui/devui.component').then((m) => m.DevuiComponent),
+    loadComponent: () => import('./features/devui/devui.component').then((m) => m.DevuiComponent),
     data: { forceFullScreen: true },
   },
   {

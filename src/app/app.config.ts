@@ -4,7 +4,7 @@ import { provideIcons } from '@ng-icons/core'
 import { APP_ICONS } from './app-icons'
 
 import { routes } from './app.routes'
-import { THEME_CONFIG } from './devui/services/theme.service'
+import { THEME_CONFIG } from './shared/services/theme.service'
 
 export const appConfig: ApplicationConfig = {
   providers: [

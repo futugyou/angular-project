@@ -15,7 +15,7 @@ import {
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { NgIconsModule, provideIcons } from '@ng-icons/core'
 import { lucideLogOut, lucideCheckCheck } from '@ng-icons/lucide'
-import { Alert, AlertTitle, AlertDescription } from '../../devui/components/ui/alert.component'
+import { Alert, AlertTitle, AlertDescription } from '@shared/ui/alert.component'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,38 +27,38 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuRadioItem,
   DropdownMenuSubTrigger,
-} from '../../devui/components/ui/dropdown.component'
-import { AttachmentGalleryComponent } from '../../devui/components/ui/attachment-gallery.component'
-import { AttachmentItem } from '../../devui/components/ui/types'
+} from '@shared/ui/dropdown.component'
+import { AttachmentGalleryComponent } from '@shared/ui/attachment-gallery.component'
+import { AttachmentItem } from '@shared/ui/types'
 import { MOCK_ATTACHMENTS } from './mock-data'
-import { BadgeComponent } from '../../devui/components/ui/badge.component'
-import { ButtonComponent } from '../../devui/components/ui/button.component'
-import { BadgeDirective } from '../../devui/directives/badge.directive'
-import { ButtonDirective } from '../../devui/directives/button.directive'
-import { SELECT_COMPONENTS } from '../../devui/components/ui/select.component'
-import { CARD_COMPONENTS } from '../../devui/components/ui/card.component'
-import { ChatMessageInputComponent } from '../../devui/components/ui/chat-message-input.component'
-import { ResponseInputContent } from '../../devui/types'
+import { BadgeComponent } from '@shared/ui/badge.component'
+import { ButtonComponent } from '@shared/ui/button.component'
+import { BadgeDirective } from '@shared/directives/badge.directive'
+import { ButtonDirective } from '@shared/directives/button.directive'
+import { SELECT_COMPONENTS } from '@shared/ui/select.component'
+import { CARD_COMPONENTS } from '@shared/ui/card.component'
+import { ChatMessageInputComponent } from '../devui/components/ui/chat-message-input.component'
 import { JsonPipe } from '@angular/common'
-import { CheckboxComponent } from '../../devui/components/ui/checkbox.component'
+import { CheckboxComponent } from '@shared/ui/checkbox.component'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { CodeBlock } from '../../devui/components/ui/code-block.component'
-import { DIALOG_COMPONENTS } from '../../devui/components/ui/dialog.component'
-import { FileUploadComponent } from '../../devui/components/ui/file-upload.component'
-import { LoadingStateComponent } from '../../devui/components/ui/loading-state.component'
-import { LoadingSpinnerComponent } from '../../devui/components/ui/loading-spinner.component'
-import { MarkdownRendererComponent } from '../../devui/components/ui/markdown-renderer.component'
-import { ScrollAreaComponent } from '../../devui/components/ui/scroll-area.component'
-import { SwitchComponent } from '../../devui/components/ui/switch.component'
-import { TAB_COMPONENTS } from '../../devui/components/ui/tab.component'
-import { TooltipContent, TooltipDirective } from '../../devui/components/ui/tooltip.component'
-import { ToastContainer, ToastService } from '../../devui/components/ui/toast.component'
+import { CodeBlock } from '@shared/ui/code-block.component'
+import { DIALOG_COMPONENTS } from '@shared/ui/dialog.component'
+import { FileUploadComponent } from '@shared/ui/file-upload.component'
+import { LoadingStateComponent } from '@shared/ui/loading-state.component'
+import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner.component'
+import { MarkdownRendererComponent } from '@shared/ui/markdown-renderer.component'
+import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
+import { SwitchComponent } from '@shared/ui/switch.component'
+import { TAB_COMPONENTS } from '@shared/ui/tab.component'
+import { TooltipContent, TooltipDirective } from '@shared/ui/tooltip.component'
+import { ToastContainer, ToastService } from '@shared/ui/toast.component'
 import { register } from '@antv/x6-angular-shape'
 import { Graph, Node } from '@antv/x6'
 import {
   ExecutorNodeComponent,
   ExecutorState,
-} from '../../devui/components/features/workflow/executor-v6node.component'
+} from '../devui/components/features/workflow/executor-v6node.component'
+import { ResponseInputContent } from '../devui/types/agent-framework'
 
 @Component({
   selector: 'app-testing-main',

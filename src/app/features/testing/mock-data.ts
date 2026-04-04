@@ -1,4 +1,4 @@
-import { AttachmentItem } from '../../devui/components/ui/types'
+import { AttachmentItem } from '../../shared/ui/types'
 
 export const MOCK_ATTACHMENTS: AttachmentItem[] = [
   {
