@@ -513,12 +513,22 @@ export class AgentViewModalComponent {
       const cachedKey = `devui_convs_${selectedAgent.id}`
       const updated = [newConversation, ...this.store.availableConversations]
       localStorage.setItem(cachedKey, JSON.stringify(updated))
+
+      this.store.addToast({
+        message: 'Conversation created successfully',
+        type: 'success',
+      })
     } catch (error) {
       // Failed to create conversation - show error to user
       const errorMessage = error instanceof Error ? error.message : 'Failed to create conversation'
       this.conversationError.set({
         message: errorMessage,
         type: 'conversation_creation_error',
+      })
+
+      this.store.addToast({
+        message: 'Failed to create conversation: ' + errorMessage,
+        type: 'error',
       })
     }
   }
@@ -546,10 +556,18 @@ export class AgentViewModalComponent {
         }
 
         this.debugEvent.emit('clear')
+        this.store.addToast({
+          message: 'Conversation deleted successfully',
+          type: 'success',
+        })
       }
     } catch (error) {
       console.error(error)
       alert('Failed to delete conversation. Please try again.')
+      this.store.addToast({
+        message: 'Failed to delete conversation with ID: ' + conversationId,
+        type: 'error',
+      })
     }
   }
 
@@ -578,7 +596,6 @@ export class AgentViewModalComponent {
     if (isReloading || !selectedAgent) return
 
     this.isReloading.set(true)
-    const addToast = this.store.addToast
     const updateAgent = this.store.updateAgent
 
     try {
@@ -592,14 +609,14 @@ export class AgentViewModalComponent {
       updateAgent(updatedAgent)
 
       // Show success toast
-      addToast({
+      this.store.addToast({
         message: `${selectedAgent.name} has been reloaded successfully`,
         type: 'success',
       })
     } catch (error) {
       // Show error toast
       const errorMessage = error instanceof Error ? error.message : 'Failed to reload entity'
-      addToast({
+      this.store.addToast({
         message: `Failed to reload: ${errorMessage}`,
         type: 'error',
         duration: 6000,

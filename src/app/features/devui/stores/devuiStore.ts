@@ -190,9 +190,12 @@ interface DevUIActions {
 }
 
 import { Injectable, signal, effect, inject } from '@angular/core'
+import { ToastService } from '@src/app/shared/ui/toast.component'
 
 @Injectable({ providedIn: 'root' })
 export class DevUIStore implements DevUIActions {
+  protected toastService = inject(ToastService)
+
   private _state = signal<DevUIState>({
     agents: [],
     workflows: [],
@@ -551,16 +554,20 @@ export class DevUIStore implements DevUIActions {
       toasts: [
         ...this.toasts,
         {
-          id: `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: `toast-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
           type: toast.type || 'info',
           duration: toast.duration || 4000,
           ...toast,
         },
       ],
     })
+    this.toastService.show(toast.message, toast.type || 'info', toast.duration || 4000)
   }
 
-  removeToast = (id: string) => this.patch({ toasts: this.toasts.filter((t: any) => t.id !== id) })
+  removeToast = (id: string) => {
+    this.patch({ toasts: this.toasts.filter((t: any) => t.id !== id) })
+    this.toastService.remove(id)
+  }
 
   setOAIMode = (config: any) => {
     const s = this._state()

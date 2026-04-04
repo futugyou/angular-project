@@ -12,7 +12,7 @@ import {
 } from '@angular/core'
 import { NgIconComponent } from '@ng-icons/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { timer, from, concatMap, tap, Subject, takeUntil, race, take } from 'rxjs'
+import { timer, from, concatMap, tap, Subject, race, take } from 'rxjs'
 
 export interface ToastData {
   id: string
