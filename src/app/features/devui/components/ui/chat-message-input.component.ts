@@ -18,7 +18,7 @@ import {
 } from '../../../devui/types'
 
 import { AttachmentItem } from '../../../../shared/ui/types'
-import { AttachmentGalleryComponent } from '../../../../shared/ui/attachment-gallery.component'
+import { AttachmentGalleryComponent } from '../../../../shared/ui/attachment'
 import { ButtonDirective } from '../../../../shared/directives/button.directive'
 import { FileUploadComponent } from '../../../../shared/ui/file-upload.component'
 import { TextareaComponent } from '../../../../shared/ui/textarea.component'

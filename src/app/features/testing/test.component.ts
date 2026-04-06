@@ -28,7 +28,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSubTrigger,
 } from '@shared/ui/dropdown.component'
-import { AttachmentGalleryComponent } from '@shared/ui/attachment-gallery.component'
+import { AttachmentGalleryComponent } from '@src/app/shared/ui/attachment'
 import { AttachmentItem } from '@shared/ui/types'
 import { MOCK_ATTACHMENTS } from './mock-data'
 import { BadgeComponent } from '@shared/ui/badge.component'

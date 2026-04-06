@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core'
-import { AttachmentItem } from './types'
+import { AttachmentItem } from '../types'
 import { AttachmentPreviewComponent } from './attachment-preview.component'
 
 @Component({
