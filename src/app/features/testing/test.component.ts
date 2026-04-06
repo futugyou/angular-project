@@ -15,7 +15,7 @@ import {
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { NgIconsModule, provideIcons } from '@ng-icons/core'
 import { lucideLogOut, lucideCheckCheck } from '@ng-icons/lucide'
-import { Alert, AlertTitle, AlertDescription } from '@shared/ui/alert.component'
+import { Alert, AlertTitle, AlertDescription } from '@src/app/shared/ui/alert'
 import {
   DropdownMenu,
   DropdownMenuContent,

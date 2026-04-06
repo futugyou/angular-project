@@ -1,23 +1,18 @@
-import { TestBed } from '@angular/core/testing'
+import { render, screen, waitFor } from '@testing-library/angular'
 import { App } from './app'
+import { provideRouter } from '@angular/router'
+import { provideIcons } from '@ng-icons/core'
+import { lucideHome } from '@ng-icons/lucide'
 
-describe('App', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [App],
-    }).compileComponents()
-  })
+describe('App Component Navigation', () => {
+  it('The Home link should be displayed after rendering is complete.', async () => {
+    await render(App, {
+      providers: [provideRouter([{ path: '', component: App }]), provideIcons({ lucideHome })],
+    })
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(App)
-    const app = fixture.componentInstance
-    expect(app).toBeTruthy()
-  })
+    const homeLink = await screen.findByRole('link', { name: /home/i })
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(App)
-    fixture.detectChanges()
-    const compiled = fixture.nativeElement as HTMLElement
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, angular-project')
+    expect(homeLink).toBeTruthy()
+    expect(homeLink.getAttribute('href')).toBe('/')
   })
 })

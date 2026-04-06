@@ -1,5 +1,5 @@
 import { Component, input, computed } from '@angular/core'
-import { cn } from '../utils/utils'
+import { cn } from '../../utils/utils'
 
 @Component({
   selector: 'app-alert',

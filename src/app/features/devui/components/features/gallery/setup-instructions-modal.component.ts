@@ -5,7 +5,7 @@ import { SampleEntity } from '../../../data/gallery/sample-entities'
 
 import { ButtonDirective } from '@shared/directives/button.directive'
 import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
-import { Alert, AlertDescription, AlertTitle } from '@shared/ui/alert.component'
+import { Alert, AlertDescription, AlertTitle } from '@src/app/shared/ui/alert'
 import {
   DialogCloseComponent,
   DialogComponent,
