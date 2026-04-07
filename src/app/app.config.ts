@@ -1,8 +1,4 @@
-import {
-  ApplicationConfig,
-  provideZoneChangeDetection,
-  provideZonelessChangeDetection,
-} from '@angular/core'
+import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core'
 import { provideRouter } from '@angular/router'
 import { provideIcons } from '@ng-icons/core'
 import { APP_ICONS } from './app-icons'
@@ -21,9 +17,7 @@ export const appConfig: ApplicationConfig = {
         disableTransitionOnChange: true,
       },
     },
-    provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-
     provideIcons(APP_ICONS),
     provideZonelessChangeDetection(),
   ],

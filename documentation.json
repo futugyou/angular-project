@@ -5588,102 +5588,7 @@
         },
         {
             "name": "IOrderRowDetail",
-            "id": "interface-IOrderRowDetail-9aea56e7db616ac35ae80bbf2a5033ab627d96256934fa625d0b4b6f7275324ce9b595e258a77727f3145607bc6bebbc1780cd5ceb53e3f08819c8cd016dd3d5",
-            "file": "src/app/features/orders/order.model.ts",
-            "deprecated": false,
-            "deprecationMessage": "",
-            "type": "interface",
-            "sourceCode": "export interface IOrderSearch {\r\n  pageIndex: number\r\n  pageSize: number\r\n  userName: string\r\n  tels: string\r\n  price: string\r\n  startTime: string\r\n  endTime: string\r\n}\r\n\r\nexport interface IOrderRow {\r\n  id: string\r\n  orderCode: string\r\n  orderUser: string\r\n  orderTime: string\r\n  orderTel: string\r\n  orderPrice: number\r\n  remark: string\r\n  payName: string\r\n  payClient: string\r\n  status: number\r\n}\r\n\r\nexport interface IOrderRowDetail {\r\n  index: number\r\n  productName: string\r\n  productCode: string\r\n  count: number\r\n  unitName: string\r\n  price: number\r\n  remark: string\r\n  allPrice: number\r\n}\r\n",
-            "properties": [
-                {
-                    "name": "allPrice",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "number",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 32
-                },
-                {
-                    "name": "count",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "number",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 28
-                },
-                {
-                    "name": "index",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "number",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 25
-                },
-                {
-                    "name": "price",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "number",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 30
-                },
-                {
-                    "name": "productCode",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "string",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 27
-                },
-                {
-                    "name": "productName",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "string",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 26
-                },
-                {
-                    "name": "remark",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "string",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 31
-                },
-                {
-                    "name": "unitName",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "string",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 29
-                }
-            ],
-            "indexSignatures": [],
-            "kind": 172,
-            "methods": [],
-            "extends": []
-        },
-        {
-            "name": "IOrderRowDetail",
-            "id": "interface-IOrderRowDetail-96af6a1f5820ff3c595fc2c1be96ab701891e051b919b943ff845bd4d24226dfd596565bfb4a15f9ec761e36918b9ca10240a5fd761828adb5c4490388209c11-1",
+            "id": "interface-IOrderRowDetail-96af6a1f5820ff3c595fc2c1be96ab701891e051b919b943ff845bd4d24226dfd596565bfb4a15f9ec761e36918b9ca10240a5fd761828adb5c4490388209c11",
             "file": "src/app/features/order-detail/model.ts",
             "deprecated": false,
             "deprecationMessage": "",
@@ -5769,6 +5674,101 @@
                     "optional": false,
                     "description": "",
                     "line": 6
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 172,
+            "methods": [],
+            "extends": []
+        },
+        {
+            "name": "IOrderRowDetail",
+            "id": "interface-IOrderRowDetail-9aea56e7db616ac35ae80bbf2a5033ab627d96256934fa625d0b4b6f7275324ce9b595e258a77727f3145607bc6bebbc1780cd5ceb53e3f08819c8cd016dd3d5-1",
+            "file": "src/app/features/orders/order.model.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "export interface IOrderSearch {\r\n  pageIndex: number\r\n  pageSize: number\r\n  userName: string\r\n  tels: string\r\n  price: string\r\n  startTime: string\r\n  endTime: string\r\n}\r\n\r\nexport interface IOrderRow {\r\n  id: string\r\n  orderCode: string\r\n  orderUser: string\r\n  orderTime: string\r\n  orderTel: string\r\n  orderPrice: number\r\n  remark: string\r\n  payName: string\r\n  payClient: string\r\n  status: number\r\n}\r\n\r\nexport interface IOrderRowDetail {\r\n  index: number\r\n  productName: string\r\n  productCode: string\r\n  count: number\r\n  unitName: string\r\n  price: number\r\n  remark: string\r\n  allPrice: number\r\n}\r\n",
+            "properties": [
+                {
+                    "name": "allPrice",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "number",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 32
+                },
+                {
+                    "name": "count",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "number",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 28
+                },
+                {
+                    "name": "index",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "number",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 25
+                },
+                {
+                    "name": "price",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "number",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 30
+                },
+                {
+                    "name": "productCode",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 27
+                },
+                {
+                    "name": "productName",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 26
+                },
+                {
+                    "name": "remark",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 31
+                },
+                {
+                    "name": "unitName",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 29
                 }
             ],
             "indexSignatures": [],
@@ -40888,7 +40888,7 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "ApplicationConfig",
-                "defaultValue": "{\r\n  providers: [\r\n    {\r\n      provide: THEME_CONFIG,\r\n      useValue: {\r\n        attribute: 'class',\r\n        defaultTheme: 'dark',\r\n        enableSystem: true,\r\n        disableTransitionOnChange: true,\r\n      },\r\n    },\r\n    provideZoneChangeDetection({ eventCoalescing: true }),\r\n    provideRouter(routes),\r\n\r\n    provideIcons(APP_ICONS),\r\n    provideZonelessChangeDetection(),\r\n  ],\r\n}"
+                "defaultValue": "{\r\n  providers: [\r\n    {\r\n      provide: THEME_CONFIG,\r\n      useValue: {\r\n        attribute: 'class',\r\n        defaultTheme: 'dark',\r\n        enableSystem: true,\r\n        disableTransitionOnChange: true,\r\n      },\r\n    },\r\n    provideRouter(routes),\r\n    provideIcons(APP_ICONS),\r\n    provideZonelessChangeDetection(),\r\n  ],\r\n}"
             },
             {
                 "name": "badgeVariants",
@@ -43789,7 +43789,7 @@
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "ApplicationConfig",
-                    "defaultValue": "{\r\n  providers: [\r\n    {\r\n      provide: THEME_CONFIG,\r\n      useValue: {\r\n        attribute: 'class',\r\n        defaultTheme: 'dark',\r\n        enableSystem: true,\r\n        disableTransitionOnChange: true,\r\n      },\r\n    },\r\n    provideZoneChangeDetection({ eventCoalescing: true }),\r\n    provideRouter(routes),\r\n\r\n    provideIcons(APP_ICONS),\r\n    provideZonelessChangeDetection(),\r\n  ],\r\n}"
+                    "defaultValue": "{\r\n  providers: [\r\n    {\r\n      provide: THEME_CONFIG,\r\n      useValue: {\r\n        attribute: 'class',\r\n        defaultTheme: 'dark',\r\n        enableSystem: true,\r\n        disableTransitionOnChange: true,\r\n      },\r\n    },\r\n    provideRouter(routes),\r\n    provideIcons(APP_ICONS),\r\n    provideZonelessChangeDetection(),\r\n  ],\r\n}"
                 }
             ],
             "src/app/shared/utils/badge.variants.ts": [
