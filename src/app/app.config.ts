@@ -1,4 +1,8 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core'
+import {
+  ApplicationConfig,
+  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
+} from '@angular/core'
 import { provideRouter } from '@angular/router'
 import { provideIcons } from '@ng-icons/core'
 import { APP_ICONS } from './app-icons'
@@ -21,5 +25,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
 
     provideIcons(APP_ICONS),
+    provideZonelessChangeDetection(),
   ],
 }
