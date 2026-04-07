@@ -8,7 +8,7 @@ import {
   DialogCloseComponent,
 } from '@shared/ui/dialog.component'
 import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
-import { BadgeComponent } from '@shared/ui/badge.component'
+import { BadgeComponent } from '@src/app/shared/ui/badge'
 import { ApiClient } from '../../../services/api.service'
 import { cn } from '@shared/utils/utils'
 import { DatePipe, JsonPipe } from '@angular/common'

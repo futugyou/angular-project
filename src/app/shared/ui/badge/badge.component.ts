@@ -1,6 +1,6 @@
 import { Component, input, computed } from '@angular/core'
-import { cn } from '../utils/utils'
-import { BadgeVariantProps, badgeVariants } from '../utils/badge.variants'
+import { cn } from '../../utils/utils'
+import { BadgeVariantProps, badgeVariants } from '../../utils/badge.variants'
 @Component({
   selector: 'app-badge',
   standalone: true,

@@ -18,7 +18,7 @@ import {
   TabsListComponent,
   TabsTriggerComponent,
 } from '@shared/ui/tab.component'
-import { BadgeComponent } from '@shared/ui/badge.component'
+import { BadgeComponent } from '@src/app/shared/ui/badge'
 import { ButtonComponent } from '@shared/ui/button.component'
 import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
 

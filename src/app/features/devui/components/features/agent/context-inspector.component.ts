@@ -11,7 +11,7 @@ import {
 } from '@angular/core'
 import { NgTemplateOutlet, NgClass } from '@angular/common'
 import { TooltipDirective, TooltipContent } from '@shared/ui/tooltip.component'
-import { BadgeComponent } from '@shared/ui/badge.component'
+import { BadgeComponent } from '@src/app/shared/ui/badge'
 import { CheckboxComponent } from '@shared/ui/checkbox.component'
 import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
 import {

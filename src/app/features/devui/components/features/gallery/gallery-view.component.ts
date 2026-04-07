@@ -16,7 +16,7 @@ import {
   getDifficultyColor,
 } from '../../../data/gallery/sample-entities'
 
-import { BadgeComponent } from '@shared/ui/badge.component'
+import { BadgeComponent } from '@src/app/shared/ui/badge'
 import {
   CardDirective,
   CardContentDirective,

@@ -12,7 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from '@shared/ui/dropdown.component'
-import { BadgeComponent } from '@shared/ui/badge.component'
+import { BadgeComponent } from '@src/app/shared/ui/badge'
 import { ChatMessageInputComponent } from '@src/app/features/devui/components/ui/chat-message-input.component'
 import {
   DialogComponent,

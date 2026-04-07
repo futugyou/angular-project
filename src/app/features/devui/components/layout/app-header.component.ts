@@ -5,7 +5,7 @@ import { DevUIStore } from '../../stores/devuiStore'
 import type { AgentInfo, WorkflowInfo } from '../../types'
 
 import { ButtonDirective } from '@shared/directives/button.directive'
-import { BadgeComponent } from '@shared/ui/badge.component'
+import { BadgeComponent } from '@src/app/shared/ui/badge'
 import { ModeToggle } from '@shared/ui/mode-toggle.component'
 import { EntitySelector } from './entity-selector.component'
 
