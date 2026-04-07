@@ -23586,7 +23586,82 @@
         },
         {
             "name": "DetailCardComponent",
-            "id": "component-DetailCardComponent-fb42d86bb4ba8ed834b764feed7983e7f6a893ca2eb67e998ab4befabf81b75583d866c5ae39c4b47f839a9e231501e7d3829021d16a4e0835f0f1865f7dd7c7",
+            "id": "component-DetailCardComponent-251a54537b972702a9846ce32d48d0899b970a9de2e9cdc4bcce2bbba78d35d1d2462f8330da37f83e80324ca84e1dbd49360fd790d72a8ac9514133355b2a7b",
+            "file": "src/app/features/devui/components/features/agent/agent-details-modal.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-detail-card",
+            "styleUrls": [],
+            "styles": [],
+            "template": "<div [class]=\"'border rounded-lg p-4 bg-card ' + className()\">\n  <div class=\"flex items-center gap-2 mb-3\">\n    <ng-icon [name]=\"iconName()\" class=\"h-4 w-4 text-muted-foreground\" />\n    <h3 class=\"text-sm font-semibold text-foreground\">{{ title() }}</h3>\n  </div>\n  <div class=\"text-sm text-muted-foreground\">\n    <ng-content />\n  </div>\n</div>\n",
+            "templateUrl": [],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [
+                {
+                    "name": "className",
+                    "defaultValue": "''",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 31,
+                    "required": false
+                },
+                {
+                    "name": "iconName",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 30,
+                    "required": true
+                },
+                {
+                    "name": "title",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 29,
+                    "required": true
+                }
+            ],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [],
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [
+                {
+                    "name": "NgIconComponent",
+                    "type": "component"
+                }
+            ],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { Component, computed, input, output } from '@angular/core'\r\nimport { NgIconComponent, provideIcons } from '@ng-icons/core'\r\nimport { AgentInfo } from '../../../types'\r\nimport {\r\n  DialogComponent,\r\n  DialogContentComponent,\r\n  DialogHeaderComponent,\r\n  DialogTitleComponent,\r\n  DialogCloseComponent,\r\n} from '@shared/ui/dialog.component'\r\n\r\n@Component({\r\n  selector: 'app-detail-card',\r\n  standalone: true,\r\n  imports: [NgIconComponent],\r\n  template: `\r\n    <div [class]=\"'border rounded-lg p-4 bg-card ' + className()\">\r\n      <div class=\"flex items-center gap-2 mb-3\">\r\n        <ng-icon [name]=\"iconName()\" class=\"h-4 w-4 text-muted-foreground\" />\r\n        <h3 class=\"text-sm font-semibold text-foreground\">{{ title() }}</h3>\r\n      </div>\r\n      <div class=\"text-sm text-muted-foreground\">\r\n        <ng-content />\r\n      </div>\r\n    </div>\r\n  `,\r\n})\r\nexport class DetailCardComponent {\r\n  title = input.required<string>()\r\n  iconName = input.required<string>()\r\n  className = input<string>('')\r\n}\r\n\r\n@Component({\r\n  selector: 'app-agent-details-modal',\r\n  standalone: true,\r\n  imports: [\r\n    NgIconComponent,\r\n    DetailCardComponent,\r\n    DialogComponent,\r\n    DialogContentComponent,\r\n    DialogHeaderComponent,\r\n    DialogTitleComponent,\r\n    DialogCloseComponent,\r\n  ],\r\n  template: `\r\n    <app-dialog [open]=\"open()\" (openChange)=\"onOpenChange.emit($event)\">\r\n      @let info = agent();\r\n\r\n      <app-dialog-header class=\"px-6 pt-6 shrink-0\">\r\n        <app-dialog-title>Agent Details</app-dialog-title>\r\n        <app-dialog-close (close)=\"onOpenChange.emit(false)\" />\r\n      </app-dialog-header>\r\n\r\n      <app-dialog-content class=\"max-w-4xl max-h-[90vh] flex flex-col\">\r\n        <div class=\"px-6 pb-6 overflow-y-auto flex-1\">\r\n          <div class=\"mb-6\">\r\n            <div class=\"flex items-center gap-3 mb-2\">\r\n              <ng-icon name=\"lucideBot\" class=\"h-6 w-6 text-primary\" />\r\n              <h2 class=\"text-xl font-semibold text-foreground\">\r\n                {{ info.name || info.id }}\r\n              </h2>\r\n            </div>\r\n            @if (info.description) {\r\n              <p class=\"text-muted-foreground\">{{ info.description }}</p>\r\n            }\r\n          </div>\r\n\r\n          <div class=\"h-px bg-border mb-6\"></div>\r\n\r\n          <div class=\"grid grid-cols-1 md:grid-cols-2 gap-4 mb-4\">\r\n            @if (info.model_id || info.chat_client_type) {\r\n              <app-detail-card title=\"Model & Client\" iconName=\"lucideBot\">\r\n                <div class=\"space-y-1\">\r\n                  @if (info.model_id) {\r\n                    <div class=\"font-mono text-foreground\">{{ info.model_id }}</div>\r\n                  }\r\n                  @if (info.chat_client_type) {\r\n                    <div class=\"text-xs\">({{ info.chat_client_type }})</div>\r\n                  }\r\n                </div>\r\n              </app-detail-card>\r\n            }\r\n\r\n            <app-detail-card title=\"Source\" [iconName]=\"sourceIcon()\">\r\n              <div class=\"space-y-1\">\r\n                <div class=\"text-foreground\">{{ sourceLabel() }}</div>\r\n                @if (info.module_path) {\r\n                  <div class=\"font-mono text-xs break-all\">{{ info.module_path }}</div>\r\n                }\r\n              </div>\r\n            </app-detail-card>\r\n\r\n            <app-detail-card\r\n              title=\"Environment\"\r\n              [iconName]=\"info.has_env ? 'lucideXCircle' : 'lucideCheckCircle'\"\r\n              className=\"md:col-span-2\"\r\n            >\r\n              <div\r\n                [class]=\"\r\n                  info.has_env\r\n                    ? 'text-orange-600 dark:text-orange-400'\r\n                    : 'text-green-600 dark:text-green-400'\r\n                \"\r\n              >\r\n                {{\r\n                  info.has_env\r\n                    ? 'Requires environment variables'\r\n                    : 'No environment variables required'\r\n                }}\r\n              </div>\r\n            </app-detail-card>\r\n          </div>\r\n\r\n          @if (info.instructions; as inst) {\r\n            <app-detail-card title=\"Instructions\" iconName=\"lucideFileText\" className=\"mb-4\">\r\n              <div class=\"text-sm text-foreground leading-relaxed whitespace-pre-wrap\">\r\n                {{ inst }}\r\n              </div>\r\n            </app-detail-card>\r\n          }\r\n\r\n          <div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\">\r\n            @if (info.tools; as tools) {\r\n              <app-detail-card [title]=\"'Tools (' + tools.length + ')'\" iconName=\"lucidePackage\">\r\n                <ul class=\"space-y-1\">\r\n                  @for (tool of tools; track $index) {\r\n                    <li class=\"font-mono text-xs text-foreground\">• {{ tool }}</li>\r\n                  }\r\n                </ul>\r\n              </app-detail-card>\r\n            }\r\n\r\n            @if (info.middleware; as mws) {\r\n              <app-detail-card\r\n                [title]=\"'Middlewares (' + mws.length + ')'\"\r\n                iconName=\"lucidePackage\"\r\n              >\r\n                <ul class=\"space-y-1\">\r\n                  @for (mw of mws; track $index) {\r\n                    <li class=\"font-mono text-xs text-foreground\">• {{ mw }}</li>\r\n                  }\r\n                </ul>\r\n              </app-detail-card>\r\n            }\r\n\r\n            @if (info.context_provider; as provider) {\r\n              <app-detail-card\r\n                title=\"Context Provider\"\r\n                iconName=\"lucideDatabase\"\r\n                [className]=\"\r\n                  !info.middleware || info.middleware.length === 0 ? 'md:col-start-2' : ''\r\n                \"\r\n              >\r\n                <div class=\"font-mono text-xs text-foreground\">{{ provider }}</div>\r\n              </app-detail-card>\r\n            }\r\n          </div>\r\n        </div>\r\n      </app-dialog-content>\r\n    </app-dialog>\r\n  `,\r\n})\r\nexport class AgentDetailsModalComponent {\r\n  // Signal Inputs\r\n  agent = input.required<AgentInfo>()\r\n  open = input.required<boolean>()\r\n\r\n  // Signal Output\r\n  onOpenChange = output<boolean>()\r\n\r\n  sourceIcon = computed(() => {\r\n    const s = this.agent().source\r\n    if (s === 'directory') return 'lucideFolderOpen'\r\n    if (s === 'in_memory') return 'lucideDatabase'\r\n    return 'lucideGlobe'\r\n  })\r\n\r\n  sourceLabel = computed(() => {\r\n    const s = this.agent().source\r\n    if (s === 'directory') return 'Local'\r\n    if (s === 'in_memory') return 'In-Memory'\r\n    return 'Gallery'\r\n  })\r\n}\r\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
+            "extends": []
+        },
+        {
+            "name": "DetailCardComponent",
+            "id": "component-DetailCardComponent-fb42d86bb4ba8ed834b764feed7983e7f6a893ca2eb67e998ab4befabf81b75583d866c5ae39c4b47f839a9e231501e7d3829021d16a4e0835f0f1865f7dd7c7-1",
             "file": "src/app/features/devui/components/features/workflow/workflow-details-modal.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -23659,81 +23734,6 @@
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "\n      :host {\n        display: block;\n      }\n    \n",
-            "extends": []
-        },
-        {
-            "name": "DetailCardComponent",
-            "id": "component-DetailCardComponent-251a54537b972702a9846ce32d48d0899b970a9de2e9cdc4bcce2bbba78d35d1d2462f8330da37f83e80324ca84e1dbd49360fd790d72a8ac9514133355b2a7b-1",
-            "file": "src/app/features/devui/components/features/agent/agent-details-modal.component.ts",
-            "encapsulation": [],
-            "entryComponents": [],
-            "inputs": [],
-            "outputs": [],
-            "providers": [],
-            "selector": "app-detail-card",
-            "styleUrls": [],
-            "styles": [],
-            "template": "<div [class]=\"'border rounded-lg p-4 bg-card ' + className()\">\n  <div class=\"flex items-center gap-2 mb-3\">\n    <ng-icon [name]=\"iconName()\" class=\"h-4 w-4 text-muted-foreground\" />\n    <h3 class=\"text-sm font-semibold text-foreground\">{{ title() }}</h3>\n  </div>\n  <div class=\"text-sm text-muted-foreground\">\n    <ng-content />\n  </div>\n</div>\n",
-            "templateUrl": [],
-            "viewProviders": [],
-            "hostDirectives": [],
-            "inputsClass": [
-                {
-                    "name": "className",
-                    "defaultValue": "''",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "string",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 31,
-                    "required": false
-                },
-                {
-                    "name": "iconName",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "string",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 30,
-                    "required": true
-                },
-                {
-                    "name": "title",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "string",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 29,
-                    "required": true
-                }
-            ],
-            "outputsClass": [],
-            "propertiesClass": [],
-            "methodsClass": [],
-            "deprecated": false,
-            "deprecationMessage": "",
-            "hostBindings": [],
-            "hostListeners": [],
-            "standalone": true,
-            "imports": [
-                {
-                    "name": "NgIconComponent",
-                    "type": "component"
-                }
-            ],
-            "description": "",
-            "rawdescription": "\n",
-            "type": "component",
-            "sourceCode": "import { Component, computed, input, output } from '@angular/core'\r\nimport { NgIconComponent, provideIcons } from '@ng-icons/core'\r\nimport { AgentInfo } from '../../../types'\r\nimport {\r\n  DialogComponent,\r\n  DialogContentComponent,\r\n  DialogHeaderComponent,\r\n  DialogTitleComponent,\r\n  DialogCloseComponent,\r\n} from '@shared/ui/dialog.component'\r\n\r\n@Component({\r\n  selector: 'app-detail-card',\r\n  standalone: true,\r\n  imports: [NgIconComponent],\r\n  template: `\r\n    <div [class]=\"'border rounded-lg p-4 bg-card ' + className()\">\r\n      <div class=\"flex items-center gap-2 mb-3\">\r\n        <ng-icon [name]=\"iconName()\" class=\"h-4 w-4 text-muted-foreground\" />\r\n        <h3 class=\"text-sm font-semibold text-foreground\">{{ title() }}</h3>\r\n      </div>\r\n      <div class=\"text-sm text-muted-foreground\">\r\n        <ng-content />\r\n      </div>\r\n    </div>\r\n  `,\r\n})\r\nexport class DetailCardComponent {\r\n  title = input.required<string>()\r\n  iconName = input.required<string>()\r\n  className = input<string>('')\r\n}\r\n\r\n@Component({\r\n  selector: 'app-agent-details-modal',\r\n  standalone: true,\r\n  imports: [\r\n    NgIconComponent,\r\n    DetailCardComponent,\r\n    DialogComponent,\r\n    DialogContentComponent,\r\n    DialogHeaderComponent,\r\n    DialogTitleComponent,\r\n    DialogCloseComponent,\r\n  ],\r\n  template: `\r\n    <app-dialog [open]=\"open()\" (openChange)=\"onOpenChange.emit($event)\">\r\n      @let info = agent();\r\n\r\n      <app-dialog-header class=\"px-6 pt-6 shrink-0\">\r\n        <app-dialog-title>Agent Details</app-dialog-title>\r\n        <app-dialog-close (close)=\"onOpenChange.emit(false)\" />\r\n      </app-dialog-header>\r\n\r\n      <app-dialog-content class=\"max-w-4xl max-h-[90vh] flex flex-col\">\r\n        <div class=\"px-6 pb-6 overflow-y-auto flex-1\">\r\n          <div class=\"mb-6\">\r\n            <div class=\"flex items-center gap-3 mb-2\">\r\n              <ng-icon name=\"lucideBot\" class=\"h-6 w-6 text-primary\" />\r\n              <h2 class=\"text-xl font-semibold text-foreground\">\r\n                {{ info.name || info.id }}\r\n              </h2>\r\n            </div>\r\n            @if (info.description) {\r\n              <p class=\"text-muted-foreground\">{{ info.description }}</p>\r\n            }\r\n          </div>\r\n\r\n          <div class=\"h-px bg-border mb-6\"></div>\r\n\r\n          <div class=\"grid grid-cols-1 md:grid-cols-2 gap-4 mb-4\">\r\n            @if (info.model_id || info.chat_client_type) {\r\n              <app-detail-card title=\"Model & Client\" iconName=\"lucideBot\">\r\n                <div class=\"space-y-1\">\r\n                  @if (info.model_id) {\r\n                    <div class=\"font-mono text-foreground\">{{ info.model_id }}</div>\r\n                  }\r\n                  @if (info.chat_client_type) {\r\n                    <div class=\"text-xs\">({{ info.chat_client_type }})</div>\r\n                  }\r\n                </div>\r\n              </app-detail-card>\r\n            }\r\n\r\n            <app-detail-card title=\"Source\" [iconName]=\"sourceIcon()\">\r\n              <div class=\"space-y-1\">\r\n                <div class=\"text-foreground\">{{ sourceLabel() }}</div>\r\n                @if (info.module_path) {\r\n                  <div class=\"font-mono text-xs break-all\">{{ info.module_path }}</div>\r\n                }\r\n              </div>\r\n            </app-detail-card>\r\n\r\n            <app-detail-card\r\n              title=\"Environment\"\r\n              [iconName]=\"info.has_env ? 'lucideXCircle' : 'lucideCheckCircle'\"\r\n              className=\"md:col-span-2\"\r\n            >\r\n              <div\r\n                [class]=\"\r\n                  info.has_env\r\n                    ? 'text-orange-600 dark:text-orange-400'\r\n                    : 'text-green-600 dark:text-green-400'\r\n                \"\r\n              >\r\n                {{\r\n                  info.has_env\r\n                    ? 'Requires environment variables'\r\n                    : 'No environment variables required'\r\n                }}\r\n              </div>\r\n            </app-detail-card>\r\n          </div>\r\n\r\n          @if (info.instructions; as inst) {\r\n            <app-detail-card title=\"Instructions\" iconName=\"lucideFileText\" className=\"mb-4\">\r\n              <div class=\"text-sm text-foreground leading-relaxed whitespace-pre-wrap\">\r\n                {{ inst }}\r\n              </div>\r\n            </app-detail-card>\r\n          }\r\n\r\n          <div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\">\r\n            @if (info.tools; as tools) {\r\n              <app-detail-card [title]=\"'Tools (' + tools.length + ')'\" iconName=\"lucidePackage\">\r\n                <ul class=\"space-y-1\">\r\n                  @for (tool of tools; track $index) {\r\n                    <li class=\"font-mono text-xs text-foreground\">• {{ tool }}</li>\r\n                  }\r\n                </ul>\r\n              </app-detail-card>\r\n            }\r\n\r\n            @if (info.middleware; as mws) {\r\n              <app-detail-card\r\n                [title]=\"'Middlewares (' + mws.length + ')'\"\r\n                iconName=\"lucidePackage\"\r\n              >\r\n                <ul class=\"space-y-1\">\r\n                  @for (mw of mws; track $index) {\r\n                    <li class=\"font-mono text-xs text-foreground\">• {{ mw }}</li>\r\n                  }\r\n                </ul>\r\n              </app-detail-card>\r\n            }\r\n\r\n            @if (info.context_provider; as provider) {\r\n              <app-detail-card\r\n                title=\"Context Provider\"\r\n                iconName=\"lucideDatabase\"\r\n                [className]=\"\r\n                  !info.middleware || info.middleware.length === 0 ? 'md:col-start-2' : ''\r\n                \"\r\n              >\r\n                <div class=\"font-mono text-xs text-foreground\">{{ provider }}</div>\r\n              </app-detail-card>\r\n            }\r\n          </div>\r\n        </div>\r\n      </app-dialog-content>\r\n    </app-dialog>\r\n  `,\r\n})\r\nexport class AgentDetailsModalComponent {\r\n  // Signal Inputs\r\n  agent = input.required<AgentInfo>()\r\n  open = input.required<boolean>()\r\n\r\n  // Signal Output\r\n  onOpenChange = output<boolean>()\r\n\r\n  sourceIcon = computed(() => {\r\n    const s = this.agent().source\r\n    if (s === 'directory') return 'lucideFolderOpen'\r\n    if (s === 'in_memory') return 'lucideDatabase'\r\n    return 'lucideGlobe'\r\n  })\r\n\r\n  sourceLabel = computed(() => {\r\n    const s = this.agent().source\r\n    if (s === 'directory') return 'Local'\r\n    if (s === 'in_memory') return 'In-Memory'\r\n    return 'Gallery'\r\n  })\r\n}\r\n",
-            "assetsDirs": [],
-            "styleUrlsData": "",
-            "stylesData": "",
             "extends": [],
             "isDuplicate": true,
             "duplicateId": 1,
@@ -40888,7 +40888,7 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "ApplicationConfig",
-                "defaultValue": "{\r\n  providers: [\r\n    {\r\n      provide: THEME_CONFIG,\r\n      useValue: {\r\n        attribute: 'class',\r\n        defaultTheme: 'dark',\r\n        enableSystem: true,\r\n        disableTransitionOnChange: true,\r\n      },\r\n    },\r\n    provideZoneChangeDetection({ eventCoalescing: true }),\r\n    provideRouter(routes),\r\n\r\n    provideIcons(APP_ICONS),\r\n  ],\r\n}"
+                "defaultValue": "{\r\n  providers: [\r\n    {\r\n      provide: THEME_CONFIG,\r\n      useValue: {\r\n        attribute: 'class',\r\n        defaultTheme: 'dark',\r\n        enableSystem: true,\r\n        disableTransitionOnChange: true,\r\n      },\r\n    },\r\n    provideZoneChangeDetection({ eventCoalescing: true }),\r\n    provideRouter(routes),\r\n\r\n    provideIcons(APP_ICONS),\r\n    provideZonelessChangeDetection(),\r\n  ],\r\n}"
             },
             {
                 "name": "badgeVariants",
@@ -42290,7 +42290,7 @@
             },
             {
                 "name": "isAbortError",
-                "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
+                "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
                 "ctype": "miscellaneous",
                 "subtype": "function",
                 "deprecated": false,
@@ -42317,7 +42317,7 @@
             },
             {
                 "name": "isAbortError",
-                "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
+                "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
                 "ctype": "miscellaneous",
                 "subtype": "function",
                 "deprecated": false,
@@ -43506,7 +43506,7 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "rawtype": "ExtendedResponseStreamEvent | \"clear\"",
-                "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
+                "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "description": "",
@@ -43517,7 +43517,7 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "rawtype": "ExtendedResponseStreamEvent | \"clear\"",
-                "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
+                "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "description": "",
@@ -43789,7 +43789,7 @@
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "ApplicationConfig",
-                    "defaultValue": "{\r\n  providers: [\r\n    {\r\n      provide: THEME_CONFIG,\r\n      useValue: {\r\n        attribute: 'class',\r\n        defaultTheme: 'dark',\r\n        enableSystem: true,\r\n        disableTransitionOnChange: true,\r\n      },\r\n    },\r\n    provideZoneChangeDetection({ eventCoalescing: true }),\r\n    provideRouter(routes),\r\n\r\n    provideIcons(APP_ICONS),\r\n  ],\r\n}"
+                    "defaultValue": "{\r\n  providers: [\r\n    {\r\n      provide: THEME_CONFIG,\r\n      useValue: {\r\n        attribute: 'class',\r\n        defaultTheme: 'dark',\r\n        enableSystem: true,\r\n        disableTransitionOnChange: true,\r\n      },\r\n    },\r\n    provideZoneChangeDetection({ eventCoalescing: true }),\r\n    provideRouter(routes),\r\n\r\n    provideIcons(APP_ICONS),\r\n    provideZonelessChangeDetection(),\r\n  ],\r\n}"
                 }
             ],
             "src/app/shared/utils/badge.variants.ts": [
@@ -46159,10 +46159,10 @@
                     ]
                 }
             ],
-            "src/app/features/devui/components/features/workflow/workflow-view.component.ts": [
+            "src/app/features/devui/components/features/agent/agent-view.component.ts": [
                 {
                     "name": "isAbortError",
-                    "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
+                    "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
                     "ctype": "miscellaneous",
                     "subtype": "function",
                     "deprecated": false,
@@ -46188,10 +46188,10 @@
                     ]
                 }
             ],
-            "src/app/features/devui/components/features/agent/agent-view.component.ts": [
+            "src/app/features/devui/components/features/workflow/workflow-view.component.ts": [
                 {
                     "name": "isAbortError",
-                    "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
+                    "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
                     "ctype": "miscellaneous",
                     "subtype": "function",
                     "deprecated": false,
@@ -46646,19 +46646,6 @@
                     "kind": 193
                 }
             ],
-            "src/app/features/devui/components/features/workflow/workflow-view.component.ts": [
-                {
-                    "name": "DebugEvent",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "rawtype": "ExtendedResponseStreamEvent | \"clear\"",
-                    "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "description": "",
-                    "kind": 193
-                }
-            ],
             "src/app/features/devui/components/features/agent/agent-view.component.ts": [
                 {
                     "name": "DebugEvent",
@@ -46666,6 +46653,19 @@
                     "subtype": "typealias",
                     "rawtype": "ExtendedResponseStreamEvent | \"clear\"",
                     "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "description": "",
+                    "kind": 193
+                }
+            ],
+            "src/app/features/devui/components/features/workflow/workflow-view.component.ts": [
+                {
+                    "name": "DebugEvent",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "rawtype": "ExtendedResponseStreamEvent | \"clear\"",
+                    "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "description": "",
