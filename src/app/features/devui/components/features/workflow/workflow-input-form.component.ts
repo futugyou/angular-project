@@ -11,7 +11,7 @@ import {
 import { ButtonComponent } from '@shared/ui/button'
 import { TextareaComponent } from '@shared/ui/textarea.component'
 import { LabelComponent } from '@shared/ui/label.component'
-import { CardTitleComponent } from '@shared/ui/card.component'
+import { CardTitleComponent } from '@shared/ui/card'
 import {
   DialogComponent,
   DialogContentComponent,

@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
-import { CARD_COMPONENTS } from '@shared/ui/card.component'
+import { CARD_COMPONENTS } from '@shared/ui/card'
 
 @Component({
   selector: 'app-card-test',
