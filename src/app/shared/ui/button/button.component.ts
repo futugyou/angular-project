@@ -1,6 +1,6 @@
 import { Component, input, computed } from '@angular/core'
-import { cn } from '../utils/utils'
-import { ButtonVariantProps, buttonVariants } from '../utils/button.variants'
+import { cn } from '../../utils/utils'
+import { ButtonVariantProps, buttonVariants } from '../../utils/button.variants'
 
 @Component({
   selector: 'button[appButton], a[appButton]',

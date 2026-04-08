@@ -5,7 +5,7 @@ import { CdkMenuModule } from '@angular/cdk/menu'
 
 import type { JSONSchemaProperty, CheckpointItem, ResponseInputContent } from '../../../types'
 
-import { ButtonComponent } from '@shared/ui/button.component'
+import { ButtonComponent } from '@shared/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,

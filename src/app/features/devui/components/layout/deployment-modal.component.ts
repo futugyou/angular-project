@@ -24,7 +24,7 @@ import {
   DialogCloseComponent,
   DialogDescriptionComponent,
 } from '@shared/ui/dialog.component'
-import { ButtonComponent } from '@shared/ui/button.component'
+import { ButtonComponent } from '@shared/ui/button'
 import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
 import { ApiClient } from '../../services/api.service'
 

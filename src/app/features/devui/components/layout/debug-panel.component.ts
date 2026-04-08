@@ -19,7 +19,7 @@ import {
   TabsTriggerComponent,
 } from '@shared/ui/tab.component'
 import { BadgeComponent } from '@src/app/shared/ui/badge'
-import { ButtonComponent } from '@shared/ui/button.component'
+import { ButtonComponent } from '@shared/ui/button'
 import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
 
 import { ContextInspectorComponent } from '../../components/features/agent/context-inspector.component'

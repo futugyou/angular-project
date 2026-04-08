@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms'
 import { NgIconComponent } from '@ng-icons/core'
 import { SchemaFormRendererComponent, validateSchemaForm } from './schema-form-renderer.component'
 import { BadgeComponent } from '@src/app/shared/ui/badge'
-import { ButtonComponent } from '@shared/ui/button.component'
+import { ButtonComponent } from '@shared/ui/button'
 import type { JSONSchemaProperty } from '../../../types'
 import { ButtonDirective } from '@shared/directives/button.directive'
 

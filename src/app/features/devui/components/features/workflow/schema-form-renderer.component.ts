@@ -3,7 +3,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/f
 import { NgIconComponent } from '@ng-icons/core'
 import type { JSONSchemaProperty } from '../../../types'
 
-import { ButtonComponent } from '@shared/ui/button.component'
+import { ButtonComponent } from '@shared/ui/button'
 import { LabelComponent } from '@shared/ui/label.component'
 import { CheckboxComponent } from '@shared/ui/checkbox.component'
 import { TextareaComponent } from '@shared/ui/textarea.component'

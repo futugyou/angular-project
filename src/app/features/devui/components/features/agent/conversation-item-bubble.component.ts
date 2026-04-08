@@ -1,7 +1,7 @@
 import { Component, input, signal, computed, ChangeDetectionStrategy, inject } from '@angular/core'
 import { NgIconComponent, provideIcons } from '@ng-icons/core'
 import { OpenAIMessageRenderer } from './message-renderers/message-renderer.component'
-import { ButtonComponent } from '@shared/ui/button.component'
+import { ButtonComponent } from '@shared/ui/button'
 import { DevUIStore } from '../../../stores/devuiStore'
 import type {
   ConversationItem,

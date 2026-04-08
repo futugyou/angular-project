@@ -10,7 +10,7 @@ import { Toast, ToastContainer, ToastService } from '@shared/ui/toast.component'
 import { ApiClient } from './services/api.service'
 import { NgIconComponent } from '@ng-icons/core'
 import type { AgentInfo, WorkflowInfo, ExtendedResponseStreamEvent } from './types'
-import { ButtonComponent } from '@shared/ui/button.component'
+import { ButtonComponent } from '@shared/ui/button'
 import { InputComponent } from '@shared/ui/input.component'
 import { DevUIStore } from './stores'
 

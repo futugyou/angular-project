@@ -8,7 +8,7 @@ import {
   filterEmptyOptionalFields,
   detectChatMessagePattern,
 } from './schema-form-renderer.component'
-import { ButtonComponent } from '@shared/ui/button.component'
+import { ButtonComponent } from '@shared/ui/button'
 import { TextareaComponent } from '@shared/ui/textarea.component'
 import { LabelComponent } from '@shared/ui/label.component'
 import { CardTitleComponent } from '@shared/ui/card.component'
