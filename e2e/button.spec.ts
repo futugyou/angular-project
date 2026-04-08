@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Button Component E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/testing')
+    await page.goto('/testing/button')
     await page.waitForLoadState('networkidle')
   })
 

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Attachment Gallery E2E', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/testing')
+    await page.goto('/testing/attachment')
   })
 
   test('should show filename and delete button on hover', async ({ page }) => {
