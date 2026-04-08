@@ -85,10 +85,12 @@ export const TESTING_ROUTES: Routes = [
       {
         path: 'toast',
         loadComponent: () => import('./toast-test.component').then((m) => m.ToastTestComponent),
+        data: { forceFullScreen: false },
       },
       {
         path: 'node',
         loadComponent: () => import('./node-test.compnent').then((m) => m.NodeTestComponent),
+        data: { exitForceFullScreen: true, showToggle: true },
       },
     ],
   },

@@ -35,15 +35,29 @@ export class App implements OnInit {
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
-        map(() => this.activatedRoute),
-        map((route) => {
-          while (route.firstChild) route = route.firstChild
+        map(() => {
+          let route = this.activatedRoute
+          while (route.firstChild) {
+            route = route.firstChild
+          }
           return route
         }),
-        mergeMap((route) => route.data),
+        mergeMap((route) => {
+          let data = { ...route.snapshot.data }
+          let parent = route.parent
+
+          while (parent) {
+            data = { ...parent.snapshot.data, ...data }
+            parent = parent.parent
+          }
+          return [data]
+        }),
       )
       .subscribe((data) => {
-        if (data['forceFullScreen']) {
+        if (data['exitForceFullScreen']) {
+          this.layoutService.setFullScreen(false)
+          this.showButton = data['showToggle'] || false
+        } else if (data['forceFullScreen']) {
           this.layoutService.setFullScreen(true)
           this.showButton = false
         } else {
