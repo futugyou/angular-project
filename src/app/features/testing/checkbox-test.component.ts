@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
 
-import { CheckboxComponent } from '@shared/ui/checkbox.component'
+import { CheckboxComponent } from '@shared/ui/checkbox'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 
 @Component({

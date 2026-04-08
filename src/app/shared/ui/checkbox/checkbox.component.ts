@@ -1,6 +1,6 @@
 import { Component, input, model, computed, forwardRef, signal } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { cn } from '../utils/utils'
+import { cn } from '../../utils/utils'
 import { NgIconsModule } from '@ng-icons/core'
 
 @Component({
