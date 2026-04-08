@@ -142,6 +142,10 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html,
+  body {
+    height: 100%;
+  }
   html {
     color-scheme: light dark;
   }
@@ -150,6 +154,7 @@
     margin: 0;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
   }
   .cdk-overlay-pane {
     --container-color: var(--card);

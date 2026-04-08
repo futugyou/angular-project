@@ -24,10 +24,8 @@ export const routes: Routes = [
   },
   {
     path: 'testing',
-    // component: TestingComponent,
-    loadComponent: () =>
-      import('./features/testing/test.component').then((m) => m.TestingComponent),
-    data: { showToggle: true },
+    loadChildren: () => import('./features/testing/testing.routes').then((m) => m.TESTING_ROUTES),
+    data: { forceFullScreen: true },
   },
   { path: '**', redirectTo: '' },
 ]

@@ -43,12 +43,10 @@ export class App implements OnInit {
         mergeMap((route) => route.data),
       )
       .subscribe((data) => {
-        // 1. 如果配置了强制全屏，直接进入全屏模式
         if (data['forceFullScreen']) {
           this.layoutService.setFullScreen(true)
           this.showButton = false
         } else {
-          // 2. 否则，根据路由决定是否显示按钮，并重置全屏状态为正常
           this.layoutService.setFullScreen(false)
           this.showButton = data['showToggle'] || false
         }
