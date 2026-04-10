@@ -1,12 +1,12 @@
 import { Component, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
-import { CodeBlock } from '@shared/ui/code-block.component'
+import { CodeBlockComponent } from '@shared/ui/code'
 
 @Component({
   selector: 'app-code-test',
   standalone: true,
-  imports: [CommonModule, NgIconsModule, CodeBlock],
+  imports: [CommonModule, NgIconsModule, CodeBlockComponent],
   template: `
     <h1 class="text-2xl font-bold mb-6 text-gray-800">Code Component Test</h1>
 

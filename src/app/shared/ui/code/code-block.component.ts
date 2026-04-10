@@ -34,7 +34,7 @@ import { NgIconComponent } from '@ng-icons/core'
     </div>
   `,
 })
-export class CodeBlock {
+export class CodeBlockComponent {
   codeText = input.required<string>({ alias: 'code' })
   language = input<string>('')
   copied = signal(false)
