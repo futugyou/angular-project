@@ -22511,9 +22511,9 @@
             "extends": []
         },
         {
-            "name": "CodeBlock",
-            "id": "component-CodeBlock-1af9d3df4adaa0e109142d7220d79d52bcf8112c4122858a6d615889f2dc774f84c8ba4589a7a3399f3c55fc31c55e4d60428de36feb9b201833aa32ab56bc8b",
-            "file": "src/app/shared/ui/code-block.component.ts",
+            "name": "CodeBlockComponent",
+            "id": "component-CodeBlockComponent-7aa97e1bca61494ef23e71a158450f4325d752a6c195ab32c0606e4755a2a5c8884f0d60606c9e1f3d081c216ac9dafbaa83dda3c202652bc83963c6ab1604e8",
+            "file": "src/app/shared/ui/code/code-block.component.ts",
             "encapsulation": [],
             "entryComponents": [],
             "inputs": [],
@@ -22619,7 +22619,7 @@
             "description": "",
             "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { Component, computed, input, signal } from '@angular/core'\r\n\r\nimport { NgIconComponent } from '@ng-icons/core'\r\n\r\n@Component({\r\n  selector: 'app-code-block',\r\n  standalone: true,\r\n  imports: [NgIconComponent],\r\n  template: `\r\n    <div class=\"relative group\">\r\n      <pre\r\n        class=\"my-3 p-3 bg-foreground/5 dark:bg-foreground/10 rounded overflow-x-auto border border-foreground/10\"\r\n        [class.pt-7]=\"language()\"\r\n      ><code class=\"text-xs font-mono block whitespace-pre-wrap wrap-break-word\">{{ formattedCode() }}</code></pre>\r\n\r\n      @if (language()) {\r\n        <span class=\"absolute top-2 left-2 opacity-60 text-[10px] mb-1 block uppercase\">{{\r\n          language()\r\n        }}</span>\r\n      }\r\n      <button\r\n        (click)=\"handleCopy()\"\r\n        class=\"absolute top-2 right-2 p-1.5 rounded-md border shadow-sm\r\n               bg-background hover:bg-accent text-muted-foreground hover:text-foreground\r\n               transition-all duration-200 opacity-0 group-hover:opacity-100\"\r\n        [title]=\"copied() ? 'Copied!' : 'Copy code'\"\r\n      >\r\n        <ng-icon\r\n          [name]=\"copied() ? 'lucideCheck' : 'lucideCopy'\"\r\n          [class.text-green-600]=\"copied()\"\r\n          size=\"14\"\r\n        />\r\n      </button>\r\n    </div>\r\n  `,\r\n})\r\nexport class CodeBlock {\r\n  codeText = input.required<string>({ alias: 'code' })\r\n  language = input<string>('')\r\n  copied = signal(false)\r\n  private _timer: any\r\n  formattedCode = computed(() => this.codeText().trim())\r\n\r\n  async handleCopy() {\r\n    try {\r\n      await navigator.clipboard.writeText(this.formattedCode())\r\n      this.copied.set(true)\r\n      clearTimeout(this._timer)\r\n      this._timer = setTimeout(() => this.copied.set(false), 2000)\r\n    } catch (err) {\r\n      console.error('Failed to copy:', err)\r\n    }\r\n  }\r\n}\r\n",
+            "sourceCode": "import { Component, computed, input, signal } from '@angular/core'\r\n\r\nimport { NgIconComponent } from '@ng-icons/core'\r\n\r\n@Component({\r\n  selector: 'app-code-block',\r\n  standalone: true,\r\n  imports: [NgIconComponent],\r\n  template: `\r\n    <div class=\"relative group\">\r\n      <pre\r\n        class=\"my-3 p-3 bg-foreground/5 dark:bg-foreground/10 rounded overflow-x-auto border border-foreground/10\"\r\n        [class.pt-7]=\"language()\"\r\n      ><code class=\"text-xs font-mono block whitespace-pre-wrap wrap-break-word\">{{ formattedCode() }}</code></pre>\r\n\r\n      @if (language()) {\r\n        <span class=\"absolute top-2 left-2 opacity-60 text-[10px] mb-1 block uppercase\">{{\r\n          language()\r\n        }}</span>\r\n      }\r\n      <button\r\n        (click)=\"handleCopy()\"\r\n        class=\"absolute top-2 right-2 p-1.5 rounded-md border shadow-sm\r\n               bg-background hover:bg-accent text-muted-foreground hover:text-foreground\r\n               transition-all duration-200 opacity-0 group-hover:opacity-100\"\r\n        [title]=\"copied() ? 'Copied!' : 'Copy code'\"\r\n      >\r\n        <ng-icon\r\n          [name]=\"copied() ? 'lucideCheck' : 'lucideCopy'\"\r\n          [class.text-green-600]=\"copied()\"\r\n          size=\"14\"\r\n        />\r\n      </button>\r\n    </div>\r\n  `,\r\n})\r\nexport class CodeBlockComponent {\r\n  codeText = input.required<string>({ alias: 'code' })\r\n  language = input<string>('')\r\n  copied = signal(false)\r\n  private _timer: any\r\n  formattedCode = computed(() => this.codeText().trim())\r\n\r\n  async handleCopy() {\r\n    try {\r\n      await navigator.clipboard.writeText(this.formattedCode())\r\n      this.copied.set(true)\r\n      clearTimeout(this._timer)\r\n      this._timer = setTimeout(() => this.copied.set(false), 2000)\r\n    } catch (err) {\r\n      console.error('Failed to copy:', err)\r\n    }\r\n  }\r\n}\r\n",
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "",
@@ -22627,7 +22627,7 @@
         },
         {
             "name": "CodeBlockComponent",
-            "id": "component-CodeBlockComponent-a2601475933f0cfffa055e94511f5b41c19b729c2aba45c530d509ea8517ff0f8ecfe6bae041fa90093ceb0d4a0cfbf816ee227bbddd1f14586679943aabe18b",
+            "id": "component-CodeBlockComponent-a2601475933f0cfffa055e94511f5b41c19b729c2aba45c530d509ea8517ff0f8ecfe6bae041fa90093ceb0d4a0cfbf816ee227bbddd1f14586679943aabe18b-1",
             "file": "src/app/features/devui/components/features/gallery/setup-instructions-modal.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -22716,11 +22716,14 @@
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "",
-            "extends": []
+            "extends": [],
+            "isDuplicate": true,
+            "duplicateId": 1,
+            "duplicateName": "CodeBlockComponent-1"
         },
         {
             "name": "CodeTestComponent",
-            "id": "component-CodeTestComponent-43c9bcb3a2b4c0a9e288ee8d0e6d2c4bf379f465679fc83b7a4a98a7b7001203fed68e5d4950952b03e61dc141ae8ef68070d31a917bc571186e85f74b3bcce0",
+            "id": "component-CodeTestComponent-108ec7e4b74c16860dba7d72e324fa4ef7f02c3382255e007cde6a74c02e0f788bf7edbd8c02350f36fec0aace1983d4efb9ca8176179dbbe899fcfa390ce487",
             "file": "src/app/features/testing/code-test.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -22765,13 +22768,14 @@
                     "type": "module"
                 },
                 {
-                    "name": "CodeBlock"
+                    "name": "CodeBlockComponent",
+                    "type": "component"
                 }
             ],
             "description": "",
             "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { Component, signal } from '@angular/core'\r\nimport { CommonModule } from '@angular/common'\r\nimport { NgIconsModule } from '@ng-icons/core'\r\nimport { CodeBlock } from '@shared/ui/code-block.component'\r\n\r\n@Component({\r\n  selector: 'app-code-test',\r\n  standalone: true,\r\n  imports: [CommonModule, NgIconsModule, CodeBlock],\r\n  template: `\r\n    <h1 class=\"text-2xl font-bold mb-6 text-gray-800\">Code Component Test</h1>\r\n\r\n    <section class=\"mb-8\">\r\n      <h2 class=\"text-sm font-semibold text-muted-foreground mb-2\">1. TypeScript Example</h2>\r\n      <app-code-block code=\"const message: string = 'Hello Angular 19!';\" language=\"typescript\" />\r\n    </section>\r\n\r\n    <section class=\"mb-8\">\r\n      <h2 class=\"text-sm font-semibold text-muted-foreground mb-2\">\r\n        2. Multiline HTML (Automatic Line Wrapping Test)\r\n      </h2>\r\n\r\n      <app-code-block [code]=\"htmlSnippet\" language=\"html\" />\r\n    </section>\r\n\r\n    <section class=\"mb-8\">\r\n      <h2 class=\"text-sm font-semibold text-muted-foreground mb-2\">3. No language identifier</h2>\r\n      <app-code-block code=\"npm install @ng-icons/core @ng-icons/lucide\" />\r\n    </section>\r\n\r\n    <p class=\"text-xs text-muted-foreground mt-10 italic\">\r\n      Tip: Hovering the mouse over the code block will display the copy button.\r\n    </p>\r\n  `,\r\n})\r\nexport class CodeTestComponent {\r\n  // code\r\n  htmlSnippet = `\r\n<div class=\"container\">\r\n  <h1>Title</h1>\r\n  <p>This is a test scenario for automatic line wrapping of long text, ensuring that even if the code is very long, it will not break the layout, but will gracefully wrap within the container.</p>\r\n</div>`.trim()\r\n}\r\n",
+            "sourceCode": "import { Component, signal } from '@angular/core'\r\nimport { CommonModule } from '@angular/common'\r\nimport { NgIconsModule } from '@ng-icons/core'\r\nimport { CodeBlockComponent } from '@shared/ui/code'\r\n\r\n@Component({\r\n  selector: 'app-code-test',\r\n  standalone: true,\r\n  imports: [CommonModule, NgIconsModule, CodeBlockComponent],\r\n  template: `\r\n    <h1 class=\"text-2xl font-bold mb-6 text-gray-800\">Code Component Test</h1>\r\n\r\n    <section class=\"mb-8\">\r\n      <h2 class=\"text-sm font-semibold text-muted-foreground mb-2\">1. TypeScript Example</h2>\r\n      <app-code-block code=\"const message: string = 'Hello Angular 19!';\" language=\"typescript\" />\r\n    </section>\r\n\r\n    <section class=\"mb-8\">\r\n      <h2 class=\"text-sm font-semibold text-muted-foreground mb-2\">\r\n        2. Multiline HTML (Automatic Line Wrapping Test)\r\n      </h2>\r\n\r\n      <app-code-block [code]=\"htmlSnippet\" language=\"html\" />\r\n    </section>\r\n\r\n    <section class=\"mb-8\">\r\n      <h2 class=\"text-sm font-semibold text-muted-foreground mb-2\">3. No language identifier</h2>\r\n      <app-code-block code=\"npm install @ng-icons/core @ng-icons/lucide\" />\r\n    </section>\r\n\r\n    <p class=\"text-xs text-muted-foreground mt-10 italic\">\r\n      Tip: Hovering the mouse over the code block will display the copy button.\r\n    </p>\r\n  `,\r\n})\r\nexport class CodeTestComponent {\r\n  // code\r\n  htmlSnippet = `\r\n<div class=\"container\">\r\n  <h1>Title</h1>\r\n  <p>This is a test scenario for automatic line wrapping of long text, ensuring that even if the code is very long, it will not break the layout, but will gracefully wrap within the container.</p>\r\n</div>`.trim()\r\n}\r\n",
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "",
@@ -24228,82 +24232,7 @@
         },
         {
             "name": "DetailCardComponent",
-            "id": "component-DetailCardComponent-251a54537b972702a9846ce32d48d0899b970a9de2e9cdc4bcce2bbba78d35d1d2462f8330da37f83e80324ca84e1dbd49360fd790d72a8ac9514133355b2a7b",
-            "file": "src/app/features/devui/components/features/agent/agent-details-modal.component.ts",
-            "encapsulation": [],
-            "entryComponents": [],
-            "inputs": [],
-            "outputs": [],
-            "providers": [],
-            "selector": "app-detail-card",
-            "styleUrls": [],
-            "styles": [],
-            "template": "<div [class]=\"'border rounded-lg p-4 bg-card ' + className()\">\n  <div class=\"flex items-center gap-2 mb-3\">\n    <ng-icon [name]=\"iconName()\" class=\"h-4 w-4 text-muted-foreground\" />\n    <h3 class=\"text-sm font-semibold text-foreground\">{{ title() }}</h3>\n  </div>\n  <div class=\"text-sm text-muted-foreground\">\n    <ng-content />\n  </div>\n</div>\n",
-            "templateUrl": [],
-            "viewProviders": [],
-            "hostDirectives": [],
-            "inputsClass": [
-                {
-                    "name": "className",
-                    "defaultValue": "''",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "string",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 31,
-                    "required": false
-                },
-                {
-                    "name": "iconName",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "string",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 30,
-                    "required": true
-                },
-                {
-                    "name": "title",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "string",
-                    "indexKey": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 29,
-                    "required": true
-                }
-            ],
-            "outputsClass": [],
-            "propertiesClass": [],
-            "methodsClass": [],
-            "deprecated": false,
-            "deprecationMessage": "",
-            "hostBindings": [],
-            "hostListeners": [],
-            "standalone": true,
-            "imports": [
-                {
-                    "name": "NgIconComponent",
-                    "type": "component"
-                }
-            ],
-            "description": "",
-            "rawdescription": "\n",
-            "type": "component",
-            "sourceCode": "import { Component, computed, input, output } from '@angular/core'\r\nimport { NgIconComponent, provideIcons } from '@ng-icons/core'\r\nimport { AgentInfo } from '../../../types'\r\nimport {\r\n  DialogComponent,\r\n  DialogContentComponent,\r\n  DialogHeaderComponent,\r\n  DialogTitleComponent,\r\n  DialogCloseComponent,\r\n} from '@shared/ui/dialog.component'\r\n\r\n@Component({\r\n  selector: 'app-detail-card',\r\n  standalone: true,\r\n  imports: [NgIconComponent],\r\n  template: `\r\n    <div [class]=\"'border rounded-lg p-4 bg-card ' + className()\">\r\n      <div class=\"flex items-center gap-2 mb-3\">\r\n        <ng-icon [name]=\"iconName()\" class=\"h-4 w-4 text-muted-foreground\" />\r\n        <h3 class=\"text-sm font-semibold text-foreground\">{{ title() }}</h3>\r\n      </div>\r\n      <div class=\"text-sm text-muted-foreground\">\r\n        <ng-content />\r\n      </div>\r\n    </div>\r\n  `,\r\n})\r\nexport class DetailCardComponent {\r\n  title = input.required<string>()\r\n  iconName = input.required<string>()\r\n  className = input<string>('')\r\n}\r\n\r\n@Component({\r\n  selector: 'app-agent-details-modal',\r\n  standalone: true,\r\n  imports: [\r\n    NgIconComponent,\r\n    DetailCardComponent,\r\n    DialogComponent,\r\n    DialogContentComponent,\r\n    DialogHeaderComponent,\r\n    DialogTitleComponent,\r\n    DialogCloseComponent,\r\n  ],\r\n  template: `\r\n    <app-dialog [open]=\"open()\" (openChange)=\"onOpenChange.emit($event)\">\r\n      @let info = agent();\r\n\r\n      <app-dialog-header class=\"px-6 pt-6 shrink-0\">\r\n        <app-dialog-title>Agent Details</app-dialog-title>\r\n        <app-dialog-close (close)=\"onOpenChange.emit(false)\" />\r\n      </app-dialog-header>\r\n\r\n      <app-dialog-content class=\"max-w-4xl max-h-[90vh] flex flex-col\">\r\n        <div class=\"px-6 pb-6 overflow-y-auto flex-1\">\r\n          <div class=\"mb-6\">\r\n            <div class=\"flex items-center gap-3 mb-2\">\r\n              <ng-icon name=\"lucideBot\" class=\"h-6 w-6 text-primary\" />\r\n              <h2 class=\"text-xl font-semibold text-foreground\">\r\n                {{ info.name || info.id }}\r\n              </h2>\r\n            </div>\r\n            @if (info.description) {\r\n              <p class=\"text-muted-foreground\">{{ info.description }}</p>\r\n            }\r\n          </div>\r\n\r\n          <div class=\"h-px bg-border mb-6\"></div>\r\n\r\n          <div class=\"grid grid-cols-1 md:grid-cols-2 gap-4 mb-4\">\r\n            @if (info.model_id || info.chat_client_type) {\r\n              <app-detail-card title=\"Model & Client\" iconName=\"lucideBot\">\r\n                <div class=\"space-y-1\">\r\n                  @if (info.model_id) {\r\n                    <div class=\"font-mono text-foreground\">{{ info.model_id }}</div>\r\n                  }\r\n                  @if (info.chat_client_type) {\r\n                    <div class=\"text-xs\">({{ info.chat_client_type }})</div>\r\n                  }\r\n                </div>\r\n              </app-detail-card>\r\n            }\r\n\r\n            <app-detail-card title=\"Source\" [iconName]=\"sourceIcon()\">\r\n              <div class=\"space-y-1\">\r\n                <div class=\"text-foreground\">{{ sourceLabel() }}</div>\r\n                @if (info.module_path) {\r\n                  <div class=\"font-mono text-xs break-all\">{{ info.module_path }}</div>\r\n                }\r\n              </div>\r\n            </app-detail-card>\r\n\r\n            <app-detail-card\r\n              title=\"Environment\"\r\n              [iconName]=\"info.has_env ? 'lucideXCircle' : 'lucideCheckCircle'\"\r\n              className=\"md:col-span-2\"\r\n            >\r\n              <div\r\n                [class]=\"\r\n                  info.has_env\r\n                    ? 'text-orange-600 dark:text-orange-400'\r\n                    : 'text-green-600 dark:text-green-400'\r\n                \"\r\n              >\r\n                {{\r\n                  info.has_env\r\n                    ? 'Requires environment variables'\r\n                    : 'No environment variables required'\r\n                }}\r\n              </div>\r\n            </app-detail-card>\r\n          </div>\r\n\r\n          @if (info.instructions; as inst) {\r\n            <app-detail-card title=\"Instructions\" iconName=\"lucideFileText\" className=\"mb-4\">\r\n              <div class=\"text-sm text-foreground leading-relaxed whitespace-pre-wrap\">\r\n                {{ inst }}\r\n              </div>\r\n            </app-detail-card>\r\n          }\r\n\r\n          <div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\">\r\n            @if (info.tools; as tools) {\r\n              <app-detail-card [title]=\"'Tools (' + tools.length + ')'\" iconName=\"lucidePackage\">\r\n                <ul class=\"space-y-1\">\r\n                  @for (tool of tools; track $index) {\r\n                    <li class=\"font-mono text-xs text-foreground\">• {{ tool }}</li>\r\n                  }\r\n                </ul>\r\n              </app-detail-card>\r\n            }\r\n\r\n            @if (info.middleware; as mws) {\r\n              <app-detail-card\r\n                [title]=\"'Middlewares (' + mws.length + ')'\"\r\n                iconName=\"lucidePackage\"\r\n              >\r\n                <ul class=\"space-y-1\">\r\n                  @for (mw of mws; track $index) {\r\n                    <li class=\"font-mono text-xs text-foreground\">• {{ mw }}</li>\r\n                  }\r\n                </ul>\r\n              </app-detail-card>\r\n            }\r\n\r\n            @if (info.context_provider; as provider) {\r\n              <app-detail-card\r\n                title=\"Context Provider\"\r\n                iconName=\"lucideDatabase\"\r\n                [className]=\"\r\n                  !info.middleware || info.middleware.length === 0 ? 'md:col-start-2' : ''\r\n                \"\r\n              >\r\n                <div class=\"font-mono text-xs text-foreground\">{{ provider }}</div>\r\n              </app-detail-card>\r\n            }\r\n          </div>\r\n        </div>\r\n      </app-dialog-content>\r\n    </app-dialog>\r\n  `,\r\n})\r\nexport class AgentDetailsModalComponent {\r\n  // Signal Inputs\r\n  agent = input.required<AgentInfo>()\r\n  open = input.required<boolean>()\r\n\r\n  // Signal Output\r\n  onOpenChange = output<boolean>()\r\n\r\n  sourceIcon = computed(() => {\r\n    const s = this.agent().source\r\n    if (s === 'directory') return 'lucideFolderOpen'\r\n    if (s === 'in_memory') return 'lucideDatabase'\r\n    return 'lucideGlobe'\r\n  })\r\n\r\n  sourceLabel = computed(() => {\r\n    const s = this.agent().source\r\n    if (s === 'directory') return 'Local'\r\n    if (s === 'in_memory') return 'In-Memory'\r\n    return 'Gallery'\r\n  })\r\n}\r\n",
-            "assetsDirs": [],
-            "styleUrlsData": "",
-            "stylesData": "",
-            "extends": []
-        },
-        {
-            "name": "DetailCardComponent",
-            "id": "component-DetailCardComponent-fb42d86bb4ba8ed834b764feed7983e7f6a893ca2eb67e998ab4befabf81b75583d866c5ae39c4b47f839a9e231501e7d3829021d16a4e0835f0f1865f7dd7c7-1",
+            "id": "component-DetailCardComponent-fb42d86bb4ba8ed834b764feed7983e7f6a893ca2eb67e998ab4befabf81b75583d866c5ae39c4b47f839a9e231501e7d3829021d16a4e0835f0f1865f7dd7c7",
             "file": "src/app/features/devui/components/features/workflow/workflow-details-modal.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -24376,6 +24305,81 @@
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "\n      :host {\n        display: block;\n      }\n    \n",
+            "extends": []
+        },
+        {
+            "name": "DetailCardComponent",
+            "id": "component-DetailCardComponent-251a54537b972702a9846ce32d48d0899b970a9de2e9cdc4bcce2bbba78d35d1d2462f8330da37f83e80324ca84e1dbd49360fd790d72a8ac9514133355b2a7b-1",
+            "file": "src/app/features/devui/components/features/agent/agent-details-modal.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-detail-card",
+            "styleUrls": [],
+            "styles": [],
+            "template": "<div [class]=\"'border rounded-lg p-4 bg-card ' + className()\">\n  <div class=\"flex items-center gap-2 mb-3\">\n    <ng-icon [name]=\"iconName()\" class=\"h-4 w-4 text-muted-foreground\" />\n    <h3 class=\"text-sm font-semibold text-foreground\">{{ title() }}</h3>\n  </div>\n  <div class=\"text-sm text-muted-foreground\">\n    <ng-content />\n  </div>\n</div>\n",
+            "templateUrl": [],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [
+                {
+                    "name": "className",
+                    "defaultValue": "''",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 31,
+                    "required": false
+                },
+                {
+                    "name": "iconName",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 30,
+                    "required": true
+                },
+                {
+                    "name": "title",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "indexKey": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 29,
+                    "required": true
+                }
+            ],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [],
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [
+                {
+                    "name": "NgIconComponent",
+                    "type": "component"
+                }
+            ],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { Component, computed, input, output } from '@angular/core'\r\nimport { NgIconComponent, provideIcons } from '@ng-icons/core'\r\nimport { AgentInfo } from '../../../types'\r\nimport {\r\n  DialogComponent,\r\n  DialogContentComponent,\r\n  DialogHeaderComponent,\r\n  DialogTitleComponent,\r\n  DialogCloseComponent,\r\n} from '@shared/ui/dialog.component'\r\n\r\n@Component({\r\n  selector: 'app-detail-card',\r\n  standalone: true,\r\n  imports: [NgIconComponent],\r\n  template: `\r\n    <div [class]=\"'border rounded-lg p-4 bg-card ' + className()\">\r\n      <div class=\"flex items-center gap-2 mb-3\">\r\n        <ng-icon [name]=\"iconName()\" class=\"h-4 w-4 text-muted-foreground\" />\r\n        <h3 class=\"text-sm font-semibold text-foreground\">{{ title() }}</h3>\r\n      </div>\r\n      <div class=\"text-sm text-muted-foreground\">\r\n        <ng-content />\r\n      </div>\r\n    </div>\r\n  `,\r\n})\r\nexport class DetailCardComponent {\r\n  title = input.required<string>()\r\n  iconName = input.required<string>()\r\n  className = input<string>('')\r\n}\r\n\r\n@Component({\r\n  selector: 'app-agent-details-modal',\r\n  standalone: true,\r\n  imports: [\r\n    NgIconComponent,\r\n    DetailCardComponent,\r\n    DialogComponent,\r\n    DialogContentComponent,\r\n    DialogHeaderComponent,\r\n    DialogTitleComponent,\r\n    DialogCloseComponent,\r\n  ],\r\n  template: `\r\n    <app-dialog [open]=\"open()\" (openChange)=\"onOpenChange.emit($event)\">\r\n      @let info = agent();\r\n\r\n      <app-dialog-header class=\"px-6 pt-6 shrink-0\">\r\n        <app-dialog-title>Agent Details</app-dialog-title>\r\n        <app-dialog-close (close)=\"onOpenChange.emit(false)\" />\r\n      </app-dialog-header>\r\n\r\n      <app-dialog-content class=\"max-w-4xl max-h-[90vh] flex flex-col\">\r\n        <div class=\"px-6 pb-6 overflow-y-auto flex-1\">\r\n          <div class=\"mb-6\">\r\n            <div class=\"flex items-center gap-3 mb-2\">\r\n              <ng-icon name=\"lucideBot\" class=\"h-6 w-6 text-primary\" />\r\n              <h2 class=\"text-xl font-semibold text-foreground\">\r\n                {{ info.name || info.id }}\r\n              </h2>\r\n            </div>\r\n            @if (info.description) {\r\n              <p class=\"text-muted-foreground\">{{ info.description }}</p>\r\n            }\r\n          </div>\r\n\r\n          <div class=\"h-px bg-border mb-6\"></div>\r\n\r\n          <div class=\"grid grid-cols-1 md:grid-cols-2 gap-4 mb-4\">\r\n            @if (info.model_id || info.chat_client_type) {\r\n              <app-detail-card title=\"Model & Client\" iconName=\"lucideBot\">\r\n                <div class=\"space-y-1\">\r\n                  @if (info.model_id) {\r\n                    <div class=\"font-mono text-foreground\">{{ info.model_id }}</div>\r\n                  }\r\n                  @if (info.chat_client_type) {\r\n                    <div class=\"text-xs\">({{ info.chat_client_type }})</div>\r\n                  }\r\n                </div>\r\n              </app-detail-card>\r\n            }\r\n\r\n            <app-detail-card title=\"Source\" [iconName]=\"sourceIcon()\">\r\n              <div class=\"space-y-1\">\r\n                <div class=\"text-foreground\">{{ sourceLabel() }}</div>\r\n                @if (info.module_path) {\r\n                  <div class=\"font-mono text-xs break-all\">{{ info.module_path }}</div>\r\n                }\r\n              </div>\r\n            </app-detail-card>\r\n\r\n            <app-detail-card\r\n              title=\"Environment\"\r\n              [iconName]=\"info.has_env ? 'lucideXCircle' : 'lucideCheckCircle'\"\r\n              className=\"md:col-span-2\"\r\n            >\r\n              <div\r\n                [class]=\"\r\n                  info.has_env\r\n                    ? 'text-orange-600 dark:text-orange-400'\r\n                    : 'text-green-600 dark:text-green-400'\r\n                \"\r\n              >\r\n                {{\r\n                  info.has_env\r\n                    ? 'Requires environment variables'\r\n                    : 'No environment variables required'\r\n                }}\r\n              </div>\r\n            </app-detail-card>\r\n          </div>\r\n\r\n          @if (info.instructions; as inst) {\r\n            <app-detail-card title=\"Instructions\" iconName=\"lucideFileText\" className=\"mb-4\">\r\n              <div class=\"text-sm text-foreground leading-relaxed whitespace-pre-wrap\">\r\n                {{ inst }}\r\n              </div>\r\n            </app-detail-card>\r\n          }\r\n\r\n          <div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\">\r\n            @if (info.tools; as tools) {\r\n              <app-detail-card [title]=\"'Tools (' + tools.length + ')'\" iconName=\"lucidePackage\">\r\n                <ul class=\"space-y-1\">\r\n                  @for (tool of tools; track $index) {\r\n                    <li class=\"font-mono text-xs text-foreground\">• {{ tool }}</li>\r\n                  }\r\n                </ul>\r\n              </app-detail-card>\r\n            }\r\n\r\n            @if (info.middleware; as mws) {\r\n              <app-detail-card\r\n                [title]=\"'Middlewares (' + mws.length + ')'\"\r\n                iconName=\"lucidePackage\"\r\n              >\r\n                <ul class=\"space-y-1\">\r\n                  @for (mw of mws; track $index) {\r\n                    <li class=\"font-mono text-xs text-foreground\">• {{ mw }}</li>\r\n                  }\r\n                </ul>\r\n              </app-detail-card>\r\n            }\r\n\r\n            @if (info.context_provider; as provider) {\r\n              <app-detail-card\r\n                title=\"Context Provider\"\r\n                iconName=\"lucideDatabase\"\r\n                [className]=\"\r\n                  !info.middleware || info.middleware.length === 0 ? 'md:col-start-2' : ''\r\n                \"\r\n              >\r\n                <div class=\"font-mono text-xs text-foreground\">{{ provider }}</div>\r\n              </app-detail-card>\r\n            }\r\n          </div>\r\n        </div>\r\n      </app-dialog-content>\r\n    </app-dialog>\r\n  `,\r\n})\r\nexport class AgentDetailsModalComponent {\r\n  // Signal Inputs\r\n  agent = input.required<AgentInfo>()\r\n  open = input.required<boolean>()\r\n\r\n  // Signal Output\r\n  onOpenChange = output<boolean>()\r\n\r\n  sourceIcon = computed(() => {\r\n    const s = this.agent().source\r\n    if (s === 'directory') return 'lucideFolderOpen'\r\n    if (s === 'in_memory') return 'lucideDatabase'\r\n    return 'lucideGlobe'\r\n  })\r\n\r\n  sourceLabel = computed(() => {\r\n    const s = this.agent().source\r\n    if (s === 'directory') return 'Local'\r\n    if (s === 'in_memory') return 'In-Memory'\r\n    return 'Gallery'\r\n  })\r\n}\r\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
             "extends": [],
             "isDuplicate": true,
             "duplicateId": 1,
@@ -31203,7 +31207,7 @@
         },
         {
             "name": "MarkdownRendererComponent",
-            "id": "component-MarkdownRendererComponent-510d04265c8c512c0effb48969c3a8842858ac98e04eaa977a13f5877ab561d2005028a7cdcf38a10b2a647dd50be59785f9b23e6f6dc978e75fee92abfd53b8",
+            "id": "component-MarkdownRendererComponent-dabb23271c24929e0f2e83ae7cac4ab0172c9776d5d7b794ad3972de2108391d1b18adca07e7f39b9f14ec3a4e61a245a4d6d53bd0e532bf412d62d0540b5d2e",
             "file": "src/app/shared/ui/markdown-renderer.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -31508,13 +31512,14 @@
             "standalone": true,
             "imports": [
                 {
-                    "name": "CodeBlock"
+                    "name": "CodeBlockComponent",
+                    "type": "component"
                 }
             ],
             "description": "",
             "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { Component, computed, input, signal, forwardRef, inject } from '@angular/core'\r\nimport { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'\r\nimport { DomSanitizer, SafeHtml } from '@angular/platform-browser'\r\nimport { CodeBlock } from './code-block.component'\r\n\r\n@Component({\r\n  selector: 'app-markdown-renderer',\r\n  standalone: true,\r\n  imports: [CodeBlock],\r\n  providers: [\r\n    {\r\n      provide: NG_VALUE_ACCESSOR,\r\n      useExisting: forwardRef(() => MarkdownRendererComponent),\r\n      multi: true,\r\n    },\r\n  ],\r\n  template: `\r\n    <div [class]=\"'markdown-content wrap-break-word ' + className()\">\r\n      @for (el of elements(); track $index) {\r\n        @switch (el.type) {\r\n          @case ('code') {\r\n            <app-code-block [code]=\"el.content\" [language]=\"el.lang\" />\r\n          }\r\n          @case ('h') {\r\n            <div [class]=\"el.css\" [innerHTML]=\"el.safeHtml\"></div>\r\n          }\r\n          @case ('list') {\r\n            @switch (el.listType) {\r\n              @case ('ul') {\r\n                <ul class=\"my-2 ml-4 list-disc space-y-1 wrap-break-word\">\r\n                  @for (item of el.items; track $index) {\r\n                    <li class=\"text-sm wrap-break-word\" [innerHTML]=\"item\"></li>\r\n                  }\r\n                </ul>\r\n              }\r\n              @case ('ol') {\r\n                <ol class=\"my-2 ml-4 list-decimal space-y-1 wrap-break-word\">\r\n                  @for (item of el.items; track $index) {\r\n                    <li class=\"text-sm wrap-break-word\" [innerHTML]=\"item\"></li>\r\n                  }\r\n                </ol>\r\n              }\r\n            }\r\n          }\r\n          @case ('table') {\r\n            <div class=\"my-3 overflow-x-auto\">\r\n              <table class=\"min-w-full border border-foreground/10 text-sm\">\r\n                <thead class=\"bg-foreground/5\">\r\n                  <tr>\r\n                    @for (h of el.headers; track $index) {\r\n                      <th\r\n                        class=\"border-b border-foreground/10 px-3 py-2 text-left font-semibold wrap-break-word\"\r\n                        [innerHTML]=\"h\"\r\n                      ></th>\r\n                    }\r\n                  </tr>\r\n                </thead>\r\n                <tbody>\r\n                  @for (row of el.rows; track $index) {\r\n                    <tr class=\"border-b border-foreground/5 last:border-b-0\">\r\n                      @for (cell of row; track $index) {\r\n                        <td\r\n                          class=\"px-3 py-2 border-r border-foreground/5 last:border-r-0 wrap-break-word\"\r\n                          [innerHTML]=\"cell\"\r\n                        ></td>\r\n                      }\r\n                    </tr>\r\n                  }\r\n                </tbody>\r\n              </table>\r\n            </div>\r\n          }\r\n          @case ('quote') {\r\n            <blockquote\r\n              class=\"my-2 pl-4 border-l-4 border-current/30 opacity-80 italic wrap-break-word\"\r\n            >\r\n              @for (line of el.lines; track $index) {\r\n                <div class=\"wrap-break-word\" [innerHTML]=\"line\"></div>\r\n              }\r\n            </blockquote>\r\n          }\r\n          @case ('hr') {\r\n            <hr class=\"my-4 border-t border-border\" />\r\n          }\r\n          @case ('spacer') {\r\n            <div class=\"h-2\"></div>\r\n          }\r\n          @case ('p') {\r\n            <p class=\"my-1 wrap-break-word\" [innerHTML]=\"el.safeHtml\"></p>\r\n          }\r\n        }\r\n      }\r\n    </div>\r\n  `,\r\n})\r\nexport class MarkdownRendererComponent implements ControlValueAccessor {\r\n  private sanitizer = inject(DomSanitizer)\r\n\r\n  // Inputs\r\n  className = input<string>('')\r\n  content = input<string>('')\r\n\r\n  // ControlValueAccessor State\r\n  private _formValue = signal<string>('')\r\n  disabled = signal(false)\r\n\r\n  private effectiveContent = computed(() => this.content() || this._formValue())\r\n\r\n  elements = computed(() => {\r\n    const text = this.effectiveContent()\r\n    if (!text) return []\r\n\r\n    const lines = text.split('\\n')\r\n    const result: any[] = []\r\n    let i = 0\r\n\r\n    const sizes = ['text-2xl', 'text-xl', 'text-lg', 'text-base', 'text-sm', 'text-sm']\r\n\r\n    while (i < lines.length) {\r\n      const line = lines[i]\r\n\r\n      // 1. Code Blocks\r\n      if (line.trim().startsWith('```')) {\r\n        const lang = line.trim().match(/^```(\\w+)?/)?.[1] || ''\r\n        const codeRows = []\r\n        i++\r\n        while (i < lines.length && !lines[i].trim().startsWith('```')) {\r\n          codeRows.push(lines[i++])\r\n        }\r\n        i++\r\n        result.push({ type: 'code', content: codeRows.join('\\n'), lang })\r\n        continue\r\n      }\r\n\r\n      // 2. Headers\r\n      const hMatch = line.match(/^(#{1,6})\\s+(.+)$/)\r\n      if (hMatch) {\r\n        const level = hMatch[1].length\r\n        result.push({\r\n          type: 'h',\r\n          level,\r\n          safeHtml: this.parseInline(hMatch[2]),\r\n          css: `${sizes[level - 1]} font-semibold mt-4 mb-2 first:mt-0`,\r\n        })\r\n        i++\r\n        continue\r\n      }\r\n\r\n      // 3. Lists\r\n      const ulMatch = line.match(/^[\\s]*[-*+]\\s+/)\r\n      const olMatch = line.match(/^[\\s]*\\d+\\.\\s+/)\r\n      if (ulMatch || olMatch) {\r\n        const listType = ulMatch ? 'ul' : 'ol'\r\n        const regex = ulMatch ? /^[\\s]*[-*+]\\s+/ : /^[\\s]*\\d+\\.\\s+/\r\n        const items = []\r\n        while (i < lines.length && lines[i].match(regex)) {\r\n          items.push(this.parseInline(lines[i++].replace(regex, '')))\r\n        }\r\n        result.push({ type: 'list', listType, items })\r\n        continue\r\n      }\r\n\r\n      // 4. Tables\r\n      if (line.trim().startsWith('|') && line.trim().endsWith('|')) {\r\n        const tLines = []\r\n        while (\r\n          i < lines.length &&\r\n          lines[i].trim().startsWith('|') &&\r\n          lines[i].trim().endsWith('|')\r\n        ) {\r\n          tLines.push(lines[i++].trim())\r\n        }\r\n        if (tLines.length >= 2 && tLines[1].match(/^\\|[\\s\\-:|]+\\|$/)) {\r\n          const headers = tLines[0]\r\n            .split('|')\r\n            .slice(1, -1)\r\n            .map((c) => this.parseInline(c.trim()))\r\n          const rows = tLines.slice(2).map((r) =>\r\n            r\r\n              .split('|')\r\n              .slice(1, -1)\r\n              .map((c) => this.parseInline(c.trim())),\r\n          )\r\n          result.push({ type: 'table', headers, rows })\r\n          continue\r\n        }\r\n        tLines.forEach((l) => result.push({ type: 'p', safeHtml: this.parseInline(l) }))\r\n        continue\r\n      }\r\n\r\n      // 5. Blockquotes\r\n      if (line.trim().startsWith('>')) {\r\n        const qLines = []\r\n        while (i < lines.length && lines[i].trim().startsWith('>')) {\r\n          qLines.push(this.parseInline(lines[i++].replace(/^>\\s?/, '')))\r\n        }\r\n        result.push({ type: 'quote', lines: qLines })\r\n        continue\r\n      }\r\n\r\n      // 6. HR / Spacer / P\r\n      if (line.match(/^[\\s]*[-*_]{3,}[\\s]*$/)) {\r\n        result.push({ type: 'hr' })\r\n      } else if (line.trim() === '') {\r\n        result.push({ type: 'spacer' })\r\n      } else {\r\n        result.push({ type: 'p', safeHtml: this.parseInline(line) })\r\n      }\r\n      i++\r\n    }\r\n    return result\r\n  })\r\n\r\n  private parseInline(text: string): SafeHtml {\r\n    // 1. Basic HTML Escaping\r\n    let h = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')\r\n\r\n    // Store protected HTML fragments\r\n    const protectedChunks: string[] = []\r\n\r\n    // Helper function: Store content in the array and return a token that won't be matched by regex\r\n    const protect = (html: string) => {\r\n      const index = protectedChunks.length\r\n      protectedChunks.push(html)\r\n      return `§${index}§` // Use the special symbol §; it won't trigger Markdown's underscore or asterisk logic\r\n    }\r\n\r\n    // 2. Extract and Protect: Inline Code\r\n    h = h.replace(/`([^`]+)`/g, (_, code) =>\r\n      protect(\r\n        `<code class=\"px-1.5 py-0.5 bg-foreground/10 rounded text-xs font-mono border border-foreground/20\">${code}</code>`,\r\n      ),\r\n    )\r\n\r\n    // 3. Extract and Protect: Images\r\n    h = h.replace(/!\\[([^\\]]*)\\]\\(([^)]+)\\)/g, (_, alt, src) =>\r\n      protect(\r\n        `<img src=\"${src}\" alt=\"${alt}\" class=\"max-w-full h-auto rounded-lg my-2 border border-border inline-block\" />`,\r\n      ),\r\n    )\r\n\r\n    // 4. Extract and Protect: Links\r\n    h = h.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, (_, text, href) =>\r\n      protect(\r\n        `<a href=\"${href}\" target=\"_blank\" rel=\"noopener\" class=\"text-primary hover:underline\">${text}</a>`,\r\n      ),\r\n    )\r\n\r\n    // --- At this point, `h` consists entirely of safe placeholders like §0§, §1§; underscores can no longer interfere with the URLs contained within them ---\r\n\r\n    // 5. Process Bold Text (Note: This must be applied to the *remaining* text)\r\n    h = h.replace(/\\*\\*(.+?)\\*\\*/g, '<strong class=\"font-semibold\">$1</strong>')\r\n    h = h.replace(/__(.+?)__/g, '<strong class=\"font-semibold\">$1</strong>')\r\n\r\n    // 6. Process italics\r\n    h = h.replace(/\\*([^\\s*][^*]*)\\*/g, '<em class=\"italic\">$1</em>')\r\n    h = h.replace(/_([^\\s_][^_]*)\\_/g, '<em class=\"italic\">$1</em>')\r\n\r\n    // 7. Final step: Restore all protected HTML content\r\n    // Replace in reverse order or use a regex loop to ensure all placeholders are reverted\r\n    h = h.replace(/§(\\d+)§/g, (_, index) => protectedChunks[+index])\r\n\r\n    return this.sanitizer.bypassSecurityTrustHtml(h)\r\n  }\r\n\r\n  // CVA Implementation\r\n  onChange = (_: any) => {}\r\n  onTouched = () => {}\r\n\r\n  writeValue(v: any): void {\r\n    this._formValue.set(v || '')\r\n  }\r\n  registerOnChange(fn: any): void {\r\n    this.onChange = fn\r\n  }\r\n  registerOnTouched(fn: any): void {\r\n    this.onTouched = fn\r\n  }\r\n  setDisabledState?(isDisabled: boolean): void {\r\n    this.disabled.set(isDisabled)\r\n  }\r\n}\r\n",
+            "sourceCode": "import { Component, computed, input, signal, forwardRef, inject } from '@angular/core'\r\nimport { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'\r\nimport { DomSanitizer, SafeHtml } from '@angular/platform-browser'\r\nimport { CodeBlockComponent } from './code'\r\n\r\n@Component({\r\n  selector: 'app-markdown-renderer',\r\n  standalone: true,\r\n  imports: [CodeBlockComponent],\r\n  providers: [\r\n    {\r\n      provide: NG_VALUE_ACCESSOR,\r\n      useExisting: forwardRef(() => MarkdownRendererComponent),\r\n      multi: true,\r\n    },\r\n  ],\r\n  template: `\r\n    <div [class]=\"'markdown-content wrap-break-word ' + className()\">\r\n      @for (el of elements(); track $index) {\r\n        @switch (el.type) {\r\n          @case ('code') {\r\n            <app-code-block [code]=\"el.content\" [language]=\"el.lang\" />\r\n          }\r\n          @case ('h') {\r\n            <div [class]=\"el.css\" [innerHTML]=\"el.safeHtml\"></div>\r\n          }\r\n          @case ('list') {\r\n            @switch (el.listType) {\r\n              @case ('ul') {\r\n                <ul class=\"my-2 ml-4 list-disc space-y-1 wrap-break-word\">\r\n                  @for (item of el.items; track $index) {\r\n                    <li class=\"text-sm wrap-break-word\" [innerHTML]=\"item\"></li>\r\n                  }\r\n                </ul>\r\n              }\r\n              @case ('ol') {\r\n                <ol class=\"my-2 ml-4 list-decimal space-y-1 wrap-break-word\">\r\n                  @for (item of el.items; track $index) {\r\n                    <li class=\"text-sm wrap-break-word\" [innerHTML]=\"item\"></li>\r\n                  }\r\n                </ol>\r\n              }\r\n            }\r\n          }\r\n          @case ('table') {\r\n            <div class=\"my-3 overflow-x-auto\">\r\n              <table class=\"min-w-full border border-foreground/10 text-sm\">\r\n                <thead class=\"bg-foreground/5\">\r\n                  <tr>\r\n                    @for (h of el.headers; track $index) {\r\n                      <th\r\n                        class=\"border-b border-foreground/10 px-3 py-2 text-left font-semibold wrap-break-word\"\r\n                        [innerHTML]=\"h\"\r\n                      ></th>\r\n                    }\r\n                  </tr>\r\n                </thead>\r\n                <tbody>\r\n                  @for (row of el.rows; track $index) {\r\n                    <tr class=\"border-b border-foreground/5 last:border-b-0\">\r\n                      @for (cell of row; track $index) {\r\n                        <td\r\n                          class=\"px-3 py-2 border-r border-foreground/5 last:border-r-0 wrap-break-word\"\r\n                          [innerHTML]=\"cell\"\r\n                        ></td>\r\n                      }\r\n                    </tr>\r\n                  }\r\n                </tbody>\r\n              </table>\r\n            </div>\r\n          }\r\n          @case ('quote') {\r\n            <blockquote\r\n              class=\"my-2 pl-4 border-l-4 border-current/30 opacity-80 italic wrap-break-word\"\r\n            >\r\n              @for (line of el.lines; track $index) {\r\n                <div class=\"wrap-break-word\" [innerHTML]=\"line\"></div>\r\n              }\r\n            </blockquote>\r\n          }\r\n          @case ('hr') {\r\n            <hr class=\"my-4 border-t border-border\" />\r\n          }\r\n          @case ('spacer') {\r\n            <div class=\"h-2\"></div>\r\n          }\r\n          @case ('p') {\r\n            <p class=\"my-1 wrap-break-word\" [innerHTML]=\"el.safeHtml\"></p>\r\n          }\r\n        }\r\n      }\r\n    </div>\r\n  `,\r\n})\r\nexport class MarkdownRendererComponent implements ControlValueAccessor {\r\n  private sanitizer = inject(DomSanitizer)\r\n\r\n  // Inputs\r\n  className = input<string>('')\r\n  content = input<string>('')\r\n\r\n  // ControlValueAccessor State\r\n  private _formValue = signal<string>('')\r\n  disabled = signal(false)\r\n\r\n  private effectiveContent = computed(() => this.content() || this._formValue())\r\n\r\n  elements = computed(() => {\r\n    const text = this.effectiveContent()\r\n    if (!text) return []\r\n\r\n    const lines = text.split('\\n')\r\n    const result: any[] = []\r\n    let i = 0\r\n\r\n    const sizes = ['text-2xl', 'text-xl', 'text-lg', 'text-base', 'text-sm', 'text-sm']\r\n\r\n    while (i < lines.length) {\r\n      const line = lines[i]\r\n\r\n      // 1. Code Blocks\r\n      if (line.trim().startsWith('```')) {\r\n        const lang = line.trim().match(/^```(\\w+)?/)?.[1] || ''\r\n        const codeRows = []\r\n        i++\r\n        while (i < lines.length && !lines[i].trim().startsWith('```')) {\r\n          codeRows.push(lines[i++])\r\n        }\r\n        i++\r\n        result.push({ type: 'code', content: codeRows.join('\\n'), lang })\r\n        continue\r\n      }\r\n\r\n      // 2. Headers\r\n      const hMatch = line.match(/^(#{1,6})\\s+(.+)$/)\r\n      if (hMatch) {\r\n        const level = hMatch[1].length\r\n        result.push({\r\n          type: 'h',\r\n          level,\r\n          safeHtml: this.parseInline(hMatch[2]),\r\n          css: `${sizes[level - 1]} font-semibold mt-4 mb-2 first:mt-0`,\r\n        })\r\n        i++\r\n        continue\r\n      }\r\n\r\n      // 3. Lists\r\n      const ulMatch = line.match(/^[\\s]*[-*+]\\s+/)\r\n      const olMatch = line.match(/^[\\s]*\\d+\\.\\s+/)\r\n      if (ulMatch || olMatch) {\r\n        const listType = ulMatch ? 'ul' : 'ol'\r\n        const regex = ulMatch ? /^[\\s]*[-*+]\\s+/ : /^[\\s]*\\d+\\.\\s+/\r\n        const items = []\r\n        while (i < lines.length && lines[i].match(regex)) {\r\n          items.push(this.parseInline(lines[i++].replace(regex, '')))\r\n        }\r\n        result.push({ type: 'list', listType, items })\r\n        continue\r\n      }\r\n\r\n      // 4. Tables\r\n      if (line.trim().startsWith('|') && line.trim().endsWith('|')) {\r\n        const tLines = []\r\n        while (\r\n          i < lines.length &&\r\n          lines[i].trim().startsWith('|') &&\r\n          lines[i].trim().endsWith('|')\r\n        ) {\r\n          tLines.push(lines[i++].trim())\r\n        }\r\n        if (tLines.length >= 2 && tLines[1].match(/^\\|[\\s\\-:|]+\\|$/)) {\r\n          const headers = tLines[0]\r\n            .split('|')\r\n            .slice(1, -1)\r\n            .map((c) => this.parseInline(c.trim()))\r\n          const rows = tLines.slice(2).map((r) =>\r\n            r\r\n              .split('|')\r\n              .slice(1, -1)\r\n              .map((c) => this.parseInline(c.trim())),\r\n          )\r\n          result.push({ type: 'table', headers, rows })\r\n          continue\r\n        }\r\n        tLines.forEach((l) => result.push({ type: 'p', safeHtml: this.parseInline(l) }))\r\n        continue\r\n      }\r\n\r\n      // 5. Blockquotes\r\n      if (line.trim().startsWith('>')) {\r\n        const qLines = []\r\n        while (i < lines.length && lines[i].trim().startsWith('>')) {\r\n          qLines.push(this.parseInline(lines[i++].replace(/^>\\s?/, '')))\r\n        }\r\n        result.push({ type: 'quote', lines: qLines })\r\n        continue\r\n      }\r\n\r\n      // 6. HR / Spacer / P\r\n      if (line.match(/^[\\s]*[-*_]{3,}[\\s]*$/)) {\r\n        result.push({ type: 'hr' })\r\n      } else if (line.trim() === '') {\r\n        result.push({ type: 'spacer' })\r\n      } else {\r\n        result.push({ type: 'p', safeHtml: this.parseInline(line) })\r\n      }\r\n      i++\r\n    }\r\n    return result\r\n  })\r\n\r\n  private parseInline(text: string): SafeHtml {\r\n    // 1. Basic HTML Escaping\r\n    let h = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')\r\n\r\n    // Store protected HTML fragments\r\n    const protectedChunks: string[] = []\r\n\r\n    // Helper function: Store content in the array and return a token that won't be matched by regex\r\n    const protect = (html: string) => {\r\n      const index = protectedChunks.length\r\n      protectedChunks.push(html)\r\n      return `§${index}§` // Use the special symbol §; it won't trigger Markdown's underscore or asterisk logic\r\n    }\r\n\r\n    // 2. Extract and Protect: Inline Code\r\n    h = h.replace(/`([^`]+)`/g, (_, code) =>\r\n      protect(\r\n        `<code class=\"px-1.5 py-0.5 bg-foreground/10 rounded text-xs font-mono border border-foreground/20\">${code}</code>`,\r\n      ),\r\n    )\r\n\r\n    // 3. Extract and Protect: Images\r\n    h = h.replace(/!\\[([^\\]]*)\\]\\(([^)]+)\\)/g, (_, alt, src) =>\r\n      protect(\r\n        `<img src=\"${src}\" alt=\"${alt}\" class=\"max-w-full h-auto rounded-lg my-2 border border-border inline-block\" />`,\r\n      ),\r\n    )\r\n\r\n    // 4. Extract and Protect: Links\r\n    h = h.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, (_, text, href) =>\r\n      protect(\r\n        `<a href=\"${href}\" target=\"_blank\" rel=\"noopener\" class=\"text-primary hover:underline\">${text}</a>`,\r\n      ),\r\n    )\r\n\r\n    // --- At this point, `h` consists entirely of safe placeholders like §0§, §1§; underscores can no longer interfere with the URLs contained within them ---\r\n\r\n    // 5. Process Bold Text (Note: This must be applied to the *remaining* text)\r\n    h = h.replace(/\\*\\*(.+?)\\*\\*/g, '<strong class=\"font-semibold\">$1</strong>')\r\n    h = h.replace(/__(.+?)__/g, '<strong class=\"font-semibold\">$1</strong>')\r\n\r\n    // 6. Process italics\r\n    h = h.replace(/\\*([^\\s*][^*]*)\\*/g, '<em class=\"italic\">$1</em>')\r\n    h = h.replace(/_([^\\s_][^_]*)\\_/g, '<em class=\"italic\">$1</em>')\r\n\r\n    // 7. Final step: Restore all protected HTML content\r\n    // Replace in reverse order or use a regex loop to ensure all placeholders are reverted\r\n    h = h.replace(/§(\\d+)§/g, (_, index) => protectedChunks[+index])\r\n\r\n    return this.sanitizer.bypassSecurityTrustHtml(h)\r\n  }\r\n\r\n  // CVA Implementation\r\n  onChange = (_: any) => {}\r\n  onTouched = () => {}\r\n\r\n  writeValue(v: any): void {\r\n    this._formValue.set(v || '')\r\n  }\r\n  registerOnChange(fn: any): void {\r\n    this.onChange = fn\r\n  }\r\n  registerOnTouched(fn: any): void {\r\n    this.onTouched = fn\r\n  }\r\n  setDisabledState?(isDisabled: boolean): void {\r\n    this.disabled.set(isDisabled)\r\n  }\r\n}\r\n",
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "",
@@ -43238,7 +43243,7 @@
             },
             {
                 "name": "isAbortError",
-                "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
+                "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
                 "ctype": "miscellaneous",
                 "subtype": "function",
                 "deprecated": false,
@@ -43265,7 +43270,7 @@
             },
             {
                 "name": "isAbortError",
-                "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
+                "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
                 "ctype": "miscellaneous",
                 "subtype": "function",
                 "deprecated": false,
@@ -44454,7 +44459,7 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "rawtype": "ExtendedResponseStreamEvent | \"clear\"",
-                "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
+                "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "description": "",
@@ -44465,7 +44470,7 @@
                 "ctype": "miscellaneous",
                 "subtype": "typealias",
                 "rawtype": "ExtendedResponseStreamEvent | \"clear\"",
-                "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
+                "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "description": "",
@@ -47119,10 +47124,10 @@
                     ]
                 }
             ],
-            "src/app/features/devui/components/features/agent/agent-view.component.ts": [
+            "src/app/features/devui/components/features/workflow/workflow-view.component.ts": [
                 {
                     "name": "isAbortError",
-                    "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
+                    "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
                     "ctype": "miscellaneous",
                     "subtype": "function",
                     "deprecated": false,
@@ -47148,10 +47153,10 @@
                     ]
                 }
             ],
-            "src/app/features/devui/components/features/workflow/workflow-view.component.ts": [
+            "src/app/features/devui/components/features/agent/agent-view.component.ts": [
                 {
                     "name": "isAbortError",
-                    "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
+                    "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
                     "ctype": "miscellaneous",
                     "subtype": "function",
                     "deprecated": false,
@@ -47606,19 +47611,6 @@
                     "kind": 193
                 }
             ],
-            "src/app/features/devui/components/features/agent/agent-view.component.ts": [
-                {
-                    "name": "DebugEvent",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "rawtype": "ExtendedResponseStreamEvent | \"clear\"",
-                    "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "description": "",
-                    "kind": 193
-                }
-            ],
             "src/app/features/devui/components/features/workflow/workflow-view.component.ts": [
                 {
                     "name": "DebugEvent",
@@ -47626,6 +47618,19 @@
                     "subtype": "typealias",
                     "rawtype": "ExtendedResponseStreamEvent | \"clear\"",
                     "file": "src/app/features/devui/components/features/workflow/workflow-view.component.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "description": "",
+                    "kind": 193
+                }
+            ],
+            "src/app/features/devui/components/features/agent/agent-view.component.ts": [
+                {
+                    "name": "DebugEvent",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "rawtype": "ExtendedResponseStreamEvent | \"clear\"",
+                    "file": "src/app/features/devui/components/features/agent/agent-view.component.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "description": "",
@@ -51704,10 +51709,10 @@
                 "status": "low"
             },
             {
-                "filePath": "src/app/shared/ui/code-block.component.ts",
+                "filePath": "src/app/shared/ui/code/code-block.component.ts",
                 "type": "component",
                 "linktype": "component",
-                "name": "CodeBlock",
+                "name": "CodeBlockComponent",
                 "coveragePercent": 0,
                 "coverageCount": "0/7",
                 "status": "low"
