@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 test.describe('CodeBlock E2E', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to the test route
-    await page.goto('/testing/code')
+    await page.goto('/testing/code', { waitUntil: 'domcontentloaded' })
   })
 
   test('Verify CodeBlock hover display logic and line-wrapping styles', async ({ page }) => {

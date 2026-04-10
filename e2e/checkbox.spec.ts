@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 test.describe('Checkbox Component E2E', () => {
   test.beforeEach(async ({ page }) => {
     // Visit the test page route
-    await page.goto('/testing/checkbox')
+    await page.goto('/testing/checkbox', { waitUntil: 'domcontentloaded' })
   })
 
   test('Reactive Forms Section: Clicking should update the form JSON value and support toggling disabled state', async ({

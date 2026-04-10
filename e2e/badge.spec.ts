@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Badge Component E2E', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/testing/badge')
+    await page.goto('/testing/badge', { waitUntil: 'domcontentloaded' })
   })
 
   test('It should display correctly on the page and have the correct CSS properties.', async ({

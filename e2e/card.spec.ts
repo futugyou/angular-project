@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Card Component E2E', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/testing/card')
+    await page.goto('/testing/card', { waitUntil: 'domcontentloaded' })
   })
 
   test('The page should display the card content and title correctly', async ({ page }) => {
