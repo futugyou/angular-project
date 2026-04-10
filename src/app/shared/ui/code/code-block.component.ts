@@ -1,4 +1,4 @@
-import { Component, computed, input, signal } from '@angular/core'
+import { Component, computed, DestroyRef, inject, input, signal } from '@angular/core'
 
 import { NgIconComponent } from '@ng-icons/core'
 
@@ -37,6 +37,8 @@ import { NgIconComponent } from '@ng-icons/core'
 export class CodeBlockComponent {
   codeText = input.required<string>({ alias: 'code' })
   language = input<string>('')
+
+  private _destroyRef = inject(DestroyRef)
   copied = signal(false)
   private _timer: any
   formattedCode = computed(() => this.codeText().trim())
@@ -47,6 +49,7 @@ export class CodeBlockComponent {
       this.copied.set(true)
       clearTimeout(this._timer)
       this._timer = setTimeout(() => this.copied.set(false), 2000)
+      this._destroyRef.onDestroy(() => clearTimeout(this._timer))
     } catch (err) {
       console.error('Failed to copy:', err)
     }
