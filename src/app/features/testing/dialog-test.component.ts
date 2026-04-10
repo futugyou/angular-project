@@ -11,7 +11,7 @@ import { DIALOG_COMPONENTS } from '@shared/ui/dialog'
     <h1 class="text-2xl font-bold mb-6 text-gray-800">Dialog Component Test</h1>
     <button (click)="showDialogModal.set(true)">open</button>
 
-    <app-dialog [(open)]="showDialogModal">
+    <app-dialog [(open)]="showDialogModal" [isModal]="false">
       <app-dialog-header>
         <app-dialog-title>title</app-dialog-title>
         <app-dialog-description>description</app-dialog-description>

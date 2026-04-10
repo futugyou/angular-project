@@ -1,14 +1,15 @@
 import {
-  Component,
-  TemplateRef,
-  ViewContainerRef,
+  signal,
   input,
+  model,
+  Component,
+  inject,
+  ViewContainerRef,
+  viewChild,
+  TemplateRef,
+  effect,
   computed,
   output,
-  model,
-  effect,
-  viewChild,
-  inject,
 } from '@angular/core'
 import { Overlay, OverlayModule, OverlayRef } from '@angular/cdk/overlay'
 import { TemplatePortal } from '@angular/cdk/portal'
@@ -117,20 +118,48 @@ export class DialogContentComponent {
   imports: [OverlayModule],
   template: `
     <ng-template #contentTemplate>
-      <div [class]="containerClasses()">
+      <div [class]="containerClasses()" [class.animate-shake]="shake()">
         <ng-content />
       </div>
     </ng-template>
   `,
+  styles: [
+    `
+      .animate-shake {
+        animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      }
+      @keyframes shake {
+        10%,
+        90% {
+          transform: translate3d(-1px, 0, 0);
+        }
+        20%,
+        80% {
+          transform: translate3d(2px, 0, 0);
+        }
+        30%,
+        50%,
+        70% {
+          transform: translate3d(-4px, 0, 0);
+        }
+        40%,
+        60% {
+          transform: translate3d(4px, 0, 0);
+        }
+      }
+    `,
+  ],
 })
 export class DialogComponent {
   open = model<boolean>(false)
   class = input<string>('')
+  isModal = input<boolean>(false)
 
   private overlay = inject(Overlay)
   private viewContainerRef = inject(ViewContainerRef)
   private contentTemplate = viewChild.required<TemplateRef<any>>('contentTemplate')
   private overlayRef?: OverlayRef
+  protected shake = signal(false)
 
   containerClasses = computed(() => {
     const customClass = this.class()
@@ -158,9 +187,31 @@ export class DialogComponent {
       scrollStrategy: this.overlay.scrollStrategies.block(),
     })
 
-    this.overlayRef.backdropClick().subscribe(() => this.open.set(false))
+    this.overlayRef.backdropClick().subscribe(() => {
+      if (this.isModal()) {
+        this.triggerShake()
+      } else {
+        this.open.set(false)
+      }
+    })
+
+    this.overlayRef.keydownEvents().subscribe((event) => {
+      if (event.key === 'Escape') {
+        if (this.isModal()) {
+          this.triggerShake()
+        } else {
+          this.open.set(false)
+        }
+      }
+    })
+
     const portal = new TemplatePortal(this.contentTemplate(), this.viewContainerRef)
     this.overlayRef.attach(portal)
+  }
+
+  private triggerShake() {
+    this.shake.set(true)
+    setTimeout(() => this.shake.set(false), 400)
   }
 
   private detachOverlay() {
