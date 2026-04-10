@@ -6,7 +6,7 @@ import {
   DialogHeaderComponent,
   DialogTitleComponent,
   DialogCloseComponent,
-} from '@shared/ui/dialog.component'
+} from '@shared/ui/dialog'
 import type { WorkflowInfo } from '../../../types'
 
 @Component({

@@ -7,7 +7,7 @@ import {
   DialogHeaderComponent,
   DialogTitleComponent,
   DialogCloseComponent,
-} from '@shared/ui/dialog.component'
+} from '@shared/ui/dialog'
 
 @Component({
   selector: 'app-detail-card',

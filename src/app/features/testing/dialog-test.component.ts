@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
-import { DIALOG_COMPONENTS } from '@shared/ui/dialog.component'
+import { DIALOG_COMPONENTS } from '@shared/ui/dialog'
 
 @Component({
   selector: 'app-dialog-test',

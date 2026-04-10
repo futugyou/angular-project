@@ -23,7 +23,7 @@ import {
   DialogTitleComponent,
   DialogCloseComponent,
   DialogDescriptionComponent,
-} from '@shared/ui/dialog.component'
+} from '@shared/ui/dialog'
 import { ButtonComponent } from '@shared/ui/button'
 import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
 import { ApiClient } from '../../services/api.service'

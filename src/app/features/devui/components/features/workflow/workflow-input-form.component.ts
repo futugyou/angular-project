@@ -19,7 +19,7 @@ import {
   DialogTitleComponent,
   DialogCloseComponent,
   DialogFooterComponent,
-} from '@shared/ui/dialog.component'
+} from '@shared/ui/dialog'
 import type { JSONSchemaProperty } from '../../../types'
 
 @Component({

@@ -13,7 +13,7 @@ import {
 import { Overlay, OverlayModule, OverlayRef } from '@angular/cdk/overlay'
 import { TemplatePortal } from '@angular/cdk/portal'
 import { NgIconComponent } from '@ng-icons/core'
-import { ButtonDirective } from '../directives/button.directive'
+import { ButtonDirective } from '../../directives/button.directive'
 
 @Component({
   selector: 'app-dialog-header',
@@ -168,13 +168,3 @@ export class DialogComponent {
     this.overlayRef = undefined
   }
 }
-
-export const DIALOG_COMPONENTS = [
-  DialogComponent,
-  DialogContentComponent,
-  DialogHeaderComponent,
-  DialogTitleComponent,
-  DialogCloseComponent,
-  DialogFooterComponent,
-  DialogDescriptionComponent,
-] as const

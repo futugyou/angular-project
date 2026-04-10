@@ -9,7 +9,7 @@ import {
   DialogCloseComponent,
   DialogContentComponent,
   DialogComponent,
-} from '@shared/ui/dialog.component'
+} from '@shared/ui/dialog'
 import { ButtonDirective } from '@shared/directives/button.directive'
 import { InputComponent } from '@shared/ui/input.component'
 import { LabelComponent } from '@shared/ui/label.component'

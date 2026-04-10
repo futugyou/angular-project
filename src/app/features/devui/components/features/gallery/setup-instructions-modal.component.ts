@@ -12,7 +12,7 @@ import {
   DialogContentComponent,
   DialogHeaderComponent,
   DialogTitleComponent,
-} from '@shared/ui/dialog.component'
+} from '@shared/ui/dialog'
 
 @Component({
   selector: 'app-code-block',

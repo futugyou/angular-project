@@ -20,7 +20,7 @@ import {
   DialogHeaderComponent,
   DialogTitleComponent,
   DialogCloseComponent,
-} from '@shared/ui/dialog.component'
+} from '@shared/ui/dialog'
 import { WorkflowInputFormComponent } from './workflow-input-form.component'
 import { isChatMessageSchema } from '../../../utils/tool'
 

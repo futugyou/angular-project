@@ -6,7 +6,7 @@ import {
   DialogHeaderComponent,
   DialogTitleComponent,
   DialogCloseComponent,
-} from '@shared/ui/dialog.component'
+} from '@shared/ui/dialog'
 import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
 import { BadgeComponent } from '@src/app/shared/ui/badge'
 import { ApiClient } from '../../../services/api.service'
