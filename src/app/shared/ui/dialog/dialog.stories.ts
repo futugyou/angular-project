@@ -56,3 +56,28 @@ export const CustomSize: StoryObj = {
     `,
   }),
 }
+
+export const ModalBehavior: StoryObj = {
+  argTypes: {
+    isModal: { control: 'boolean' },
+  },
+  render: (args) => ({
+    props: {
+      isOpen: signal(true),
+      isModal: args['isModal'],
+    },
+    template: `
+    <app-dialog [open]="isOpen()" [isModal]="isModal">
+      <app-dialog-header>
+        <app-dialog-title>Modal Behavior Demo</app-dialog-title>
+      </app-dialog-header>
+      <app-dialog-content>
+        Current Mode: {{ isModal ? 'Forced Mode (Clicking outside has no effect)' : 'Normal Mode' }}
+      </app-dialog-content>
+      <app-dialog-footer>
+        <button (click)="isOpen.set(false)">You must click me to close</button>
+      </app-dialog-footer>
+    </app-dialog>
+    `,
+  }),
+}
