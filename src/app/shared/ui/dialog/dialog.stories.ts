@@ -45,7 +45,7 @@ export const CustomSize: StoryObj = {
       isOpen: signal(true),
     },
     template: `
-      <app-dialog [open]="isOpen()" class="max-w-sm min-h-[200px]">
+      <app-dialog [open]="isOpen()" class="max-w-sm min-h-50">
         <app-dialog-header>
           <app-dialog-title>Small Dialog</app-dialog-title>
         </app-dialog-header>
