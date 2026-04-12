@@ -6,12 +6,7 @@ import { CdkMenuModule } from '@angular/cdk/menu'
 import type { JSONSchemaProperty, CheckpointItem, ResponseInputContent } from '../../../types'
 
 import { ButtonComponent } from '@shared/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from '@shared/ui/dropdown.component'
+import { DROPDOWN_COMPONENTS } from '@shared/ui/dropdown'
 import { BadgeComponent } from '@src/app/shared/ui/badge'
 import { ChatMessageInputComponent } from '@src/app/features/devui/components/ui/chat-message-input.component'
 import {
@@ -31,10 +26,7 @@ import { isChatMessageSchema } from '../../../utils/tool'
     CdkMenuModule,
     NgIconComponent,
     ButtonComponent,
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
+    ...DROPDOWN_COMPONENTS,
     BadgeComponent,
     DialogComponent,
     DialogContentComponent,

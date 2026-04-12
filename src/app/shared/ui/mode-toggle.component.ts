@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core'
 import { NgIconComponent } from '@ng-icons/core'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from './dropdown.component'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from './dropdown'
 import { ThemeService } from '../services/theme.service'
 import { ButtonDirective } from '../directives/button.directive'
 

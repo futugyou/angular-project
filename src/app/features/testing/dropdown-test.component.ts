@@ -2,38 +2,14 @@ import { Component, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule, provideIcons } from '@ng-icons/core'
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-  DropdownMenuSubContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuCheckboxItem,
-  DropdownMenuRadioItem,
-  DropdownMenuSubTrigger,
-} from '@shared/ui/dropdown.component'
+import { DROPDOWN_COMPONENTS } from '@shared/ui/dropdown'
 import { lucideCheckCheck, lucideLogOut } from '@ng-icons/lucide'
 
 @Component({
   selector: 'app-dropdown-test',
   standalone: true,
   providers: [provideIcons({ lucideLogOut, lucideCheckCheck })],
-  imports: [
-    CommonModule,
-    NgIconsModule,
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuLabel,
-    DropdownMenuSubContent,
-    DropdownMenuRadioGroup,
-    DropdownMenuCheckboxItem,
-    DropdownMenuRadioItem,
-    DropdownMenuSubTrigger,
-  ],
+  imports: [CommonModule, NgIconsModule, ...DROPDOWN_COMPONENTS],
   template: `
     <h1 class="text-2xl font-bold mb-6 text-gray-800">Dropdown Component Test</h1>
     <button

@@ -4,12 +4,7 @@ import { NgTemplateOutlet } from '@angular/common'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { ButtonDirective } from '@shared/directives/button.directive'
 import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner.component'
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from '@shared/ui/dropdown.component'
+import { DROPDOWN_COMPONENTS } from '@shared/ui/dropdown'
 import { NgIconComponent } from '@ng-icons/core'
 import type { AgentInfo, WorkflowInfo } from '../../types'
 
@@ -22,10 +17,7 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
     ButtonDirective,
     NgTemplateOutlet,
     LoadingSpinnerComponent,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuLabel,
+    ...DROPDOWN_COMPONENTS,
   ],
   providers: [
     {

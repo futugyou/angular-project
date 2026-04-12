@@ -14,18 +14,13 @@ import {
   ChangeDetectionStrategy,
   OnInit,
   computed,
+  Injector,
 } from '@angular/core'
 import { Graph, Node } from '@antv/x6'
 
 import { NgIconComponent } from '@ng-icons/core'
 import { ButtonDirective } from '@shared/directives/button.directive'
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuCheckboxItem,
-  DropdownMenu,
-} from '@shared/ui/dropdown.component'
+import { DROPDOWN_COMPONENTS } from '@shared/ui/dropdown'
 import { GridDrawOptions } from '@antv/x6/lib/graph/grid'
 import { GraphService } from '../../../services/v6node-graph.service'
 import { CommonModule, JsonPipe } from '@angular/common'
@@ -39,15 +34,7 @@ import {
 @Component({
   selector: 'app-workflow-graph',
   standalone: true,
-  imports: [
-    NgIconComponent,
-    ButtonDirective,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuCheckboxItem,
-    DropdownMenu,
-  ],
+  imports: [NgIconComponent, ButtonDirective, ...DROPDOWN_COMPONENTS],
   host: {
     class: 'block relative w-full h-full',
   },
@@ -407,8 +394,9 @@ export class TimelineResizeHandlerComponent {
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WorkflowFlowComponent implements OnDestroy {
+export class WorkflowFlowComponent implements AfterViewInit, OnDestroy {
   protected readonly graphService = inject(GraphService)
+  private injector = inject(Injector)
 
   workflowDump = input.required<any>()
   events = input<any[]>([])
@@ -459,6 +447,7 @@ export class WorkflowFlowComponent implements OnDestroy {
       const edges = this.initialEdges()
       if (nodes.length > 0 && this.graphService.isInitialized()) {
         untracked(() => {
+          console.log('2 Setting initial nodes and edges:', nodes, edges)
           this.graphService.setNodesAndEdges(nodes, edges)
           this.graphService.applyDagreLayout(this.layoutDirection())
           this.graphService.fitView({ padding: 0.2, duration: 500 })
@@ -503,13 +492,14 @@ export class WorkflowFlowComponent implements OnDestroy {
         untracked(() => this.graphService.setNodesDraggable(!streaming))
       }
     })
+  }
 
-    effect(() => {
-      const el = this.container()
-      if (el) {
-        this.graphService.initGraph(el.nativeElement)
-      }
-    })
+  ngAfterViewInit(): void {
+    const el = this.container()
+    if (el) {
+      console.log('1 Initializing graph in container:', el)
+      this.graphService.initGraph(el.nativeElement)
+    }
   }
 
   ngOnDestroy() {

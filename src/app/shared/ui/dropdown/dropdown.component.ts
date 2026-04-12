@@ -17,7 +17,7 @@ import {
   CdkMenu,
 } from '@angular/cdk/menu'
 import { NgIconComponent } from '@ng-icons/core'
-import { cn } from '../utils/utils'
+import { cn } from '../../utils/utils'
 
 @Directive({
   selector: '[appDropdownMenu]',
