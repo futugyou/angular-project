@@ -1,6 +1,6 @@
 import { Component, input, output, viewChild, ElementRef, computed } from '@angular/core'
 import { NgIconsModule } from '@ng-icons/core'
-import { ButtonDirective } from '../directives/button.directive'
+import { ButtonDirective } from '../../directives/button.directive'
 
 @Component({
   selector: 'app-file-upload',

@@ -1,7 +1,7 @@
 import { Component, computed, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
-import { FileUploadComponent } from '@shared/ui/file-upload.component'
+import { FileUploadComponent } from '@shared/ui/fileupload'
 
 @Component({
   selector: 'app-upload-test',
