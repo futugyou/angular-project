@@ -80,6 +80,7 @@ export class TestingComponent {
     { name: 'Select', path: 'select' },
     { name: 'Badge', path: 'badge' },
     { name: 'Dropdown', path: 'dropdown' },
+    { name: 'Input', path: 'input' },
     { name: 'Alert', path: 'alert' },
     { name: 'Attachment', path: 'attachment' },
     { name: 'Card', path: 'card' },

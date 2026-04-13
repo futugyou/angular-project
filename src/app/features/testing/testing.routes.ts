@@ -24,6 +24,10 @@ export const TESTING_ROUTES: Routes = [
           import('./dropdown-test.component').then((m) => m.DropdownTestComponent),
       },
       {
+        path: 'input',
+        loadComponent: () => import('./input-test.component').then((m) => m.InputTestComponent),
+      },
+      {
         path: 'alert',
         loadComponent: () => import('./alert-test.component').then((m) => m.AlertTestComponent),
       },
