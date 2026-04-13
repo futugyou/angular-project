@@ -1,8 +1,7 @@
 import { Component, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
-import { AttachmentGalleryComponent } from '@shared/ui/attachment'
-import { AttachmentItem } from '@shared/ui/types'
+import { AttachmentGalleryComponent, AttachmentItem } from '@shared/ui/attachment'
 import { MOCK_ATTACHMENTS } from './mock-data'
 
 @Component({

@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core'
 
-import { AttachmentItem } from '../types'
+import { AttachmentItem } from './types'
 import { NgIconsModule } from '@ng-icons/core'
 
 @Component({

@@ -1,4 +1,4 @@
-import { AttachmentItem } from '@shared/ui/types'
+import { AttachmentItem } from '@shared/ui/attachment'
 import type {
   AgentInfo,
   WorkflowInfo,

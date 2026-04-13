@@ -1,4 +1,4 @@
-import { AttachmentItem } from '../../shared/ui/types'
+import { AttachmentItem } from '@shared/ui/attachment'
 
 export const MOCK_ATTACHMENTS: AttachmentItem[] = [
   {
