@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { LayoutService } from '../services/layout.service'
+import { LayoutService } from '../../services/layout.service'
 import { NgIconComponent } from '@ng-icons/core'
 import { CdkDrag } from '@angular/cdk/drag-drop'
 

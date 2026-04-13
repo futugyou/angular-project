@@ -6,7 +6,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core'
 import { NgIconComponent } from '@ng-icons/core'
-import { cn } from '../utils/utils'
+import { cn } from '../../utils/utils'
 
 @Component({
   selector: 'label[appLabel], app-label',

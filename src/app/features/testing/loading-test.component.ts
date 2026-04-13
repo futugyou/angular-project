@@ -1,8 +1,7 @@
-import { Component, signal } from '@angular/core'
+import { Component } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
-import { LoadingStateComponent } from '@shared/ui/loading-state.component'
-import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner.component'
+import { LoadingStateComponent, LoadingSpinnerComponent } from '@shared/ui/loading'
 
 @Component({
   selector: 'app-loading-test',

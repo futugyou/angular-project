@@ -12,7 +12,7 @@ import { DatePipe } from '@angular/common'
 import { NgIconComponent } from '@ng-icons/core'
 import { ButtonComponent } from '@shared/ui/button'
 import { BadgeComponent } from '@src/app/shared/ui/badge'
-import { LoadingStateComponent } from '@shared/ui/loading-state.component'
+import { LoadingStateComponent } from '@shared/ui/loading'
 
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@shared/ui/select.component'
 

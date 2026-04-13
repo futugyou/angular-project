@@ -11,7 +11,7 @@ import { filter, map, mergeMap } from 'rxjs/operators'
 
 import { NgIconsModule } from '@ng-icons/core'
 import { MenuStack, MENU_STACK } from '@angular/cdk/menu'
-import { FullscreenToggleComponent } from '@shared/ui/fullscreen-toggle.component'
+import { FullscreenToggleComponent } from '@shared/ui/fullscreen-toggle'
 import { LayoutService } from '@shared/services/layout.service'
 
 @Component({

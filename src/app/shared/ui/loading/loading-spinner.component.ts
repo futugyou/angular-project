@@ -1,6 +1,6 @@
 import { Component, computed, input, type Signal } from '@angular/core'
 import { NgIconComponent } from '@ng-icons/core'
-import { cn } from '../utils/utils'
+import { cn } from '../../utils/utils'
 
 @Component({
   selector: 'app-loading-spinner',

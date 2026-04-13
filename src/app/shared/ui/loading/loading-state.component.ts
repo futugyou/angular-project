@@ -1,7 +1,7 @@
 import { Component, computed, input } from '@angular/core'
 
-import { cn } from '../utils/utils'
 import { LoadingSpinnerComponent } from './loading-spinner.component'
+import { cn } from '../../utils/utils'
 
 @Component({
   selector: 'app-loading-state',

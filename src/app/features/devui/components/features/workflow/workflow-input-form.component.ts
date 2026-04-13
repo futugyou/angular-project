@@ -10,7 +10,7 @@ import {
 } from './schema-form-renderer.component'
 import { ButtonComponent } from '@shared/ui/button'
 import { TextareaComponent } from '@shared/ui/textarea.component'
-import { LabelComponent } from '@shared/ui/label.component'
+import { LabelComponent } from '@shared/ui/label'
 import { CardTitleComponent } from '@shared/ui/card'
 import {
   DialogComponent,

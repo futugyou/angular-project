@@ -4,7 +4,7 @@ import { NgIconComponent } from '@ng-icons/core'
 import type { JSONSchemaProperty } from '../../../types'
 
 import { ButtonComponent } from '@shared/ui/button'
-import { LabelComponent } from '@shared/ui/label.component'
+import { LabelComponent } from '@shared/ui/label'
 import { CheckboxComponent } from '@shared/ui/checkbox'
 import { TextareaComponent } from '@shared/ui/textarea.component'
 import { InputComponent } from '@shared/ui/input'

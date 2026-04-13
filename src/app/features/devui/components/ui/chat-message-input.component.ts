@@ -22,7 +22,7 @@ import { AttachmentGalleryComponent } from '@shared/ui/attachment'
 import { ButtonDirective } from '../../../../shared/directives/button.directive'
 import { FileUploadComponent } from '@shared/ui/fileupload'
 import { TextareaComponent } from '@shared/ui/textarea.component'
-import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner.component'
+import { LoadingSpinnerComponent } from '@shared/ui/loading'
 
 @Component({
   selector: 'app-chat-message-input',
