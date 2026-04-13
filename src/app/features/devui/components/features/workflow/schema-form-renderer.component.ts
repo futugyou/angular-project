@@ -8,14 +8,7 @@ import { LabelComponent } from '@shared/ui/label'
 import { CheckboxComponent } from '@shared/ui/checkbox'
 import { TextareaComponent } from '@shared/ui/textarea.component'
 import { InputComponent } from '@shared/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@shared/ui/select.component'
+import { SELECT_COMPONENTS } from '@shared/ui/select'
 
 // ============================================================================
 // Field Type Detection Helpers
@@ -130,12 +123,7 @@ export function filterEmptyOptionalFields(
     CheckboxComponent,
     TextareaComponent,
     InputComponent,
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+    ...SELECT_COMPONENTS,
   ],
   template: `
     <div [class]="columnSpan()">

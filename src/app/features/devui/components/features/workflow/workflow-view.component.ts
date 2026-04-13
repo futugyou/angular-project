@@ -14,7 +14,7 @@ import { ButtonComponent } from '@shared/ui/button'
 import { BadgeComponent } from '@src/app/shared/ui/badge'
 import { LoadingStateComponent } from '@shared/ui/loading'
 
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@shared/ui/select.component'
+import { SELECT_COMPONENTS } from '@shared/ui/select'
 
 import { ApiClient } from '../../../services/api.service'
 import { WorkflowFlowComponent } from './workflow-flow.component'
@@ -74,10 +74,6 @@ const WORKFLOW_EVENT_TYPES = [
     NgIconComponent,
     NgIconComponent,
     ButtonComponent,
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
     WorkflowFlowComponent,
     ExecutionTimelineComponent,
     CheckpointInfoModal,
@@ -86,6 +82,7 @@ const WORKFLOW_EVENT_TYPES = [
     BadgeComponent,
     RunWorkflowButtonComponent,
     WorkflowDetailsModalComponent,
+    ...SELECT_COMPONENTS,
   ],
   host: {
     class: 'block relative w-full h-full',

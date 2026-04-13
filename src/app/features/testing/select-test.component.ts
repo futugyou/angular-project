@@ -1,7 +1,7 @@
 import { Component, effect, Injector, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
-import { SELECT_COMPONENTS } from '@shared/ui/select.component'
+import { SELECT_COMPONENTS } from '@shared/ui/select'
 
 @Component({
   selector: 'app-select-test',

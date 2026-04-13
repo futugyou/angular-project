@@ -19,7 +19,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CdkListbox, CdkListboxModule, CdkOption } from '@angular/cdk/listbox'
 import { NgIconComponent } from '@ng-icons/core'
-import { cn } from '../utils/utils'
+import { cn } from '../../utils/utils'
 import { NgTemplateOutlet } from '@angular/common'
 
 export interface SelectContentProvider {

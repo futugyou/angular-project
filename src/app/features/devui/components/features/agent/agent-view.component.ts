@@ -17,22 +17,13 @@ import { ScrollAreaComponent } from '@shared/ui/scroll-area'
 import { ChatMessageInputComponent } from '@src/app/features/devui/components/ui/chat-message-input.component'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@shared/ui/select.component'
-
+import { SELECT_COMPONENTS } from '@shared/ui/select'
 import { AgentDetailsModalComponent } from './agent-details-modal.component'
 import { ApiClient } from '../../../services/api.service'
 import { ConversationItemBubble } from './conversation-item-bubble.component'
 import type {
   AgentInfo,
   RunAgentRequest,
-  Conversation,
   ExtendedResponseStreamEvent,
   ConversationItem,
   ResponseInputParam,
@@ -80,11 +71,7 @@ type DebugEvent = ExtendedResponseStreamEvent | 'clear'
     NgIconComponent,
     ButtonComponent,
     ScrollAreaComponent,
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
+    ...SELECT_COMPONENTS,
     AgentDetailsModalComponent,
     ConversationItemBubble,
     DragDropDirective,
