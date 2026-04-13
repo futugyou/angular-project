@@ -7,7 +7,7 @@ import { ButtonComponent } from '@shared/ui/button'
 import { LabelComponent } from '@shared/ui/label.component'
 import { CheckboxComponent } from '@shared/ui/checkbox'
 import { TextareaComponent } from '@shared/ui/textarea.component'
-import { InputComponent } from '@shared/ui/input.component'
+import { InputComponent } from '@shared/ui/input'
 import {
   Select,
   SelectContent,

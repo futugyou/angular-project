@@ -11,7 +11,7 @@ import {
   DialogComponent,
 } from '@shared/ui/dialog'
 import { ButtonDirective } from '@shared/directives/button.directive'
-import { InputComponent } from '@shared/ui/input.component'
+import { InputComponent } from '@shared/ui/input'
 import { LabelComponent } from '@shared/ui/label.component'
 import { SwitchComponent } from '@shared/ui/switch.component'
 

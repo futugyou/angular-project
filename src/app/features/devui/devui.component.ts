@@ -11,7 +11,7 @@ import { ApiClient } from './services/api.service'
 import { NgIconComponent } from '@ng-icons/core'
 import type { AgentInfo, WorkflowInfo, ExtendedResponseStreamEvent } from './types'
 import { ButtonComponent } from '@shared/ui/button'
-import { InputComponent } from '@shared/ui/input.component'
+import { InputComponent } from '@shared/ui/input'
 import { DevUIStore } from './stores'
 
 @Component({
