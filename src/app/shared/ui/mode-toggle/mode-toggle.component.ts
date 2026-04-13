@@ -1,8 +1,8 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core'
 import { NgIconComponent } from '@ng-icons/core'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from './dropdown'
-import { ThemeService } from '../services/theme.service'
-import { ButtonDirective } from '../directives/button.directive'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from '../dropdown'
+import { ThemeService } from '../../services/theme.service'
+import { ButtonDirective } from '../../directives/button.directive'
 
 @Component({
   selector: 'app-mode-toggle',
@@ -33,7 +33,7 @@ import { ButtonDirective } from '../directives/button.directive'
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModeToggle {
+export class ModeToggleComponent {
   private themeService = inject(ThemeService)
 
   setTheme(theme: 'light' | 'dark' | 'system') {

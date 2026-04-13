@@ -1,7 +1,7 @@
 import { Component, computed, input, signal, forwardRef, inject } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
-import { CodeBlockComponent } from './code'
+import { CodeBlockComponent } from '../code'
 
 @Component({
   selector: 'app-markdown-renderer',

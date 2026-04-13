@@ -20,7 +20,7 @@ import {
 } from '@shared/ui/tab.component'
 import { BadgeComponent } from '@src/app/shared/ui/badge'
 import { ButtonComponent } from '@shared/ui/button'
-import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
+import { ScrollAreaComponent } from '@shared/ui/scroll-area'
 
 import { ContextInspectorComponent } from '../../components/features/agent/context-inspector.component'
 import {

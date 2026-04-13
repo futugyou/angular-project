@@ -13,7 +13,7 @@ import {
 import { DatePipe, DecimalPipe, JsonPipe, NgClass, SlicePipe } from '@angular/common'
 import { NgIconComponent } from '@ng-icons/core'
 import { ButtonComponent } from '@shared/ui/button'
-import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
+import { ScrollAreaComponent } from '@shared/ui/scroll-area'
 import { ChatMessageInputComponent } from '@src/app/features/devui/components/ui/chat-message-input.component'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 

@@ -6,13 +6,13 @@ import type { AgentInfo, WorkflowInfo } from '../../types'
 
 import { ButtonDirective } from '@shared/directives/button.directive'
 import { BadgeComponent } from '@src/app/shared/ui/badge'
-import { ModeToggle } from '@shared/ui/mode-toggle.component'
+import { ModeToggleComponent } from '@shared/ui/mode-toggle'
 import { EntitySelector } from './entity-selector.component'
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [NgIconComponent, ButtonDirective, BadgeComponent, ModeToggle, EntitySelector],
+  imports: [NgIconComponent, ButtonDirective, BadgeComponent, ModeToggleComponent, EntitySelector],
   providers: [provideIcons({ lucideSettings, lucideZap })],
   template: `
     <header class="flex h-14 items-center gap-4 border-b px-4">

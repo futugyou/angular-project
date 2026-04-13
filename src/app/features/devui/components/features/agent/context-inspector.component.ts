@@ -13,7 +13,7 @@ import { NgTemplateOutlet, NgClass } from '@angular/common'
 import { TooltipDirective, TooltipContent } from '@shared/ui/tooltip.component'
 import { BadgeComponent } from '@src/app/shared/ui/badge'
 import { CheckboxComponent } from '@shared/ui/checkbox'
-import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
+import { ScrollAreaComponent } from '@shared/ui/scroll-area'
 import {
   TraceAttributes,
   type TypedTraceAttributes,

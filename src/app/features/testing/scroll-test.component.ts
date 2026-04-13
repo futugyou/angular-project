@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
-import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
+import { ScrollAreaComponent } from '@shared/ui/scroll-area'
 
 @Component({
   selector: 'app-scroll-test',

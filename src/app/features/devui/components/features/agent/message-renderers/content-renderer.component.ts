@@ -2,7 +2,7 @@ import { Component, computed, ElementRef, inject, input, signal } from '@angular
 import { JsonPipe } from '@angular/common'
 import { NgIconComponent } from '@ng-icons/core'
 import { MessageContent } from '../../../../types'
-import { MarkdownRendererComponent } from '@shared/ui/markdown-renderer.component'
+import { MarkdownRendererComponent } from '@shared/ui/markdown-renderer'
 
 // --- Utility: Base64 to Blob URL Hook Logic in Angular ---
 function useBase64ToBlobUrl(dataSignal: () => string | undefined, mimeType: string) {

@@ -4,7 +4,7 @@ import { NgIconComponent } from '@ng-icons/core'
 import { SampleEntity } from '../../../data/gallery/sample-entities'
 
 import { ButtonDirective } from '@shared/directives/button.directive'
-import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
+import { ScrollAreaComponent } from '@shared/ui/scroll-area'
 import { Alert, AlertDescription, AlertTitle } from '@src/app/shared/ui/alert'
 import {
   DialogCloseComponent,

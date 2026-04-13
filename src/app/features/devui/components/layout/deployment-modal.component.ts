@@ -25,7 +25,7 @@ import {
   DialogDescriptionComponent,
 } from '@shared/ui/dialog'
 import { ButtonComponent } from '@shared/ui/button'
-import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
+import { ScrollAreaComponent } from '@shared/ui/scroll-area'
 import { ApiClient } from '../../services/api.service'
 
 type Tab = 'docker' | 'azure'

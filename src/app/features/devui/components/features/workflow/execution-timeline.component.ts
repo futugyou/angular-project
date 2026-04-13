@@ -13,7 +13,7 @@ import {
 } from '@angular/core'
 import { NgClass } from '@angular/common'
 import { NgIconComponent } from '@ng-icons/core'
-import { ScrollAreaComponent } from '@shared/ui/scroll-area.component'
+import { ScrollAreaComponent } from '@shared/ui/scroll-area'
 import { ButtonComponent } from '@shared/ui/button'
 import { BadgeComponent } from '@src/app/shared/ui/badge'
 import { HilTimelineItemComponent } from './hil-timeline-item.component'

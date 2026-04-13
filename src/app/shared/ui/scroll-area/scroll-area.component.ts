@@ -10,7 +10,7 @@ import {
   inject,
 } from '@angular/core'
 import { ScrollingModule } from '@angular/cdk/scrolling'
-import { cn } from '../utils/utils'
+import { cn } from '../../utils/utils'
 
 @Component({
   selector: 'app-scroll-bar',

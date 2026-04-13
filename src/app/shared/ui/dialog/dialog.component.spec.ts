@@ -5,10 +5,13 @@ import { signal } from '@angular/core'
 import { Component } from '@angular/core'
 import { DIALOG_COMPONENTS } from './index'
 import { expect, describe, it } from 'vitest'
+import { NgIconComponent, NgIconsModule, provideIcons } from '@ng-icons/core'
+import { lucideX } from '@ng-icons/lucide'
 
 @Component({
   standalone: true,
-  imports: [...DIALOG_COMPONENTS],
+  imports: [...DIALOG_COMPONENTS, NgIconComponent],
+  providers: [provideIcons({ lucideX })],
   template: `
     <app-dialog [(open)]="isOpen">
       <app-dialog-header>
@@ -25,12 +28,26 @@ class TestHostComponent {
 
 describe('Dialog Component', () => {
   it('should not display content when open is false', async () => {
-    await render(TestHostComponent)
+    await render(TestHostComponent, {
+      imports: [
+        NgIconComponent,
+        NgIconsModule.withIcons({
+          lucideX,
+        }),
+      ],
+    })
     expect(screen.queryByText('Test Title')).not.toBeInTheDocument()
   })
 
   it('should display the dialog and respond to the close event when open is true', async () => {
-    const { fixture } = await render(TestHostComponent)
+    const { fixture } = await render(TestHostComponent, {
+      imports: [
+        NgIconComponent,
+        NgIconsModule.withIcons({
+          lucideX,
+        }),
+      ],
+    })
     const host = fixture.componentInstance
 
     // Open the dialog

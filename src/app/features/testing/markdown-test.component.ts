@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
-import { MarkdownRendererComponent } from '@shared/ui/markdown-renderer.component'
+import { MarkdownRendererComponent } from '@shared/ui/markdown-renderer'
 import { FormsModule } from '@angular/forms'
 
 @Component({
