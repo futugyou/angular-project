@@ -7,6 +7,10 @@ import { cn } from '../../utils/utils'
   selector: 'app-loading-state',
   standalone: true,
   imports: [LoadingSpinnerComponent],
+  host: {
+    '[attr.data-fullpage]': 'fullPage()',
+    '[attr.data-testid]': "'loading-state'",
+  },
   template: `
     <div
       [class.min-h-screen]="fullPage()"
