@@ -32,7 +32,7 @@ export class TabsComponent implements ControlValueAccessor {
   readonly value = model<string>('')
   readonly className = input<string>('')
 
-  readonly hostClass = computed(() => cn('block', this.className()))
+  readonly hostClass = computed(() => cn('flex flex-col w-full', this.className()))
 
   private onChange: (val: string) => void = () => {}
   private onTouched: () => void = () => {}
@@ -64,12 +64,21 @@ export class TabsComponent implements ControlValueAccessor {
 })
 export class TabsListComponent {
   readonly className = input<string>('')
-  readonly hostClass = computed(() =>
-    cn(
-      'inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground',
+  readonly align = input<'start' | 'center' | 'end'>('start')
+
+  readonly hostClass = computed(() => {
+    const alignClass = {
+      start: 'justify-start',
+      center: 'justify-center',
+      end: 'justify-end',
+    }[this.align()]
+
+    return cn(
+      'inline-flex h-9 items-center rounded-lg bg-muted p-1 text-muted-foreground w-full',
+      alignClass,
       this.className(),
-    ),
-  )
+    )
+  })
 }
 
 @Component({

@@ -118,4 +118,76 @@ describe('Tabs System Unit/Integration', () => {
     await render(TestHost)
     expect(screen.getByRole('tablist')).toBeInTheDocument()
   })
+
+  // Use Case 1: Verify Host Container Layout Classes
+  test('the app-tabs host element should have flex-col layout classes', async () => {
+    const { container } = await render(
+      `
+      <app-tabs value="1">
+      <app-tabs-list></app-tabs-list>
+      <app-tabs-content value="1">C1</app-tabs-content>
+      </app-tabs>
+      `,
+      {
+        imports: [TabsComponent, TabsListComponent, TabsTriggerComponent, TabsContentComponent],
+      },
+    )
+    const host = container.querySelector('app-tabs')
+    expect(host).toHaveClass('flex', 'flex-col')
+  })
+
+  // Use Case 2: Verify the Vertical Order of Child Components (List above Content)
+  test('TabsList should render before TabsContent', async () => {
+    const { container } = await render(
+      `
+      <app-tabs value="1">
+      <app-tabs-list></app-tabs-list>
+      <app-tabs-content value="1">C1</app-tabs-content>
+      </app-tabs>
+      `,
+      { imports: [TabsComponent, TabsListComponent, TabsTriggerComponent, TabsContentComponent] },
+    )
+
+    const list = container.querySelector('app-tabs-list')
+    const content = container.querySelector('app-tabs-content')
+
+    // Verify DOM order: the element immediately following the list should be the content
+    expect(list?.nextElementSibling).toBe(content)
+  })
+
+  test('should have the justify-start class by default', async () => {
+    const { container } = await render(
+      `<app-tabs-list>
+      <app-tabs-content value="1">C1</app-tabs-content>
+      </app-tabs-list>`,
+      {
+        imports: [TabsListComponent],
+      },
+    )
+    const host = container.querySelector('app-tabs-list')
+    expect(host).toHaveClass('justify-start')
+  })
+
+  // Use Case 2: Verify passing the 'center' parameter
+  test('should switch to justify-center when align is set to center', async () => {
+    const props = {
+      alignProp: 'center' as 'start' | 'center' | 'end',
+    }
+
+    const { container, rerender } = await render(
+      `<app-tabs-list [align]="alignProp">
+      <app-tabs-content value="1">C1</app-tabs-content>
+      </app-tabs-list>`,
+      {
+        imports: [TabsListComponent],
+        componentProperties: props,
+      },
+    )
+
+    const host = container.querySelector('app-tabs-list')
+    expect(host).toHaveClass('justify-center')
+
+    await rerender({ componentProperties: { alignProp: 'end' } })
+    expect(host).toHaveClass('justify-end')
+  })
 })
