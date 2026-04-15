@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
-import { TooltipContent, TooltipDirective } from '@shared/ui/tooltip.component'
+import { TooltipDirective, TooltipContent } from '@shared/ui/tooltip'
 
 @Component({
   selector: 'app-tooltip-test',
