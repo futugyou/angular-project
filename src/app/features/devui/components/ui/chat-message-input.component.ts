@@ -20,7 +20,7 @@ import {
 import { AttachmentGalleryComponent, AttachmentItem } from '@shared/ui/attachment'
 import { ButtonDirective } from '../../../../shared/directives/button.directive'
 import { FileUploadComponent } from '@shared/ui/fileupload'
-import { TextareaComponent } from '@shared/ui/textarea.component'
+import { TextareaComponent } from '@shared/ui/textarea'
 import { LoadingSpinnerComponent } from '@shared/ui/loading'
 
 @Component({

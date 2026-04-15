@@ -9,7 +9,7 @@ import {
   detectChatMessagePattern,
 } from './schema-form-renderer.component'
 import { ButtonComponent } from '@shared/ui/button'
-import { TextareaComponent } from '@shared/ui/textarea.component'
+import { TextareaComponent } from '@shared/ui/textarea'
 import { LabelComponent } from '@shared/ui/label'
 import { CardTitleComponent } from '@shared/ui/card'
 import {

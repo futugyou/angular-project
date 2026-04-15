@@ -28,6 +28,11 @@ export const TESTING_ROUTES: Routes = [
         loadComponent: () => import('./input-test.component').then((m) => m.InputTestComponent),
       },
       {
+        path: 'textarea',
+        loadComponent: () =>
+          import('./textarea-test.component').then((m) => m.TextareaTestComponent),
+      },
+      {
         path: 'alert',
         loadComponent: () => import('./alert-test.component').then((m) => m.AlertTestComponent),
       },

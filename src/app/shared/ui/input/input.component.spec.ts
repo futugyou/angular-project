@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/angular'
 import { InputComponent } from './input.component'
-import { FormControl, ReactiveFormsModule } from '@angular/forms'
-import { Component } from '@angular/core'
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { Component, signal } from '@angular/core'
 import { describe, it, expect } from 'vitest'
 
 describe('InputComponent', () => {
@@ -31,5 +31,27 @@ describe('InputComponent', () => {
 
     const input = screen.getByRole('textbox') as HTMLInputElement
     expect(input.value).toBe('independent value')
+  })
+
+  it('should sync value with NgModel', async () => {
+    @Component({
+      standalone: true,
+      imports: [InputComponent, FormsModule],
+      template: `<app-input [(ngModel)]="modelValue" />`,
+    })
+    class TestWrapper {
+      modelValue = signal('initial')
+    }
+
+    const { fixture } = await render(TestWrapper)
+    await fixture.whenStable()
+    const input = screen.getByRole('textbox') as HTMLInputElement
+
+    //Initial value verification
+    expect(input.value).toBe('initial')
+
+    //Analog input
+    fireEvent.input(input, { target: { value: 'updated' } })
+    expect(fixture.componentInstance.modelValue()).toBe('updated')
   })
 })

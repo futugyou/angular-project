@@ -6,7 +6,7 @@ import type { JSONSchemaProperty } from '../../../types'
 import { ButtonComponent } from '@shared/ui/button'
 import { LabelComponent } from '@shared/ui/label'
 import { CheckboxComponent } from '@shared/ui/checkbox'
-import { TextareaComponent } from '@shared/ui/textarea.component'
+import { TextareaComponent } from '@shared/ui/textarea'
 import { InputComponent } from '@shared/ui/input'
 import { SELECT_COMPONENTS } from '@shared/ui/select'
 

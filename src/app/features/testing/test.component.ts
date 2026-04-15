@@ -81,6 +81,7 @@ export class TestingComponent {
     { name: 'Badge', path: 'badge' },
     { name: 'Dropdown', path: 'dropdown' },
     { name: 'Input', path: 'input' },
+    { name: 'Textarea', path: 'textarea' },
     { name: 'Alert', path: 'alert' },
     { name: 'Attachment', path: 'attachment' },
     { name: 'Card', path: 'card' },

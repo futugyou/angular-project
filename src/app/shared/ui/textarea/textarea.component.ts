@@ -6,9 +6,10 @@ import {
   viewChild,
   signal,
   computed,
+  effect,
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms'
-import { cn } from '../utils/utils'
+import { cn } from '../../utils/utils'
 
 @Component({
   selector: 'app-textarea',
@@ -29,27 +30,46 @@ import { cn } from '../utils/utils'
       [placeholder]="placeholder()"
       [rows]="rows()"
       [disabled]="isEffectivelyDisabled()"
-      [value]="value()"
       (input)="handleInput($event)"
       (blur)="onTouched()"
     ></textarea>
   `,
 })
 export class TextareaComponent implements ControlValueAccessor {
-  // Signals Inputs
-  readonly className = input<string>('')
+  // --- Signal Inputs ---
+  readonly className = input<string>('', { alias: 'class' })
   readonly placeholder = input<string>('')
   readonly rows = input<number>(3)
   readonly disabled = input<boolean>(false)
-  private readonly _isCvaDisabled = signal(false)
-  readonly isEffectivelyDisabled = computed(() => this.disabled() || this._isCvaDisabled())
+
+  readonly value = input<string>('')
+
+  // --- View Child ---
   readonly textareaElement = viewChild.required<ElementRef<HTMLTextAreaElement>>('textarea')
 
-  // Internal State
-  readonly value = input<string>('')
-  private innerValue: string = ''
+  // --- Internal State ---
+  private readonly _innerValue = signal<string>('')
+  private readonly _isCvaDisabled = signal(false)
 
-  // ControlValueAccessor Callbacks
+  protected readonly displayValue = computed(() => {
+    const ext = this.value()
+    const inn = this._innerValue()
+    return ext || inn
+  })
+
+  readonly isEffectivelyDisabled = computed(() => this.disabled() || this._isCvaDisabled())
+
+  constructor() {
+    effect(() => {
+      const val = this.displayValue()
+      const el = this.textareaElement().nativeElement
+      if (el.value !== val) {
+        el.value = val
+      }
+    })
+  }
+
+  // --- CVA Callbacks ---
   onChange: (value: string) => void = () => {}
   onTouched: () => void = () => {}
 
@@ -62,15 +82,13 @@ export class TextareaComponent implements ControlValueAccessor {
 
   handleInput(event: Event) {
     const val = (event.target as HTMLTextAreaElement).value
-    this.innerValue = val
+    this._innerValue.set(val)
     this.onChange(val)
   }
 
+  // --- CVA Implementation ---
   writeValue(value: any): void {
-    this.innerValue = value || ''
-    if (this.textareaElement()) {
-      this.textareaElement().nativeElement.value = this.innerValue
-    }
+    this._innerValue.set(value || '')
   }
 
   registerOnChange(fn: any): void {
@@ -81,7 +99,7 @@ export class TextareaComponent implements ControlValueAccessor {
     this.onTouched = fn
   }
 
-  setDisabledState?(isDisabled: boolean): void {
+  setDisabledState(isDisabled: boolean): void {
     this._isCvaDisabled.set(isDisabled)
   }
 }
