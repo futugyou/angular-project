@@ -10,7 +10,7 @@ import {
   effect,
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { cn } from '../utils/utils'
+import { cn } from '../../utils/utils'
 
 const TABS_ROOT = new InjectionToken<{
   value: ReturnType<typeof model<string>>
@@ -143,10 +143,3 @@ export class TabsContentComponent {
     ),
   )
 }
-
-export const TAB_COMPONENTS = [
-  TabsComponent,
-  TabsListComponent,
-  TabsTriggerComponent,
-  TabsContentComponent,
-] as const

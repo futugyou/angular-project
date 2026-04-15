@@ -12,12 +12,7 @@ import {
   output,
 } from '@angular/core'
 import { NgClass } from '@angular/common'
-import {
-  TabsComponent,
-  TabsContentComponent,
-  TabsListComponent,
-  TabsTriggerComponent,
-} from '@shared/ui/tab.component'
+import { TAB_COMPONENTS } from '@shared/ui/tab'
 import { BadgeComponent } from '@src/app/shared/ui/badge'
 import { ButtonComponent } from '@shared/ui/button'
 import { ScrollAreaComponent } from '@shared/ui/scroll-area'
@@ -1890,10 +1885,7 @@ export class ToolsTabComponent {
   },
   imports: [
     NgIconComponent,
-    TabsComponent,
-    TabsListComponent,
-    TabsTriggerComponent,
-    TabsContentComponent,
+    ...TAB_COMPONENTS,
     ButtonComponent,
     EventsTabComponent,
     TracesTabComponent,

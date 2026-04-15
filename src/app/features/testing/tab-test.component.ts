@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
-import { TAB_COMPONENTS } from '@shared/ui/tab.component'
+import { TAB_COMPONENTS } from '@shared/ui/tab'
 
 @Component({
   selector: 'app-tab-test',
