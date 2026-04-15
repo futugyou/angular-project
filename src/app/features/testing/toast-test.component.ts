@@ -1,12 +1,11 @@
 import { Component, inject, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
-import { ToastContainer, ToastService } from '@shared/ui/toast.component'
-
+import { ToastContainerComponent, ToastService } from '@shared/ui/toast'
 @Component({
   selector: 'app-toast-test',
   standalone: true,
-  imports: [CommonModule, NgIconsModule, ToastContainer],
+  imports: [CommonModule, NgIconsModule, ToastContainerComponent],
   template: `
     <h1 class="text-2xl font-bold mb-6 text-gray-800">Toast Component Test</h1>
     <div class="grid grid-cols-2 gap-4">

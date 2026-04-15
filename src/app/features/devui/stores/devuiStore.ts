@@ -190,7 +190,7 @@ interface DevUIActions {
 }
 
 import { Injectable, signal, effect, inject } from '@angular/core'
-import { ToastService } from '@src/app/shared/ui/toast.component'
+import { ToastService } from '@shared/ui/toast'
 
 @Injectable({ providedIn: 'root' })
 export class DevUIStore implements DevUIActions {

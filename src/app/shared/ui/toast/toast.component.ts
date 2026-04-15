@@ -43,7 +43,7 @@ export interface ToastData {
     </div>
   `,
 })
-export class Toast implements OnInit {
+export class ToastComponent implements OnInit {
   message = input.required<string>()
   type = input<'info' | 'success' | 'warning' | 'error'>('info')
   duration = input<number>(4000)
@@ -114,7 +114,7 @@ export class Toast implements OnInit {
 @Component({
   selector: 'app-toast-container',
   standalone: true,
-  imports: [Toast],
+  imports: [ToastComponent],
   template: `
     <div class="fixed top-4 right-4 z-1000 flex flex-col gap-2 pointer-events-none">
       @for (toast of toasts(); track toast.id) {
@@ -130,7 +130,7 @@ export class Toast implements OnInit {
     </div>
   `,
 })
-export class ToastContainer {
+export class ToastContainerComponent {
   toasts = input.required<ToastData[]>()
   onRemove = output<string>()
 }

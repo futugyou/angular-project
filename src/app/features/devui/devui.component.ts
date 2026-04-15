@@ -6,7 +6,7 @@ import { DeploymentModalComponent } from './components/layout/deployment-modal.c
 import { GalleryViewComponent } from './components/features/gallery/gallery-view.component'
 import { AgentViewModalComponent } from './components/features/agent/agent-view.component'
 import { WorkflowViewComponent } from './components/features/workflow/workflow-view.component'
-import { Toast, ToastContainer, ToastService } from '@shared/ui/toast.component'
+import { ToastContainerComponent, ToastComponent, ToastService } from '@shared/ui/toast'
 import { ApiClient } from './services/api.service'
 import { NgIconComponent } from '@ng-icons/core'
 import type { AgentInfo, WorkflowInfo, ExtendedResponseStreamEvent } from './types'
@@ -30,8 +30,8 @@ import { DevUIStore } from './stores'
     AgentViewModalComponent,
     WorkflowViewComponent,
     WorkflowViewComponent,
-    Toast,
-    ToastContainer,
+    ToastContainerComponent,
+    ToastComponent,
     InputComponent,
   ],
   template: ` @if (isLoadingEntities()) {
