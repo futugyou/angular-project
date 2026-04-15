@@ -13,7 +13,7 @@ import {
 import { ButtonDirective } from '@shared/directives/button.directive'
 import { InputComponent } from '@shared/ui/input'
 import { LabelComponent } from '@shared/ui/label'
-import { SwitchComponent } from '@shared/ui/switch.component'
+import { SwitchComponent } from '@shared/ui/switch'
 
 type Tab = 'general' | 'proxy' | 'about'
 

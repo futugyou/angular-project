@@ -9,7 +9,7 @@ import {
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NgIcon } from '@ng-icons/core'
-import { cn } from '../utils/utils'
+import { cn } from '../../utils/utils'
 
 @Component({
   selector: 'app-switch',

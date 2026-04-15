@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgIconsModule } from '@ng-icons/core'
-import { SwitchComponent } from '@shared/ui/switch.component'
+import { SwitchComponent } from '@shared/ui/switch'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 
 @Component({

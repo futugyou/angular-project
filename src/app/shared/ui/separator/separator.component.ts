@@ -1,6 +1,6 @@
 import { Component, input, ChangeDetectionStrategy } from '@angular/core'
 import { NgIcon } from '@ng-icons/core'
-import { SeparatorRoot } from '../directives/separator.directive'
+import { SeparatorRoot } from '../../directives/separator.directive'
 
 @Component({
   selector: 'app-separator',
@@ -39,6 +39,6 @@ import { SeparatorRoot } from '../directives/separator.directive'
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Separator {
+export class SeparatorComponent {
   icon = input<string | undefined>()
 }
