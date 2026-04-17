@@ -1,7 +1,10 @@
-import { Injectable, signal, computed, OnDestroy } from '@angular/core'
+import { Injectable, signal, computed, OnDestroy, Injector } from '@angular/core'
 import { EdgeMetadata, Graph, Node, NodeMetadata, NodeProperties, Cell, Edge } from '@antv/x6'
+import { register } from '@antv/x6-angular-shape'
 import { DagreLayout } from '@antv/layout'
 import { NodeUpdate, WorkflowDump } from '../utils/layout'
+import { ExecutorNodeComponent } from '../components/features/workflow/executor-v6node.component'
+import { selfLoopRouter } from '../components/features/workflow/self-loop-router'
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +13,7 @@ export class GraphService implements OnDestroy {
   private graph = signal<Graph | null>(null)
   private cacheTrigger = signal<Record<string, number>>({})
 
-  initGraph(container: HTMLDivElement): Graph {
+  initGraph(container: HTMLDivElement, injector: Injector): Graph {
     const graph = new Graph({
       container: container,
       autoResize: true,
@@ -30,9 +33,49 @@ export class GraphService implements OnDestroy {
     })
 
     this.init(graph)
+
+    this.registerNode(injector)
+    this.registerEdge()
+
     return graph
   }
 
+  registerNode(injector: Injector) {
+    register({
+      shape: 'custom-angular-template-node',
+      content: ExecutorNodeComponent,
+      injector: injector,
+      width: 256,
+      height: 68,
+    })
+  }
+
+  registerEdge() {
+    Graph.registerRouter('self-loop-router', selfLoopRouter, true)
+    if (!Edge.registry.exist('self-loop-edge')) {
+      Graph.registerEdge('self-loop-edge', {
+        inherit: 'edge',
+        router: {
+          name: 'self-loop-router',
+        },
+        connector: {
+          name: 'smooth',
+          args: { radius: 20 },
+        },
+        attrs: {
+          line: {
+            stroke: '#b1b1b7',
+            strokeWidth: 2,
+            targetMarker: {
+              name: 'block',
+              width: 10,
+              height: 8,
+            },
+          },
+        },
+      })
+    }
+  }
   init(graph: Graph) {
     this.graph.set(graph)
 
@@ -68,13 +111,14 @@ export class GraphService implements OnDestroy {
   ): { nodes: NodeMetadata[]; edges: EdgeMetadata[] } {
     const nodes: NodeMetadata[] = dump['nodes'].map((n: any) => ({
       id: n.id,
-      shape: 'custom-rect',
+      shape: 'custom-angular-template-node',
       width: 180,
       height: 60,
       label: n.name,
       data: { ...n, status: 'pending' },
     }))
 
+    console.log('3 Converted nodes:', nodes)
     const edges: EdgeMetadata[] = dump['edges'].map((e: any) => ({
       id: `${e.source}-${e.target}`,
       source: e.source,
@@ -96,55 +140,33 @@ export class GraphService implements OnDestroy {
       rankdir: direction,
       nodesep: 60,
       ranksep: 80,
+      controlPoints: true,
     })
-    const nodes = graph.getNodes()
-    const edges = graph.getEdges()
 
-    const data = {
-      nodes: [],
-      edges: [],
+    const layoutData = {
+      nodes: graph.getNodes().map((node) => ({
+        id: node.id,
+        width: node.size().width,
+        height: node.size().height,
+      })),
+      edges: graph.getEdges().map((edge) => ({
+        source: edge.getSourceCellId(),
+        target: edge.getTargetCellId(),
+      })),
     }
 
-    nodes.forEach((node) => {
-      data.nodes!.push({
-        id: node.id,
-        shape: node.shape,
-        width: 180,
-        height: 60,
-        label: node.data.name,
-        attrs: {
-          body: {
-            fill: '#5F95FF',
-            stroke: 'transparent',
-          },
-          label: {
-            fill: '#ffffff',
-            textWrap: {
-              text: node.data.name,
-              width: -10,
-              ellipsis: true,
-              breakWord: false,
-            },
-          },
-        },
-      } as never)
+    const result = dagreLayout.layout(layoutData)
+
+    graph.batchUpdate(() => {
+      result.nodes?.forEach((node: any) => {
+        const x6Node = graph.getCellById(node.id)
+        if (x6Node && x6Node.isNode()) {
+          x6Node.position(node.x, node.y)
+        }
+      })
     })
 
-    edges.forEach((edge: any) => {
-      data.edges!.push({
-        source: edge.store.data.source.cell,
-        target: edge.store.data.target.cell,
-        attrs: {
-          line: {
-            stroke: '#A2B1C3',
-            strokeWidth: 2,
-          },
-        },
-      } as never)
-    })
-
-    const newCells = dagreLayout.layout(data)
-    graph.fromJSON(newCells)
+    graph.centerContent()
   }
 
   render(nodes: NodeMetadata[], edges: EdgeMetadata[]) {
@@ -230,6 +252,66 @@ export class GraphService implements OnDestroy {
     const nodeInstances = nodes.map((n) => graph.createNode(n))
     const edgeInstances = edges.map((e) => graph.createEdge(e))
     graph.resetCells([...nodeInstances, ...edgeInstances])
+
+    // const n: NodeMetadata = {
+    //   id: 'node-a',
+    //   shape: 'custom-angular-template-node',
+    //   x: 100,
+    //   y: 100,
+    //   data: {
+    //     ngArguments: {
+    //       value: {
+    //         executorId: 'exec-88294-v5',
+    //         executorType: 'llm-inference-node',
+    //         name: 'GPT-4 Summary Generator',
+    //         state: 'running',
+    //         inputData: {
+    //           text: 'The quick brown fox jumps over the lazy dog.',
+    //           maxLength: 100,
+    //           temperature: 0.7,
+    //         },
+    //         outputData: null,
+    //         error: null,
+    //         isSelected: true,
+    //         isStartNode: false,
+    //         isEndNode: false,
+    //         layoutDirection: 'LR',
+    //         isStreaming: true,
+    //       },
+    //     },
+    //   },
+    // }
+    // const nodeInstance = graph.createNode(n)
+    // // graph.resetCells([nodeInstance, ...graph.getEdges()])
+
+    // graph.addNode({
+    //   id: 'node-a',
+    //   shape: 'custom-angular-template-node',
+    //   x: 100,
+    //   y: 100,
+    //   data: {
+    //     ngArguments: {
+    //       value: {
+    //         executorId: 'exec-88294-v5',
+    //         executorType: 'llm-inference-node',
+    //         name: 'GPT-4 Summary Generator',
+    //         state: 'running',
+    //         inputData: {
+    //           text: 'The quick brown fox jumps over the lazy dog.',
+    //           maxLength: 100,
+    //           temperature: 0.7,
+    //         },
+    //         outputData: null,
+    //         error: null,
+    //         isSelected: true,
+    //         isStartNode: false,
+    //         isEndNode: false,
+    //         layoutDirection: 'LR',
+    //         isStreaming: true,
+    //       },
+    //     },
+    //   },
+    // })
   }
 
   resetEdgesToDefault(consolidate: boolean) {

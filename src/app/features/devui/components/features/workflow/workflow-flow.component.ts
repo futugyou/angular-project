@@ -498,7 +498,7 @@ export class WorkflowFlowComponent implements AfterViewInit, OnDestroy {
     const el = this.container()
     if (el) {
       console.log('1 Initializing graph in container:', el)
-      this.graphService.initGraph(el.nativeElement)
+      this.graphService.initGraph(el.nativeElement, this.injector)
     }
   }
 
