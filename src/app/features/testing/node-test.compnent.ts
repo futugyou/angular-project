@@ -75,8 +75,22 @@ export class NodeTestComponent implements AfterViewInit {
       background: {
         color: '#F2F7FA',
       },
+      connecting: {
+        anchor: 'nodeCenter',
+        connectionPoint: 'anchor',
+      },
     })
 
+    this.container!.nativeElement.addEventListener('node-resize-request', (e: any) => {
+      const { height } = e.detail
+      const view = this.graph!.findViewByElem(e.target)
+      if (view && view.cell.isNode()) {
+        const node = view.cell
+
+        const { width } = node.size()
+        node.resize(width, height, { direction: 'bottom' })
+      }
+    })
     // Graph.registerConnector('self-loop-connector', selfLoopConnector, true)
     // Graph.registerEdge('self-loop-edge', {
     //   inherit: 'edge',
@@ -228,7 +242,7 @@ export class NodeTestComponent implements AfterViewInit {
         },
       },
     })
-    this.testNode.resize(260, 220)
+    // this.testNode.resize(260, 220)
   }
 
   applyDagreLayout(direction: 'TB' | 'LR' = 'TB') {

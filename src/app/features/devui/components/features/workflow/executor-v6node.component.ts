@@ -1,12 +1,4 @@
-import {
-  Component,
-  signal,
-  computed,
-  inject,
-  ChangeDetectorRef,
-  OnInit,
-  input,
-} from '@angular/core'
+import { Component, signal, computed, inject, input, ElementRef } from '@angular/core'
 import { NgIconComponent } from '@ng-icons/core'
 import { cn, truncateText } from '@shared/utils/utils'
 
@@ -124,28 +116,11 @@ export interface ExecutorNodeData {
     '[class.contents]': 'true',
   },
 })
-export class ExecutorNodeComponent implements OnInit {
-  // @Input() value!: ExecutorNodeData
+export class ExecutorNodeComponent {
   value = input.required<ExecutorNodeData>()
   isSelected = signal(false)
   isOutputExpanded = signal(false)
-  private nodeTrigger = signal(0)
-  private cdr = inject(ChangeDetectorRef)
-
-  ngOnInit() {
-    // if (!this.node) return
-    // this.nodeTrigger.update((v) => v + 1)
-    // this.node.on('change:data', () => {
-    //   this.nodeTrigger.update((v) => v + 1)
-    //   this.cdr.detectChanges()
-    // })
-    // this.node.on('selected', () => this.isSelected.set(true))
-    // this.node.on('unselected', () => this.isSelected.set(false))
-    // const graph = this.node.model?.graph
-    // if (graph) {
-    //   this.isSelected.set(graph.isSelected(this.node))
-    // }
-  }
+  private elementRef = inject(ElementRef)
 
   config = computed(() => {
     const state = this.value().state
@@ -204,5 +179,26 @@ export class ExecutorNodeComponent implements OnInit {
   toggleExpand(event: MouseEvent) {
     event.stopPropagation()
     this.isOutputExpanded.update((v) => !v)
+
+    setTimeout(() => {
+      this.updateNodeSize()
+    }, 0)
+  }
+
+  private updateNodeSize() {
+    const container = this.elementRef.nativeElement.querySelector('.group')
+    const actualHeight = container?.getClientRects()[0]?.height || container?.offsetHeight || 0
+
+    console.log('Measured Height:', actualHeight)
+
+    if (actualHeight > 0) {
+      this.elementRef.nativeElement.dispatchEvent(
+        new CustomEvent('node-resize-request', {
+          bubbles: true,
+          composed: true,
+          detail: { height: actualHeight },
+        }),
+      )
+    }
   }
 }
