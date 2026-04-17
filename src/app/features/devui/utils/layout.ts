@@ -299,19 +299,25 @@ export function convertWorkflowDumpToNodes(
   const nodes = executors.map((executor) => ({
     id: executor.id,
     type: 'executor',
+    shape: 'custom-angular-template-node',
     width: 180,
     height: 60,
     position: { x: 0, y: 0 }, // Will be set by layout algorithm
     data: {
-      executorId: executor.id,
-      executorType: executor.type,
-      name: executor.name || executor.id,
-      state: 'pending' as ExecutorState,
-      isStartNode: executor.id === startExecutorId,
-      layoutDirection: layoutDirection || 'LR',
-      width: 180,
-      height: 60,
-      onNodeClick,
+      ngArguments: {
+        value: {
+          executorId: executor.id,
+          executorType: executor.type,
+          name: executor.name || executor.id,
+          state: 'pending' as ExecutorState,
+          isStartNode: executor.id === startExecutorId,
+          layoutDirection: layoutDirection || 'LR',
+          width: 180,
+          height: 60,
+          inputData: executor.config,
+          onNodeClick,
+        },
+      },
     },
   }))
 
@@ -364,6 +370,7 @@ export function convertWorkflowDumpToEdges(
       target: connection.target,
       sourceHandle: 'source',
       targetHandle: 'target',
+      shape: 'self-loop-edge',
       type: isSelfLoop ? 'selfLoop' : 'default',
       animated: false,
       style: {
