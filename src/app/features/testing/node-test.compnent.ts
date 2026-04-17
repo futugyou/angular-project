@@ -8,8 +8,9 @@ import {
 import { ResponseInputContent } from '../devui/types/agent-framework'
 import { selfLoopConnector } from '../devui/components/features/workflow/self-loop-connector'
 import { selfLoopRouter } from '../devui/components/features/workflow/self-loop-router'
-import { Graph, Node } from '@antv/x6'
+import { Graph, Node, Edge } from '@antv/x6'
 import { register } from '@antv/x6-angular-shape'
+import { DagreLayout } from '@antv/layout'
 
 @Component({
   selector: 'app-node-test',
@@ -94,27 +95,29 @@ export class NodeTestComponent implements AfterViewInit {
     // })
 
     Graph.registerRouter('self-loop-router', selfLoopRouter, true)
-    Graph.registerEdge('self-loop-edge', {
-      inherit: 'edge',
-      router: {
-        name: 'self-loop-router',
-      },
-      connector: {
-        name: 'smooth',
-        args: { radius: 20 },
-      },
-      attrs: {
-        line: {
-          stroke: '#b1b1b7',
-          strokeWidth: 2,
-          targetMarker: {
-            name: 'block',
-            width: 10,
-            height: 8,
+    if (!Edge.registry.exist('self-loop-edge')) {
+      Graph.registerEdge('self-loop-edge', {
+        inherit: 'edge',
+        router: {
+          name: 'self-loop-router',
+        },
+        connector: {
+          name: 'smooth',
+          args: { radius: 20 },
+        },
+        attrs: {
+          line: {
+            stroke: '#b1b1b7',
+            strokeWidth: 2,
+            targetMarker: {
+              name: 'block',
+              width: 10,
+              height: 8,
+            },
           },
         },
-      },
-    })
+      })
+    }
 
     register({
       shape: 'custom-angular-template-node',
@@ -127,8 +130,8 @@ export class NodeTestComponent implements AfterViewInit {
     this.testNode = this.graph.addNode({
       id: 'node-a',
       shape: 'custom-angular-template-node',
-      x: 100,
-      y: 100,
+      // x: 100,
+      // y: 100,
       data: {
         ngArguments: {
           value: {
@@ -156,8 +159,8 @@ export class NodeTestComponent implements AfterViewInit {
     const nodeB = this.graph.addNode({
       id: 'node-b',
       shape: 'custom-angular-template-node',
-      x: 500,
-      y: 100,
+      // x: 500,
+      // y: 100,
       data: {
         ngArguments: {
           value: {
@@ -191,6 +194,8 @@ export class NodeTestComponent implements AfterViewInit {
     this.graph.on('node:change:data', ({ node, current }) => {
       console.log('🌐 Graph Level Event:', node.id, current)
     })
+
+    this.applyDagreLayout('TB')
   }
 
   updateWorkflowState(state: ExecutorState) {
@@ -224,5 +229,43 @@ export class NodeTestComponent implements AfterViewInit {
       },
     })
     this.testNode.resize(260, 220)
+  }
+
+  applyDagreLayout(direction: 'TB' | 'LR' = 'TB') {
+    const graph = this.graph
+    if (!graph) return
+
+    const dagreLayout = new DagreLayout({
+      type: 'dagre',
+      rankdir: direction,
+      nodesep: 60,
+      ranksep: 80,
+      controlPoints: true,
+    })
+
+    const layoutData = {
+      nodes: graph.getNodes().map((node) => ({
+        id: node.id,
+        width: node.size().width,
+        height: node.size().height,
+      })),
+      edges: graph.getEdges().map((edge) => ({
+        source: edge.getSourceCellId(),
+        target: edge.getTargetCellId(),
+      })),
+    }
+
+    const result = dagreLayout.layout(layoutData)
+
+    graph.batchUpdate(() => {
+      result.nodes?.forEach((node: any) => {
+        const x6Node = graph.getCellById(node.id)
+        if (x6Node && x6Node.isNode()) {
+          x6Node.position(node.x, node.y)
+        }
+      })
+    })
+
+    graph.centerContent()
   }
 }
