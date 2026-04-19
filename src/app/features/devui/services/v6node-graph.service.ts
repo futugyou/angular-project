@@ -186,7 +186,22 @@ export class GraphService implements OnDestroy {
       Object.entries(updates).forEach(([id, update]) => {
         const node = graph.getCellById(id) as Node
         if (node) {
-          node.setData({ ...update, isStreaming: streaming }, { overwrite: false })
+          const currentData = node.getData()
+          node.setData(
+            {
+              ngArguments: {
+                value: {
+                  ...currentData.ngArguments.value,
+                  state: update.state,
+                  outputData: update.data,
+                  error: update.error,
+                  status: update.status,
+                  isStreaming: streaming,
+                },
+              },
+            },
+            { overwrite: false },
+          )
 
           if (update.status === 'success') {
             node.attr('body/stroke', '#52c41a')
@@ -219,7 +234,17 @@ export class GraphService implements OnDestroy {
   resetNodesToPending() {
     this.graph()
       ?.getNodes()
-      .forEach((n) => n.setData({ status: 'pending' }))
+      .forEach((n) => {
+        const currentData = n.getData()
+        n.setData({
+          ngArguments: {
+            value: {
+              ...currentData.ngArguments.value,
+              state: 'pending',
+            },
+          },
+        })
+      })
   }
 
   isInitialized(): boolean {
