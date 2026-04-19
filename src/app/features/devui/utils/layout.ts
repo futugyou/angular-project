@@ -80,8 +80,8 @@ export function applySimpleLayout(
   }
 
   // --- spacing constants ---
-  const NODE_WIDTH = 220
-  const NODE_HEIGHT = 120
+  const NODE_WIDTH = 256
+  const NODE_HEIGHT = 68
   const HORIZONTAL_SPACING = direction === 'LR' ? 350 : 280
   const VERTICAL_SPACING = direction === 'TB' ? 250 : 180
 
@@ -300,8 +300,8 @@ export function convertWorkflowDumpToNodes(
     id: executor.id,
     type: 'executor',
     shape: 'custom-angular-template-node',
-    width: 180,
-    height: 60,
+    width: 256,
+    height: 68,
     position: { x: 0, y: 0 }, // Will be set by layout algorithm
     data: {
       ngArguments: {
@@ -312,8 +312,8 @@ export function convertWorkflowDumpToNodes(
           state: 'pending' as ExecutorState,
           isStartNode: executor.id === startExecutorId,
           layoutDirection: layoutDirection || 'LR',
-          width: 180,
-          height: 60,
+          width: 256,
+          height: 68,
           inputData: executor.config,
           onNodeClick,
         },

@@ -141,8 +141,8 @@ export class GraphService implements OnDestroy {
     const dagreLayout = new DagreLayout({
       type: 'dagre',
       rankdir: direction,
-      nodesep: 60,
-      ranksep: 80,
+      nodesep: 100,
+      ranksep: 40,
       controlPoints: true,
     })
 
