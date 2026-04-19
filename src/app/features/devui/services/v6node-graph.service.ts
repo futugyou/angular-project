@@ -37,6 +37,8 @@ export class GraphService implements OnDestroy {
     this.registerNode(injector)
     this.registerEdge()
 
+    container.addEventListener('node-resize-request', this.onNodeResizeRequest)
+
     return graph
   }
 
@@ -76,6 +78,7 @@ export class GraphService implements OnDestroy {
       })
     }
   }
+
   init(graph: Graph) {
     this.graph.set(graph)
 
@@ -252,66 +255,6 @@ export class GraphService implements OnDestroy {
     const nodeInstances = nodes.map((n) => graph.createNode(n))
     const edgeInstances = edges.map((e) => graph.createEdge(e))
     graph.resetCells([...nodeInstances, ...edgeInstances])
-
-    // const n: NodeMetadata = {
-    //   id: 'node-a',
-    //   shape: 'custom-angular-template-node',
-    //   x: 100,
-    //   y: 100,
-    //   data: {
-    //     ngArguments: {
-    //       value: {
-    //         executorId: 'exec-88294-v5',
-    //         executorType: 'llm-inference-node',
-    //         name: 'GPT-4 Summary Generator',
-    //         state: 'running',
-    //         inputData: {
-    //           text: 'The quick brown fox jumps over the lazy dog.',
-    //           maxLength: 100,
-    //           temperature: 0.7,
-    //         },
-    //         outputData: null,
-    //         error: null,
-    //         isSelected: true,
-    //         isStartNode: false,
-    //         isEndNode: false,
-    //         layoutDirection: 'LR',
-    //         isStreaming: true,
-    //       },
-    //     },
-    //   },
-    // }
-    // const nodeInstance = graph.createNode(n)
-    // // graph.resetCells([nodeInstance, ...graph.getEdges()])
-
-    // graph.addNode({
-    //   id: 'node-a',
-    //   shape: 'custom-angular-template-node',
-    //   x: 100,
-    //   y: 100,
-    //   data: {
-    //     ngArguments: {
-    //       value: {
-    //         executorId: 'exec-88294-v5',
-    //         executorType: 'llm-inference-node',
-    //         name: 'GPT-4 Summary Generator',
-    //         state: 'running',
-    //         inputData: {
-    //           text: 'The quick brown fox jumps over the lazy dog.',
-    //           maxLength: 100,
-    //           temperature: 0.7,
-    //         },
-    //         outputData: null,
-    //         error: null,
-    //         isSelected: true,
-    //         isStartNode: false,
-    //         isEndNode: false,
-    //         layoutDirection: 'LR',
-    //         isStreaming: true,
-    //       },
-    //     },
-    //   },
-    // })
   }
 
   resetEdgesToDefault(consolidate: boolean) {
@@ -347,5 +290,25 @@ export class GraphService implements OnDestroy {
         }
       }
     })
+  }
+
+  onNodeResizeRequest = (e: Event): void => {
+    const graph = this.graph()
+    if (!graph) return
+
+    const customEvent = e as CustomEvent<{ height: number; width?: number }>
+    const target = customEvent.target as Element
+
+    if (graph && target) {
+      const view = graph.findViewByElem(target)
+
+      if (view && view.cell.isNode()) {
+        const node = view.cell
+        const { width: currentWidth } = node.size()
+        const { height, width } = customEvent.detail
+
+        node.resize(width ?? currentWidth, height, { direction: 'bottom' })
+      }
+    }
   }
 }
