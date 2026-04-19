@@ -1,22 +1,25 @@
 import { Component, signal } from '@angular/core'
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router'
 import { CommonModule } from '@angular/common'
+import { ScrollAreaComponent } from '@shared/ui/scroll-area'
 
 @Component({
   selector: 'app-testing',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ScrollAreaComponent],
   template: `
     <div class="testing-container">
       <aside class="sidebar">
         <h2 class="sidebar-title">Components</h2>
-        <nav class="nav-list">
-          @for (item of components(); track item.path) {
-            <a [routerLink]="[item.path]" routerLinkActive="active-link" class="nav-item">
-              {{ item.name }}
-            </a>
-          }
-        </nav>
+        <app-scroll-area class="scroll-container">
+          <nav class="nav-list">
+            @for (item of components(); track item.path) {
+              <a [routerLink]="[item.path]" routerLinkActive="active-link" class="nav-item">
+                {{ item.name }}
+              </a>
+            }
+          </nav>
+        </app-scroll-area>
       </aside>
 
       <main class="content-area">
@@ -45,6 +48,11 @@ import { CommonModule } from '@angular/common'
         font-size: 1.2rem;
         margin-bottom: 1rem;
         color: #333;
+      }
+      .scroll-container {
+        flex: 1 1 0%;
+        min-height: 0;
+        display: block;
       }
       .nav-list {
         display: flex;
