@@ -9,7 +9,7 @@ import { ScrollAreaComponent } from '@shared/ui/scroll-area'
   imports: [CommonModule, NgIconsModule, ScrollAreaComponent],
   template: `
     <h1 class="text-2xl font-bold mb-6 text-gray-800">ScrollArea Component Test</h1>
-    <app-scroll-area height="400px">
+    <app-scroll-area id="test-scroll-area" height="400px">
       <div class="p-6">
         <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100 text-blue-700 text-sm">
           💡 <b>Test Instructions:</b>
