@@ -14,7 +14,16 @@ jobs:
         with:
           node-version: lts/*
       - name: Install dependencies
+        id: install
+        continue-on-error: true
         run: npm ci
+
+      - name: Fallback to npm install
+        if: steps.install.outcome == 'failure'
+        run: |
+          echo "npm ci failed, falling back to npm install to generate lockfile..."
+          npm install
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
