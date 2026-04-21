@@ -19,9 +19,10 @@ import type {
 import type { AgentFrameworkRequest } from '../types/agent-framework'
 import type { ExtendedResponseStreamEvent, OpenAIResponse } from '../types/openai'
 import {
+  applyStreamingEventToState,
+  createStreamingState,
   loadStreamingState,
-  updateStreamingState,
-  markStreamingCompleted,
+  saveStreamingState,
   clearStreamingState,
 } from './streaming-state.service'
 import { Injectable, Optional, Inject } from '@angular/core'
@@ -74,6 +75,7 @@ const DEFAULT_API_BASE_URL = environment.VITE_API_BASE_URL
 // Retry configuration for streaming
 const RETRY_INTERVAL_MS = 1000 // Base retry interval (will use exponential backoff)
 const MAX_RETRY_ATTEMPTS = 10 // Max 10 retries (~30 seconds with exponential backoff)
+const STREAMING_STATE_SAVE_INTERVAL_MS = 250
 
 // Get backend URL from localStorage or default
 function getBackendUrl(): string {
@@ -231,7 +233,7 @@ export class ApiClient {
           },
           input_type_name: entity.input_type_name || 'Input',
           start_executor_id: '',
-        }
+        } as AgentInfo
       } else {
         // Workflow - prefer executors field, fall back to tools for backward compatibility
         const executorList = entity.executors || entity.tools || []
@@ -270,7 +272,7 @@ export class ApiClient {
           input_type_name: entity.input_type_name || 'Input',
           start_executor_id: startExecutorId,
           tools: [],
-        }
+        } as WorkflowInfo
       }
     })
 
@@ -463,31 +465,65 @@ export class ApiClient {
     let hasYieldedAnyEvent = false
     let currentResponseId: string | undefined = resumeResponseId
     let lastMessageId: string | undefined = undefined
+    let lastStreamingStateSaveAt = 0
+    let storedState = conversationId ? loadStreamingState(conversationId) : null
+    let streamingState = storedState ? { ...storedState } : null
+
+    const persistStreamingState = (force: boolean = false): void => {
+      if (!conversationId || !streamingState) {
+        return
+      }
+
+      const now = Date.now()
+      if (!force && now - lastStreamingStateSaveAt < STREAMING_STATE_SAVE_INTERVAL_MS) {
+        return
+      }
+
+      lastStreamingStateSaveAt = now
+      saveStreamingState({
+        ...streamingState,
+        timestamp: now,
+      })
+    }
+
+    const recordStreamingEvent = (event: ExtendedResponseStreamEvent): void => {
+      if (!conversationId || !currentResponseId) {
+        return
+      }
+
+      streamingState = applyStreamingEventToState(
+        streamingState ??
+          createStreamingState({
+            conversationId,
+            responseId: currentResponseId,
+            lastMessageId,
+            lastSequenceNumber,
+            accumulatedText: storedState?.accumulatedText,
+          }),
+        event,
+        currentResponseId,
+        lastMessageId,
+      )
+
+      const isTextDelta =
+        event.type === 'response.output_text.delta' &&
+        'delta' in event &&
+        typeof event.delta === 'string' &&
+        event.delta.length > 0
+      persistStreamingState(!isTextDelta)
+    }
 
     // Try to resume from stored state if conversation ID is provided
-    if (conversationId) {
-      const storedState = loadStreamingState(conversationId)
-      if (storedState) {
-        // Use stored response ID if no explicit one provided
-        if (!resumeResponseId) {
-          currentResponseId = storedState.responseId
-        }
-
-        lastSequenceNumber = storedState.lastSequenceNumber
-        lastMessageId = storedState.lastMessageId
-
-        // Replay stored events only if we're not explicitly resuming
-        // (explicit resume means the caller already has the events)
-        if (!resumeResponseId) {
-          for (const event of storedState.events) {
-            hasYieldedAnyEvent = true
-            yield event
-          }
-        } else {
-          // Mark that we've already seen events up to this sequence number
-          hasYieldedAnyEvent = storedState.events.length > 0
-        }
+    if (storedState) {
+      // Use stored response ID if no explicit one provided
+      if (!resumeResponseId) {
+        currentResponseId = storedState.responseId
       }
+
+      lastSequenceNumber = storedState.lastSequenceNumber
+      lastMessageId = storedState.lastMessageId
+      hasYieldedAnyEvent =
+        storedState.lastSequenceNumber >= 0 || Boolean(storedState.accumulatedText)
     }
 
     while (retryCount <= MAX_RETRY_ATTEMPTS) {
@@ -600,7 +636,8 @@ export class ApiClient {
             if (done) {
               // Stream completed successfully
               if (conversationId) {
-                markStreamingCompleted(conversationId)
+                clearStreamingState(conversationId)
+                streamingState = null
               }
               return
             }
@@ -619,7 +656,8 @@ export class ApiClient {
                 // Handle [DONE] signal
                 if (dataStr === '[DONE]') {
                   if (conversationId) {
-                    markStreamingCompleted(conversationId)
+                    clearStreamingState(conversationId)
+                    streamingState = null
                   }
                   return
                 }
@@ -664,6 +702,9 @@ export class ApiClient {
                       if (conversationId) {
                         clearStreamingState(conversationId)
                       }
+                      storedState = null
+                      streamingState = null
+                      lastStreamingStateSaveAt = 0
                       yield {
                         type: 'error',
                         message:
@@ -673,14 +714,7 @@ export class ApiClient {
                       hasYieldedAnyEvent = true
 
                       // Save new event to storage
-                      if (conversationId && currentResponseId) {
-                        updateStreamingState(
-                          conversationId,
-                          openAIEvent,
-                          currentResponseId,
-                          lastMessageId,
-                        )
-                      }
+                      recordStreamingEvent(openAIEvent)
 
                       yield openAIEvent
                     }
@@ -692,14 +726,7 @@ export class ApiClient {
                       hasYieldedAnyEvent = true
 
                       // Save event to storage before yielding
-                      if (conversationId && currentResponseId) {
-                        updateStreamingState(
-                          conversationId,
-                          openAIEvent,
-                          currentResponseId,
-                          lastMessageId,
-                        )
-                      }
+                      recordStreamingEvent(openAIEvent)
 
                       yield openAIEvent
                     }
@@ -708,14 +735,7 @@ export class ApiClient {
                     hasYieldedAnyEvent = true
 
                     // Still save to storage if we have conversation context
-                    if (conversationId && currentResponseId) {
-                      updateStreamingState(
-                        conversationId,
-                        openAIEvent,
-                        currentResponseId,
-                        lastMessageId,
-                      )
-                    }
+                    recordStreamingEvent(openAIEvent)
 
                     yield openAIEvent
                   }
