@@ -78,7 +78,7 @@ type Tab = 'docker' | 'azure'
           }
         </button>
 
-        @if (deploymentSupported) {
+        @if (deploymentSupported()) {
           <button
             (click)="activeTab.set('azure')"
             class="px-4 py-2 text-sm font-medium transition-colors relative"
@@ -107,6 +107,7 @@ type Tab = 'docker' | 'azure'
                   Package your agent as a Docker container for consistent deployment anywhere.
                 </p>
               </div>
+
               <div>
                 <div class="flex items-center justify-between mb-2">
                   <span class="text-sm font-medium">Dockerfile</span>
@@ -129,6 +130,7 @@ type Tab = 'docker' | 'azure'
                   dockerfileTemplate
                 }}</pre>
               </div>
+
               <div>
                 <div class="flex items-center justify-between mb-2">
                   <span class="text-sm font-medium">docker-compose.yml</span>
@@ -151,6 +153,31 @@ type Tab = 'docker' | 'azure'
                   dockerComposeTemplate
                 }}</pre>
               </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium"> requirements.txt </span>
+                  <Button
+                    [appButton]
+                    size="sm"
+                    variant="ghost"
+                    (click)="handleCopy(requirementsTemplate, 'requirements')"
+                  >
+                    @if (copiedTemplate() === 'requirements') {
+                      <ng-icon name="lucideCheckCircle2" class="h-4 w-4 mr-1 text-green-500" />
+                      Copied!
+                    } @else {
+                      <ng-icon name="lucideCopy" class="h-4 w-4 mr-1" />
+                      Copy
+                    }
+                  </Button>
+                </div>
+                <pre class="bg-muted p-3 rounded-md text-xs overflow-x-auto border"
+                  >{{ requirementsTemplate }}
+                </pre
+                >
+              </div>
+
               <div
                 class="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-md p-3"
               >
@@ -167,6 +194,7 @@ type Tab = 'docker' | 'azure'
                   <li>Your agent is now running in a container!</li>
                 </ol>
               </div>
+
               <div
                 class="bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 rounded-md p-3"
               >
@@ -182,6 +210,42 @@ type Tab = 'docker' | 'azure'
                   <li><strong>Scaling:</strong> Single instance only (in-memory store)</li>
                 </ul>
               </div>
+
+              <div class="bg-muted p-3 rounded-md text-xs overflow-x-auto border border-t">
+                <h4 class="font-semibold text-sm mb-3">Pre-Deployment Checklist</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-start gap-2">
+                    <ng-icon
+                      name="lucideCheckCircle2"
+                      class="h-4 w-4 mt-0.5 text-muted-foreground shrink-0"
+                    />
+                    <span class="text-muted-foreground">
+                      Set environment variables (API keys, secrets)
+                    </span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <ng-icon
+                      name="lucideCheckCircle2"
+                      class="h-4 w-4 mt-0.5 text-muted-foreground shrink-0"
+                    />
+                    <span class="text-muted-foreground"> Test agent locally in container </span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <ng-icon
+                      name="lucideCheckCircle2"
+                      class="h-4 w-4 mt-0.5 text-muted-foreground shrink-0"
+                    />
+                    <span class="text-muted-foreground"> Configure logging and monitoring </span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <ng-icon
+                      name="lucideCheckCircle2"
+                      class="h-4 w-4 mt-0.5 text-muted-foreground shrink-0"
+                    />
+                    <span class="text-muted-foreground"> Set up error handling and retries </span>
+                  </div>
+                </div>
+              </div>
             </div>
           }
 
@@ -191,7 +255,7 @@ type Tab = 'docker' | 'azure'
                 <h3 class="font-semibold mb-2">Deploy to Azure Container Apps</h3>
                 <p class="text-sm text-muted-foreground">
                   {{
-                    deploymentSupported
+                    deploymentSupported()
                       ? 'One-click deployment to Azure with automatic containerization.'
                       : 'Azure Container Apps provides serverless containers.'
                   }}
@@ -214,7 +278,7 @@ type Tab = 'docker' | 'azure'
                   <li>Docker installed and running</li>
                 </ul>
               </div>
-              @if (deploymentSupported && entity() && !lastDeployment) {
+              @if (deploymentSupported() && entity() && !lastDeployment()) {
                 <div class="border rounded-lg p-4 space-y-4">
                   @if (!isDeploying()) {
                     <div class="space-y-3">
@@ -328,6 +392,139 @@ type Tab = 'docker' | 'azure'
                   </button>
                 </div>
               }
+
+              @if (!deploymentSupported() && entity()?.deployment_reason) {
+                <div
+                  class="bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 rounded-md p-3"
+                >
+                  <div class="flex items-start gap-2">
+                    <ng-icon name="AlertCircle" class="h-4 w-4 mt-0.5 text-amber-600 shrink-0" />
+                    <div class="text-sm text-amber-800 dark:text-amber-200">
+                      <strong>Deployment not available:</strong> {{ entity()?.deployment_reason }}
+                    </div>
+                  </div>
+                </div>
+              }
+
+              @if (!deploymentSupported()) {
+                <div class="border rounded-lg p-4 space-y-3">
+                  <h4 class="font-medium text-sm">Prerequisites</h4>
+                  <ul class="text-xs space-y-1 list-disc list-inside text-muted-foreground">
+                    <li>Azure subscription</li>
+                    <li>
+                      Azure CLI installed (
+                      <code class="bg-muted px-1 rounded"> az --version </code>
+                      )
+                    </li>
+                    <li>Docker installed and running</li>
+                    <li>
+                      Logged in to Azure:&#123;" "&#125;
+                      <code class="bg-muted px-1 rounded">az login</code>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="space-y-3">
+                  <h4 class="font-medium text-sm">Deployment Steps</h4>
+
+                  <div class="space-y-3">
+                    <div class="border-l-2 border-primary pl-3">
+                      <div class="flex items-center gap-2 mb-1">
+                        <div
+                          class="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold"
+                        >
+                          1
+                        </div>
+                        <h5 class="font-medium text-sm">Create Azure Container Registry</h5>
+                      </div>
+                      <pre class="bg-muted p-2 rounded text-xs overflow-x-auto border mt-2"
+                        >{{ create_resource_group }}
+                            </pre
+                      >
+                    </div>
+
+                    <div class="border-l-2 border-primary pl-3">
+                      <div class="flex items-center gap-2 mb-1">
+                        <div
+                          class="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold"
+                        >
+                          2
+                        </div>
+                        <h5 class="font-medium text-sm">Build and Push Docker Image</h5>
+                      </div>
+                      <pre class="bg-muted p-2 rounded text-xs overflow-x-auto border mt-2"
+                        >{{ build_push_image }}
+                            </pre
+                      >
+                    </div>
+
+                    <div class="border-l-2 border-primary pl-3">
+                      <div class="flex items-center gap-2 mb-1">
+                        <div
+                          class="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold"
+                        >
+                          3
+                        </div>
+                        <h5 class="font-medium text-sm">Create Container Apps Environment</h5>
+                      </div>
+                      <pre class="bg-muted p-2 rounded text-xs overflow-x-auto border mt-2"
+                        >{{ create_env }}
+                            </pre
+                      >
+                    </div>
+
+                    <div class="border-l-2 border-primary pl-3">
+                      <div class="flex items-center gap-2 mb-1">
+                        <div
+                          class="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold"
+                        >
+                          4
+                        </div>
+                        <h5 class="font-medium text-sm">Deploy Container App</h5>
+                      </div>
+                      <pre class="bg-muted p-2 rounded text-xs overflow-x-auto border mt-2"
+                        >{{ deploy_app }}
+                            </pre
+                      >
+                    </div>
+
+                    <div class="border-l-2 border-primary pl-3">
+                      <div class="flex items-center gap-2 mb-1">
+                        <div
+                          class="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold"
+                        >
+                          5
+                        </div>
+                        <h5 class="font-medium text-sm">Get Application URL</h5>
+                      </div>
+                      <pre class="bg-muted p-2 rounded text-xs overflow-x-auto border mt-2"
+                        >{{ get_app_url }}
+                            </pre
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-md p-3"
+                >
+                  <h4 class="text-sm font-semibold mb-2">Learn More</h4>
+                  <p class="text-xs text-muted-foreground mb-3">
+                    Explore Azure Container Apps documentation for advanced features like scaling,
+                    monitoring, and CI/CD integration.
+                  </p>
+                  <Button [appButton] size="sm" variant="outline" class="w-full">
+                    <a
+                      href="https://learn.microsoft.com/azure/container-apps/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <ng-icon name="lucideExternalLink" class="h-3 w-3 mr-1"></ng-icon>
+                      View Azure Container Apps Documentation
+                    </a>
+                  </Button>
+                </div>
+              }
             </div>
           }
         </div>
@@ -352,8 +549,9 @@ export class DeploymentModalComponent {
   azureDeploymentEnabled = computed(() => this.store.azureDeploymentEnabled)
 
   // Check if deployment is truly supported (both feature flag and backend support)
-  deploymentSupported =
-    this.azureDeploymentEnabled() && (this.entity()?.deployment_supported ?? false)
+  deploymentSupported = computed(() => {
+    return this.azureDeploymentEnabled() && (this.entity()?.deployment_supported ?? false)
+  })
 
   // Deployment state from Zustand
   isDeploying = computed(() => this.store.isDeploying)
@@ -363,7 +561,7 @@ export class DeploymentModalComponent {
   clearDeploymentState = computed(() => this.store.clearDeploymentState)
 
   // Context-aware tab ordering: Azure first if deployable, Docker first otherwise
-  activeTab = signal<Tab>(this.deploymentSupported ? 'azure' : 'docker')
+  activeTab = signal<Tab>(this.deploymentSupported() ? 'azure' : 'docker')
   copiedTemplate = signal<string | null>(null)
   readonly logsContainer = viewChild<ElementRef<HTMLDivElement>>('logsContainer')
 
@@ -560,17 +758,24 @@ services:
     environment:
       # OpenAI
       - OPENAI_API_KEY=\${OPENAI_API_KEY}
-      - OPENAI_CHAT_MODEL_ID=\${OPENAI_CHAT_MODEL_ID:-gpt-4o-mini}
+      - OPENAI_CHAT_COMPLETION_MODEL=\${OPENAI_CHAT_COMPLETION_MODEL:-gpt-4o-mini}
       # Or Azure OpenAI
       - AZURE_OPENAI_API_KEY=\${AZURE_OPENAI_API_KEY}
       - AZURE_OPENAI_ENDPOINT=\${AZURE_OPENAI_ENDPOINT}
-      - AZURE_OPENAI_CHAT_DEPLOYMENT_NAME=\${AZURE_OPENAI_CHAT_DEPLOYMENT_NAME}
+      - AZURE_OPENAI_MODEL=\${AZURE_OPENAI_MODEL}
       # Optional: Enable instrumentation
       - ENABLE_INSTRUMENTATION=\${ENABLE_INSTRUMENTATION:-false}
     ports:
       - "8080:8080"
     restart: unless-stopped
 `
+
+  create_resource_group = `# Create resource group
+az group create --name myResourceGroup --location eastus
+
+# Create container registry
+az acr create --resource-group myResourceGroup \\
+  --name myregistry --sku Basic`
 
   requirementsTemplate = `# requirements.txt
 agent-framework-devui>=0.1.0
@@ -580,6 +785,26 @@ openai>=1.0.0
 # azure-openai
 # anthropic
 `
+
+  build_push_image = `# Build and push in one command
+az acr build --registry myregistry \\
+  --image ${this.agentName().toLowerCase()}-agent:latest .`
+
+  create_env = `az containerapp env create --name myEnvironment \\
+  --resource-group myResourceGroup \\
+  --location eastus`
+  deploy_app = `az containerapp create --name ${this.agentName().toLowerCase()}-app \\
+  --resource-group myResourceGroup \\
+  --environment myEnvironment \\
+  --image myregistry.azurecr.io/${this.agentName().toLowerCase()}-agent:latest \\
+  --target-port 8080 \\
+  --ingress 'external' \\
+  --registry-server myregistry.azurecr.io \\
+  --env-vars OPENAI_API_KEY=secretref:openai-key OPENAI_CHAT_COMPLETION_MODEL=gpt-4o-mini`
+
+  get_app_url = `az containerapp show --name ${this.agentName().toLowerCase()}-app \\
+  --resource-group myResourceGroup \\
+  --query properties.configuration.ingress.fqdn`
 
   openUrl(url: string) {
     window.open(url, '_blank')
