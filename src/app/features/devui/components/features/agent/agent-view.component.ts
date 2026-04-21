@@ -62,6 +62,7 @@ function isAbortError(error: unknown): boolean {
 }
 
 type DebugEvent = ExtendedResponseStreamEvent | 'clear'
+const ASSISTANT_TEXT_RENDER_INTERVAL_MS = 50
 
 @Component({
   selector: 'app-agent-view',
@@ -414,6 +415,7 @@ export class AgentViewModalComponent {
   isReloading = signal(false)
   wasCancelled = signal(false)
   accumulatedTextRef = signal<string>('')
+  lastAssistantTextRenderAt = signal(0)
 
   currentMessageUsage = signal<{
     total_tokens: number
@@ -430,6 +432,62 @@ export class AgentViewModalComponent {
   readonly messagesEnd = viewChild<ElementRef<HTMLDivElement>>('messagesEnd')
   private userJustSentMessage = false
   droppedFiles: File[] | undefined
+
+  renderAssistantStreamingText = (
+    assistantMessageId: string,
+    status: 'in_progress' | 'completed' | 'incomplete' = 'in_progress',
+    force: boolean = false,
+  ) => {
+    const now = performance.now()
+    if (!force && now - this.lastAssistantTextRenderAt() < ASSISTANT_TEXT_RENDER_INTERVAL_MS) {
+      return
+    }
+
+    const currentItems = this.store.chatItems
+    let changed = false
+    const nextItems = currentItems.map((item) => {
+      if (item.id !== assistantMessageId || item.type !== 'message') {
+        return item
+      }
+
+      const nextText = this.accumulatedTextRef()
+      const existingTextContent = item.content.find(
+        (content) => content.type === 'text' || content.type === 'output_text',
+      )
+      const currentText =
+        existingTextContent && 'text' in existingTextContent ? existingTextContent.text : ''
+
+      if (currentText === nextText && item.status === status) {
+        return item
+      }
+
+      changed = true
+      const existingNonTextContent = item.content.filter(
+        (content) => content.type !== 'text' && content.type !== 'output_text',
+      )
+
+      return {
+        ...item,
+        content: nextText
+          ? [
+              ...existingNonTextContent,
+              {
+                type: 'text',
+                text: nextText,
+              } as MessageTextContent,
+            ]
+          : existingNonTextContent,
+        status,
+      }
+    })
+
+    if (changed) {
+      this.lastAssistantTextRenderAt.set(now)
+      this.store.setChatItems(nextItems)
+    } else if (force) {
+      this.lastAssistantTextRenderAt.set(now)
+    }
+  }
 
   constructor() {
     this.chatService.debug$.pipe(takeUntilDestroyed()).subscribe((event) => {
@@ -888,6 +946,7 @@ export class AgentViewModalComponent {
         apiRequest,
         signal,
       )
+      this.lastAssistantTextRenderAt.set(0)
 
       for await (const openAIEvent of streamGenerator) {
         // Pass all events to debug panel
@@ -926,6 +985,12 @@ export class AgentViewModalComponent {
             }
           }
 
+          if (this.accumulatedTextRef()) {
+            this.renderAssistantStreamingText(assistantMessage.id, 'incomplete', true)
+            this.store.setIsStreaming(false)
+            return
+          }
+
           // Update assistant message with error
           const currentItems = this.store.chatItems
           this.store.setChatItems(
@@ -951,7 +1016,7 @@ export class AgentViewModalComponent {
         // Handle function approval request events
         if (openAIEvent.type === 'response.function_approval.requested') {
           const approvalEvent = openAIEvent as ResponseFunctionApprovalRequestedEvent
-
+          this.renderAssistantStreamingText(assistantMessage.id, 'in_progress', true)
           // Add to pending approvals (for popup)
           this.store.setPendingApprovals([
             ...this.store.pendingApprovals,
@@ -1032,6 +1097,12 @@ export class AgentViewModalComponent {
           }
           const errorMessage = errorEvent.message || 'An error occurred'
 
+          if (this.accumulatedTextRef()) {
+            this.renderAssistantStreamingText(assistantMessage.id, 'incomplete', true)
+            this.store.setIsStreaming(false)
+            return // Exit stream processing early on error
+          }
+
           // Update assistant message with error and stop streaming
           const currentItems = this.store.chatItems
           this.store.setChatItems(
@@ -1058,6 +1129,7 @@ export class AgentViewModalComponent {
         if (openAIEvent.type === 'response.output_item.added') {
           const outputItemEvent = openAIEvent as ResponseOutputItemAddedEvent
           const item = outputItemEvent.item
+          this.renderAssistantStreamingText(assistantMessage.id, 'in_progress', true)
 
           // Handle function calls as separate conversation items
           if (item.type === 'function_call') {
@@ -1133,30 +1205,7 @@ export class AgentViewModalComponent {
           openAIEvent.delta
         ) {
           this.accumulatedTextRef.update((prev) => (prev || '') + openAIEvent.delta)
-
-          // Update assistant message with accumulated content
-          // Preserve any existing non-text content (images, files, data)
-          const currentItems = this.store.chatItems
-          this.store.setChatItems(
-            currentItems.map((item) => {
-              if (item.id === assistantMessage.id && item.type === 'message') {
-                // Keep existing non-text content, update text content
-                const existingNonTextContent = item.content.filter((c) => c.type !== 'text')
-                return {
-                  ...item,
-                  content: [
-                    ...existingNonTextContent,
-                    {
-                      type: 'text',
-                      text: this.accumulatedTextRef(),
-                    } as MessageTextContent,
-                  ],
-                  status: 'in_progress' as const,
-                }
-              }
-              return item
-            }),
-          )
+          this.renderAssistantStreamingText(assistantMessage.id)
         }
 
         // Handle completion/error by detecting when streaming stops
@@ -1166,6 +1215,7 @@ export class AgentViewModalComponent {
       // Stream ended - mark as complete
       // Usage is provided via response.completed event (OpenAI standard)
       const finalUsage = this.currentMessageUsage()
+      this.renderAssistantStreamingText(assistantMessage.id, 'in_progress', true)
 
       const currentItems = this.store.chatItems
       this.store.setChatItems(
@@ -1193,43 +1243,36 @@ export class AgentViewModalComponent {
       if (isAbortError(error)) {
         // User cancelled - mark as cancelled for UI feedback
         this.wasCancelled.set(true)
-        // Mark the message as completed with what we have
-        const currentItems = this.store.chatItems
-        this.store.setChatItems(
-          currentItems.map((item) =>
-            item.id === assistantMessage.id && item.type === 'message'
-              ? {
-                  ...item,
-                  status: this.accumulatedTextRef()
-                    ? ('completed' as const)
-                    : ('incomplete' as const),
-                  // Keep whatever text we have accumulated
-                  content: item.content,
-                }
-              : item,
-          ),
+        this.renderAssistantStreamingText(
+          assistantMessage.id,
+          this.accumulatedTextRef() ? 'completed' : 'incomplete',
+          true,
         )
       } else {
-        // Other errors - show error message
-        const currentItems = this.store.chatItems
-        this.store.setChatItems(
-          currentItems.map((item) =>
-            item.id === assistantMessage.id && item.type === 'message'
-              ? {
-                  ...item,
-                  content: [
-                    {
-                      type: 'text',
-                      text: `Error: ${
-                        error instanceof Error ? error.message : 'Failed to get response'
-                      }`,
-                    } as MessageTextContent,
-                  ],
-                  status: 'incomplete' as const,
-                }
-              : item,
-          ),
-        )
+        if (this.accumulatedTextRef()) {
+          this.renderAssistantStreamingText(assistantMessage.id, 'incomplete', true)
+        } else {
+          // Other errors - show error message
+          const currentItems = this.store.chatItems
+          this.store.setChatItems(
+            currentItems.map((item) =>
+              item.id === assistantMessage.id && item.type === 'message'
+                ? {
+                    ...item,
+                    content: [
+                      {
+                        type: 'text',
+                        text: `Error: ${
+                          error instanceof Error ? error.message : 'Failed to get response'
+                        }`,
+                      } as MessageTextContent,
+                    ],
+                    status: 'incomplete' as const,
+                  }
+                : item,
+            ),
+          )
+        }
       }
       this.store.setIsStreaming(false)
       this.resetCancelling()
