@@ -410,13 +410,32 @@ const WORKFLOW_EVENT_TYPES = [
                 <div class="flex-1 min-h-0 overflow-hidden">
                   <app-execution-timeline
                     [events]="workflowEvents()"
+                    [itemOutputs]="itemOutputs()"
+                    [currentExecutorId]="activeExecutors()[activeExecutors().length - 1] || null"
                     [isStreaming]="isStreaming()"
+                    (onExecutorClick)="handleNodeSelect($event)"
                     [selectedExecutorId]="selectedExecutorId()"
                     [workflowResult]="workflowResult()"
                     [pendingHilRequests]="pendingHilRequests()"
-                    [checkpoints]="sessionCheckpoints()"
+                    [hilResponses]="hilResponses()"
+                    (onHilResponseChange)="handleHilResponseChange($event.requestId, $event.values)"
+                    (onHilSubmit)="handleSubmitHilResponses()"
+                    [isSubmittingHil]="isStreaming()"
+                    [inputSchema]="workflowInfo()?.input_schema"
                     (onRun)="handleWorkflowRun($event.data, $event.checkpointId)"
+                    [checkpoints]="sessionCheckpoints()"
                     (cancel)="handleCancel()"
+                    [isCancelling]="isCancelling()"
+                    [workflowState]="
+                      isStreaming()
+                        ? 'running'
+                        : wasCancelled()
+                          ? 'cancelled'
+                          : executorHistory.length > 0
+                            ? 'completed'
+                            : 'ready'
+                    "
+                    [wasCancelled]="wasCancelled()"
                   ></app-execution-timeline>
                 </div>
               </div>
@@ -1231,6 +1250,17 @@ export class WorkflowViewComponent {
       }
     }
     return true
+  }
+
+  handleNodeSelect = (executorId: string) => {
+    this.selectedExecutorId.set(executorId)
+  }
+
+  handleHilResponseChange(requestId: string, values: Record<string, any>) {
+    this.hilResponses.update((prev) => ({
+      ...prev,
+      [requestId]: values,
+    }))
   }
 
   handleSubmitHilResponses = async () => {
