@@ -21,6 +21,13 @@ import { RunWorkflowButtonComponent } from './run-workflow-button.component'
 import { ChatMessageInputComponent } from '@src/app/features/devui/components/ui/chat-message-input.component'
 import { truncateText } from '@shared/utils/utils'
 import { isChatMessageSchema } from '../../../utils/tool'
+import {
+  CheckpointItem,
+  ExtendedResponseStreamEvent,
+  JSONSchemaProperty,
+  ResponseOutputItemAddedEvent,
+  ResponseOutputItemDoneEvent,
+} from '../../../types'
 
 type ExecutorState = 'running' | 'completed' | 'failed' | 'cancelled' | 'pending'
 
@@ -304,7 +311,7 @@ export class ExecutorRunItemComponent {
 })
 export class ExecutionTimelineComponent implements OnDestroy {
   // Inputs via Signal API
-  events = input<any[]>([])
+  events = input<ExtendedResponseStreamEvent[]>([])
   itemOutputs = input<Record<string, string>>({})
   currentExecutorId = input<string | null>(null)
   isStreaming = input<boolean>(false)
@@ -313,11 +320,11 @@ export class ExecutionTimelineComponent implements OnDestroy {
   pendingHilRequests = input<any[]>([])
   hilResponses = input<Record<string, Record<string, any>>>({})
   isSubmittingHil = input<boolean>(false)
-  inputSchema = input<any>()
+  inputSchema = input<JSONSchemaProperty>()
   isCancelling = input<boolean>(false)
   workflowState = input<'ready' | 'running' | 'completed' | 'error' | 'cancelled'>('ready')
   wasCancelled = input<boolean>(false)
-  checkpoints = input<any[]>([])
+  checkpoints = input<CheckpointItem[]>([])
 
   // Outputs via Signal API
   onExecutorClick = output<string>()
@@ -348,38 +355,88 @@ export class ExecutionTimelineComponent implements OnDestroy {
     const runCountMap = new Map<string, number>()
 
     evs.forEach((event) => {
-      const uiTimestamp = (event._uiTimestamp || Date.now() / 1000) * 1000
+      // Extract UI timestamp (captured when event arrived, won't change on re-render)
+      const uiTimestamp =
+        '_uiTimestamp' in event && typeof event._uiTimestamp === 'number'
+          ? event._uiTimestamp * 1000
+          : Date.now()
 
+      // Handle new standard OpenAI events
       if (event.type === 'response.output_item.added') {
-        const item = event.item
-        if (
-          item?.type === 'executor_action' ||
-          (item?.type === 'message' && item.metadata?.source === 'magentic')
-        ) {
-          const executorId = item.executor_id || item.metadata?.agent_id
+        const item = (event as ResponseOutputItemAddedEvent).item
+
+        // Handle both executor_action items AND message items from Magentic agents
+        if (item && item.type === 'executor_action' && 'executor_id' in item && item.id) {
+          const executorId = String(item.executor_id)
           const itemId = item.id
           const runNumber = (runCountMap.get(executorId) || 0) + 1
           runCountMap.set(executorId, runNumber)
 
           runs.push({
             executorId,
-            executorName: executorId,
+            executorName: truncateText(executorId, 35),
             itemId,
             state: 'running',
-            output: outputs[itemId] || '',
+            output: this.itemOutputs()[itemId] || '',
             timestamp: uiTimestamp,
             runNumber,
           })
+        } else if (item && item.type === 'message' && 'metadata' in item && item.id) {
+          // Handle message items from Magentic agents
+          const metadata = item['metadata'] as { agent_id?: string; source?: string } | undefined
+          if (metadata?.agent_id && metadata?.source === 'magentic') {
+            const executorId = metadata.agent_id
+            const itemId = item.id
+            const runNumber = (runCountMap.get(executorId) || 0) + 1
+            runCountMap.set(executorId, runNumber)
+
+            runs.push({
+              executorId,
+              executorName: truncateText(executorId, 35),
+              itemId,
+              state: 'running',
+              output: this.itemOutputs()[itemId] || '',
+              timestamp: uiTimestamp,
+              runNumber,
+            })
+          }
         }
       }
 
       if (event.type === 'response.output_item.done') {
-        const item = event.item
-        const existing = runs.find((r) => r.itemId === item.id)
-        if (existing) {
-          existing.state = item.status === 'failed' ? 'failed' : 'completed'
-          existing.output = outputs[item.id] || ''
-          if (item.error) existing.error = String(item.error)
+        const item = (event as ResponseOutputItemDoneEvent).item
+
+        // Handle both executor_action items AND message items from Magentic agents
+        if (item && item.type === 'executor_action' && 'executor_id' in item && item.id) {
+          const itemId = item.id
+          // Find the run by ITEM ID (not executor ID!) to handle multiple runs correctly
+          const existingRun = runs.find((r) => r.itemId === itemId)
+
+          if (existingRun) {
+            existingRun.state =
+              item.status === 'completed'
+                ? 'completed'
+                : item.status === 'failed'
+                  ? 'failed'
+                  : 'completed'
+            // Use item-specific output, not executor-wide output
+            existingRun.output = this.itemOutputs()[itemId] || ''
+            if (item.status === 'failed' && 'error' in item && item.error) {
+              existingRun.error = String(item.error)
+            }
+          }
+        } else if (item && item.type === 'message' && 'metadata' in item && item.id) {
+          // Handle message completion from Magentic agents
+          const metadata = item['metadata'] as { agent_id?: string; source?: string } | undefined
+          if (metadata?.agent_id && metadata?.source === 'magentic') {
+            const itemId = item.id
+            const existingRun = runs.find((r) => r.itemId === itemId)
+
+            if (existingRun) {
+              existingRun.state = item.status === 'completed' ? 'completed' : 'failed'
+              existingRun.output = this.itemOutputs()[itemId] || ''
+            }
+          }
         }
       }
 
