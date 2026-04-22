@@ -9,10 +9,17 @@ import { WorkflowViewComponent } from './components/features/workflow/workflow-v
 import { ToastContainerComponent, ToastComponent, ToastService } from '@shared/ui/toast'
 import { ApiClient } from './services/api.service'
 import { NgIconComponent } from '@ng-icons/core'
-import type { AgentInfo, WorkflowInfo, ExtendedResponseStreamEvent } from './types'
+import type {
+  AgentInfo,
+  WorkflowInfo,
+  ExtendedResponseStreamEvent,
+  ResponseTextDeltaEvent,
+} from './types'
 import { ButtonComponent } from '@shared/ui/button'
 import { InputComponent } from '@shared/ui/input'
 import { DevUIStore } from './stores'
+
+const DEBUG_TEXT_EVENT_FLUSH_INTERVAL_MS = 50
 
 @Component({
   selector: 'dev-ui',
@@ -367,6 +374,9 @@ export class DevuiComponent {
   authToken = signal('')
   isTestingToken = signal(false)
   authError = signal('')
+  private bufferedDebugText: ResponseTextDeltaEvent | null = null
+  private lastBufferedDebugFlushAtRef = 0
+
   private apiClient = inject(ApiClient)
   protected store = inject(DevUIStore)
   protected toastService = inject(ToastService)
@@ -405,6 +415,17 @@ export class DevuiComponent {
 
     return backendPort
   })
+
+  flushBufferedDebugText = () => {
+    const bufferedEvent = this.bufferedDebugText
+    if (!bufferedEvent) {
+      return
+    }
+
+    this.bufferedDebugText = null
+    this.lastBufferedDebugFlushAtRef = performance.now()
+    this.store.addDebugEvent(bufferedEvent)
+  }
 
   handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && !this.isTestingToken()) {
@@ -501,10 +522,46 @@ export class DevuiComponent {
 
   handleDebugEvent = (event: ExtendedResponseStreamEvent | 'clear') => {
     if (event === 'clear') {
+      this.bufferedDebugText = null
       this.store.clearDebugEvents()
-    } else {
-      this.store.addDebugEvent(event)
+      return
     }
+
+    if (
+      event.type === 'response.output_text.delta' &&
+      'delta' in event &&
+      typeof event.delta === 'string' &&
+      event.delta.length > 0
+    ) {
+      const bufferedEvent = this.bufferedDebugText
+      const isSameOutput =
+        bufferedEvent !== null &&
+        bufferedEvent.item_id === event.item_id &&
+        bufferedEvent.output_index === event.output_index &&
+        bufferedEvent.content_index === event.content_index
+
+      if (isSameOutput && bufferedEvent) {
+        this.bufferedDebugText = {
+          ...bufferedEvent,
+          delta: bufferedEvent.delta + event.delta,
+          sequence_number: event.sequence_number ?? bufferedEvent.sequence_number,
+        }
+      } else {
+        this.flushBufferedDebugText()
+        this.bufferedDebugText = { ...event } as ResponseTextDeltaEvent
+      }
+
+      if (
+        performance.now() - this.lastBufferedDebugFlushAtRef >=
+        DEBUG_TEXT_EVENT_FLUSH_INTERVAL_MS
+      ) {
+        this.flushBufferedDebugText()
+      }
+      return
+    }
+
+    this.flushBufferedDebugText()
+    this.store.addDebugEvent(event)
   }
 
   constructor() {
