@@ -15,11 +15,12 @@ import { Overlay, OverlayModule, OverlayRef } from '@angular/cdk/overlay'
 import { TemplatePortal } from '@angular/cdk/portal'
 import { NgIconComponent } from '@ng-icons/core'
 import { ButtonDirective } from '../../directives/button.directive'
+import { cn } from '../../utils/utils'
 
 @Component({
   selector: 'app-dialog-header',
   standalone: true,
-  template: `<div [class]="'space-y-2 p-6 ' + class()"><ng-content /></div>`,
+  template: `<ng-content />`,
   styles: [
     `
       :host {
@@ -28,18 +29,23 @@ import { ButtonDirective } from '../../directives/button.directive'
       }
     `,
   ],
+  host: {
+    '[class]': 'computedClasses()',
+  },
 })
 export class DialogHeaderComponent {
-  class = input<string>('')
+  className = input<string>('', { alias: 'class' })
+  computedClasses = computed(() => cn('space-y-2 p-6', this.className()))
 }
 
 @Component({
   selector: 'app-dialog-title',
   standalone: true,
-  template: `<h2 class="text-lg font-semibold {{ class() }}"><ng-content></ng-content></h2>`,
+  template: `<h2 class="{{ computedClasses() }}"><ng-content></ng-content></h2>`,
 })
 export class DialogTitleComponent {
-  class = input<string>('')
+  className = input<string>('', { alias: 'class' })
+  computedClasses = computed(() => cn('text-lg font-semibold', this.className()))
 }
 
 @Component({

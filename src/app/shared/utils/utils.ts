@@ -1,4 +1,3 @@
-import { JSONSchemaProperty } from '@src/app/features/devui/types'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
