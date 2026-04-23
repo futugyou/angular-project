@@ -6,6 +6,8 @@ import {
   ViewEncapsulation,
   ChangeDetectionStrategy,
   TemplateRef,
+  inject,
+  effect,
 } from '@angular/core'
 import {
   CdkMenuModule,
@@ -19,6 +21,8 @@ import {
 import { NgIconComponent } from '@ng-icons/core'
 import { cn } from '../../utils/utils'
 
+export type DropdownPosition = 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end'
+
 @Directive({
   selector: '[appDropdownMenu]',
   standalone: true,
@@ -29,7 +33,35 @@ import { cn } from '../../utils/utils'
     },
   ],
 })
-export class DropdownMenu {}
+export class DropdownMenu {
+  private _trigger = inject(CdkMenuTrigger)
+
+  position = input<DropdownPosition>('bottom-start', { alias: 'appDropdownPosition' })
+
+  constructor() {
+    effect(() => {
+      const pos = this.position()
+      if (pos === 'bottom-end') {
+        this._trigger.menuPosition = [
+          { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top' },
+        ]
+      } else if (pos === 'top-start') {
+        this._trigger.menuPosition = [
+          { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
+        ]
+      } else if (pos === 'top-end') {
+        this._trigger.menuPosition = [
+          { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom' },
+        ]
+      } else {
+        // default bottom-start
+        this._trigger.menuPosition = [
+          { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
+        ]
+      }
+    })
+  }
+}
 
 @Component({
   selector: 'app-dropdown-menu-content',
