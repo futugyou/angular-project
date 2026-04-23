@@ -79,7 +79,9 @@ import { isChatMessageSchema } from '../../../utils/tool'
           [disabled]="isDisabled()"
           [variant]="buttonVariant()"
           class="rounded-l-none border-l-0 px-2"
+          title="More options"
           [appDropdownMenu]="workflowMenu"
+          appDropdownPosition="top-end"
         >
           <ng-icon name="lucideChevronDown" class="w-4 h-4"></ng-icon>
         </button>
@@ -142,16 +144,18 @@ import { isChatMessageSchema } from '../../../utils/tool'
     </ng-template>
 
     @if (schema) {
-      <app-dialog [open]="showModal()" (openChange)="showModal.set($event)">
-        <app-dialog-header class="px-8 pt-6">
+      <app-dialog
+        [open]="showModal()"
+        (openChange)="showModal.set($event)"
+        class="w-full min-w-100 max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col"
+      >
+        <app-dialog-header class="px-6 pb-0 space-y-2">
           <app-dialog-title>Configure Workflow Inputs</app-dialog-title>
           <app-dialog-close (close)="showModal.set(false)" />
         </app-dialog-header>
 
-        <app-dialog-content
-          class="w-full min-w-100 max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col"
-        >
-          <div class="px-8 py-4 border-b shrink-0">
+        <app-dialog-content class="px-0 pb-0">
+          <div class="px-8 pb-4 border-b shrink-0">
             <div class="text-sm text-muted-foreground">
               <div class="flex items-center gap-3">
                 <span class="font-medium">Input Type:</span>
