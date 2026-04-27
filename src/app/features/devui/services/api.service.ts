@@ -383,7 +383,12 @@ export class ApiClient {
       // Clear streaming state when conversation is deleted
       clearStreamingState(conversationId)
       return true
-    } catch {
+    } catch (err: any) {
+      if (err.status === 404) {
+        console.warn(`Conversation ${conversationId} not found`)
+        return true
+      }
+
       return false
     }
   }
