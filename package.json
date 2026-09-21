@@ -61,7 +61,7 @@
     "eslint-plugin-storybook": "^10.6.0",
     "jsdom": "^30.0.1",
     "playwright": "^1.63.0",
-    "prettier": "3.9.6",
+    "prettier": "3.9.8",
     "storybook": "^10.6.0",
     "typescript": "~6.0.2",
     "vite-tsconfig-paths": "^6.1.1",
