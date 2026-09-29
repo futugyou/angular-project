@@ -25,7 +25,7 @@
     "@antv/x6": "^3.1.8",
     "@antv/x6-angular-shape": "^3.0.1",
     "@antv/x6-plugin-selection": "^2.2.2",
-    "@ng-icons/core": "^36.0.0",
+    "@ng-icons/core": "^36.1.0",
     "@ng-icons/lucide": "^36.0.0",
     "@tailwindcss/postcss": "^4.3.3",
     "class-variance-authority": "^0.7.1",
