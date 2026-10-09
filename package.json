@@ -33,7 +33,7 @@
     "cytoscape": "^3.34.3",
     "ngx-sonner": "^3.1.0",
     "ngx-xyflow": "^0.1.1",
-    "postcss": "^8.5.28",
+    "postcss": "^8.5.29",
     "rxjs": "~7.8.2",
     "tailwind-merge": "^3.7.0",
     "tailwindcss": "^4.3.3",
