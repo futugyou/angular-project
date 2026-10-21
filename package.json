@@ -51,7 +51,7 @@
     "@storybook/addon-a11y": "^10.6.2",
     "@storybook/addon-docs": "^10.6.2",
     "@storybook/angular": "^10.6.2",
-    "@testing-library/angular": "^19.5.0",
+    "@testing-library/angular": "^19.6.0",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@types/node": "^26.6.5",
