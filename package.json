@@ -47,7 +47,7 @@
     "@angular/cli": "^22.2.6",
     "@angular/compiler-cli": "^22.2.4",
     "@compodoc/compodoc": "^2.0.0",
-    "@playwright/test": "^1.64.1",
+    "@playwright/test": "^1.65.0",
     "@storybook/addon-a11y": "^10.6.5",
     "@storybook/addon-docs": "^10.6.6",
     "@storybook/angular": "^10.6.6",
