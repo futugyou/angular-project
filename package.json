@@ -60,7 +60,7 @@
     "eslint": "^10.15.0",
     "eslint-plugin-storybook": "^10.6.7",
     "jsdom": "^31.0.1",
-    "playwright": "^1.64.1",
+    "playwright": "^1.65.1",
     "prettier": "3.10.1",
     "storybook": "^10.6.7",
     "typescript": "~6.0.2",
