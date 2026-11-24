@@ -50,7 +50,7 @@
     "@playwright/test": "^1.65.1",
     "@storybook/addon-a11y": "^10.6.8",
     "@storybook/addon-docs": "^10.6.8",
-    "@storybook/angular": "^10.6.7",
+    "@storybook/angular": "^10.6.8",
     "@testing-library/angular": "^19.6.0",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^8.0.0",
