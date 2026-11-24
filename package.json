@@ -58,7 +58,7 @@
     "@vitest/ui": "^5.1.1",
     "angular-eslint": "^22.8.0",
     "eslint": "^10.15.0",
-    "eslint-plugin-storybook": "^10.6.7",
+    "eslint-plugin-storybook": "^10.6.8",
     "jsdom": "^31.0.1",
     "playwright": "^1.65.1",
     "prettier": "3.10.1",
